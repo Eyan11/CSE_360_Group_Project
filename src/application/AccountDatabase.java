@@ -6,78 +6,28 @@ public class AccountDatabase {
 	
 	// JDBC driver name and database URL 
 	static final String JDBC_DRIVER = "org.h2.Driver";   
-	static final String DB_URL = "jdbc:h2:~/firstDatabase"; 
+	static final String DB_URL = "jdbc:h2:~/accountDatabase"; 
 
 	//  Database credentials 
 	static final String USER = "sa"; 
 	static final String PASS = ""; 
 
+	// Reusable variables to execute queries
+	private String query = "";
 	private Connection connection = null;
 	private Statement statement = null; 
 	private ResultSet resultSet = null;
-
-
-	/**********************************************************************************************
-
-	Private Methods
-	
-	**********************************************************************************************/
-	
-	/**********
-	 * Creates a table called accounts and initializes columns
-	 * From Instructor's DatabaseHelper class
-	 */
-	private void createTables() throws SQLException {
-		String userTable = "CREATE TABLE IF NOT EXISTS accounts ("
-				+ "username VARCHAR(50) PRIMARY KEY UNIQUE, "
-				+ "password VARCHAR(50), "		// VARCHAR(#) is a string with a max of # characters
-				+ "email VARCHAR(50) UNIQUE, "
-				+ "first_name VARCHAR(50),"
-				+ "middle_name VARCHAR(50),"
-				+ "last_name VARCHAR(50),"
-				+ "preferred_name VARCHAR(50),"
-				+ "display_name VARCHAR(50),"
-				+ "is_key BIT," 					// BIT is used for boolean, 0 is false, 1 is true
-				+ "is_student BIT,"
-				+ "is_instructor BIT,"
-				+ "is_admin BIT,"
-				+ "expiration TIMESTAMP)";			// TIMESTAMP is an exact date and time (when key expires)
-		statement.execute(userTable);
-	}
-	
-	
-	/**********
-	 * TODO To test if users have been added to database
-	 * From Instructor's DatabaseHelper class
-	 */
-	private void printUsers() throws SQLException{
-		// get entire accounts table
-		String sql = "SELECT * FROM accounts"; 
-		statement = connection.createStatement();
-		resultSet = statement.executeQuery(sql); 
-		
-		System.out.println(); // empty line before printing all users
-
-		// while the row exists
-		while(resultSet.next()) { 
-			// Retrieve by column name 
-			String user = resultSet.getString("username"); 
-
-			// Display values 
-			System.out.println("ID: " + user); 
-		} 
-	}
 	
 	
 	/**********************************************************************************************
 
-	Public Methods
+	Public Methods For Database Connection
 	
 	**********************************************************************************************/
 	
+	
 	/**********
-	 * This method starts the connection to the SQL database when the program is started
-	 * From Instructor's DatabaseHelper class
+	 * Starts the connection to the SQL database DELETE working
 	 */
 	public void connectToDatabase() throws SQLException {
 		try {
@@ -85,22 +35,19 @@ public class AccountDatabase {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			System.out.println("Connection Successful!");
 			statement = connection.createStatement(); 
-			createTables();  // Create the necessary tables if they don't exist
 			
-			// testing
-			//register("Tommy", "1234");
-			//register("Billy", "1112");
-			//printUsers();
-			
-		// Connection failed, driver not found
-		} catch (ClassNotFoundException e) {
+			createTables();  // Create accounts database if it doesn't exist on local machine
+			System.out.println("Created Tables if none existed"); // DELETE working
+		} 
+		// Connection failed
+		catch (ClassNotFoundException e) {
 			System.err.println("JDBC Driver not found: " + e.getMessage());
 		}
 	}
 	
+	
 	/**********
-	 * This method closes the connection to the SQL database when the program is closed
-	 * From Instructor's DatabaseHelper class
+	 * Closes the connection to the SQL database when the program is closed DELETE working
 	 */
 	public void closeConnection() {
 		// Close statement
@@ -117,14 +64,20 @@ public class AccountDatabase {
 		} 
 	}
 	
+	
+	/**********************************************************************************************
+
+	Public Getter Methods To Check Database Values
+	
+	**********************************************************************************************/
+	
+	
 	/**********
-	 * Checks if there exists a row of data in accounts database
-	 * Returns true when there are no rows in the accounts database
-	 * From Instructor's DatabaseHelper class
+	 * Checks if there is at least one row of data in accounts database
 	 */
 	public boolean isDatabaseEmpty() throws SQLException {
 		// Counts total number of rows in accounts database
-		String query = "SELECT COUNT(*) AS count FROM accounts";
+		query = "SELECT COUNT(*) AS count FROM accounts";
 		resultSet = statement.executeQuery(query);
 		
 		// if there is a next row, return the number of rows 
@@ -134,81 +87,456 @@ public class AccountDatabase {
 		return true;
 	}
 	
-	public boolean doesLoginExist(String user, String pass) {
-		// TODO
-		return true;
+	
+	/**********
+	 * Checks if the given username and password exist in the same row in accounts database
+	 */
+	public boolean doesLoginExist(String user, String pass) throws SQLException {
+		// Query gets all data in accounts database where username and password equal placeholder variable ?
+		query = "SELECT * FROM accounts WHERE username = ? AND password = ?";
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			pstmt.setString(1, user);				// First ? = user
+			pstmt.setString(2, pass);				// Second ? = pass
+			
+			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
+			return resultSet.next();				// Returns if first row exists or not			
+		}
 	}
-	
-	public boolean doesKeyExist(String key) {
-		// TODO
-		return true;
-	}
-	
-	public boolean doesUsernameExist(String user) {
-		// TODO
-		return false;
-	}
-	
-	public boolean doesEmailExist(String email) {
-		// TODO
-		return false;
-	}
-	
-	public void CreateAccount(String user, String pass) {
-		// TODO
-	}
-	
-	public void UpdateAccount(String email, String firstName, String middleName, String lastName, String prefName) {
-		// TODO
-	}
-	
-	
-	
-	// TODO put in main function before launch(args); to start and close database
-	// Not putting in main right now to avoid giving merge conflicts
-	/*
-	import java.sql.SQLException;
-	
-	// Reference to database
-	AccountDatabase database = new AccountDatabase();
-	
-	// Start database connection
-	try {
-		database.connectToDatabase();
-	}
-	catch (SQLException e) {
-		System.err.println("Database error: " + e.getMessage());
-		e.printStackTrace();
-	}
-	// Close database connection when software is closed
-	finally {
-		System.out.println("Closing Database Connection");
-		database.closeConnection();
-	}
-	*/
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	/**********
-	 * TODO Adds a username and password to database
-	 * From Instructor's DatabaseHelper class
+	 * Checks if the given key exists and is_key is true in database DELETE untested changes
 	 */
-	/*
-	public void register(String username, String password) throws SQLException {
-		String insertUser = "INSERT INTO accounts (username, password) VALUES (?, ?)";
-		try (PreparedStatement pstmt = connection.prepareStatement(insertUser)) {
-			pstmt.setString(1, username);
-			pstmt.setString(2, password);
+	public boolean doesKeyExist(String key) throws SQLException {
+		// Query gets all data in accounts database where is_key and password equal placeholder variable ?
+		query = "SELECT * FROM accounts WHERE is_key = true AND password = ?";
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			pstmt.setString(1, key);				// Second ? = key
+			
+			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
+			return resultSet.next();				// Returns if first row exists or not			
+		}
+	}
+	
+	
+	/**********
+	 * Checks if the given username exists in the accounts database
+	 */
+	public boolean doesUsernameExist(String user) {
+		// Query finds total number of rows in accounts database where username is equal to placeholder variable ?
+	    query = "SELECT COUNT(*) FROM accounts WHERE username = ?";
+	    // Prepare the previous query to be executed
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        pstmt.setString(1, user);				    // Set the ? placeholder variable in query to user
+	        resultSet = pstmt.executeQuery();			// ResultSet is now positioned before first row
+	        
+	        if (resultSet.next()) {						// Move resultSet cursor to first row
+	            return resultSet.getInt(1) > 0;			// If returned at least 1 row, user exists
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();						// print trace of exception
+	    }
+	    return false; 									// If an error occurs, assume user doesn't exist
+	}
+	
+	
+	/**********
+	 * Checks if the given email exists in the accounts database
+	 */
+	public boolean doesEmailExist(String email) {
+		// Query finds total number of rows in accounts database where email is equal to placeholder variable ?
+	    query = "SELECT COUNT(*) FROM accounts WHERE email = ?";
+	    // Prepare the previous query to be executed
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        pstmt.setString(1, email);				    // Set the ? placeholder variable in query to email
+	        resultSet = pstmt.executeQuery();			// ResultSet is now positioned before first row
+	        
+	        if (resultSet.next()) {						// Move resultSet cursor to first row
+	            return resultSet.getInt(1) > 0;			// If returned at least 1 row, email exists
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();						// print trace of exception
+	    }
+	    return false; 									// If an error occurs, assume user doesn't exist
+	}
+	
+	
+	/**********
+	 * Checks if a given user has the student role
+	 */
+	public boolean isStudentRole(String user) {
+		// Query finds total number of rows in accounts database 
+		// where username is equal to placeholder variable ? and is_student is true
+	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_student = true";
+	    // Prepare the previous query to be executed
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        pstmt.setString(1, user);				    // Set the ? placeholder variable in query to user
+	        resultSet = pstmt.executeQuery();			// ResultSet is now positioned before first row
+	        
+	        if (resultSet.next()) {						// Move resultSet cursor to first row
+	            return resultSet.getInt(1) > 0;			// If returned at least 1 row, user has student role
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();						// print trace of exception
+	    }
+	    return false; 									// If an error occurs, assume user doesn't exist
+	}
+	
+	
+	/**********
+	 * Checks if a given user has the instructor role
+	 */
+	public boolean isInstructorRole(String user) {
+		// Query finds total number of rows in accounts database 
+		// where username is equal to placeholder variable ? and is_instructor is true
+	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_instructor = true";
+	    // Prepare the previous query to be executed
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        pstmt.setString(1, user);				    // Set the ? placeholder variable in query to user
+	        resultSet = pstmt.executeQuery();			// ResultSet is now positioned before first row
+	        
+	        if (resultSet.next()) {						// Move resultSet cursor to first row
+	            return resultSet.getInt(1) > 0;			// If returned at least 1 row, user has instructor role
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();						// print trace of exception
+	    }
+	    return false; 									// If an error occurs, assume user doesn't exist
+	}
+	
+	
+	/**********
+	 * Checks if a given user has the admin role
+	 */
+	public boolean isAdminRole(String user) {
+		// Query finds total number of rows in accounts database 
+		// where username is equal to placeholder variable ? and is_admin is true
+	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_admin = true";
+	    // Prepare the previous query to be executed
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        pstmt.setString(1, user);				    // Set the ? placeholder variable in query to user
+	        resultSet = pstmt.executeQuery();			// ResultSet is now positioned before first row
+	        
+	        if (resultSet.next()) {						// Move resultSet cursor to first row
+	            return resultSet.getInt(1) > 0;			// If returned at least 1 row, user has admin role
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();						// print trace of exception
+	    }
+	    return false; 									// If an error occurs, assume user doesn't exist
+	}
+	
+	
+	/**********************************************************************************************
+
+	Public Setter Methods To Update or Add Accounts to Database
+	
+	**********************************************************************************************/
+	
+	
+	/**********
+	 * Creates the first account in accounts database with provided username and password.
+	 * If there is already an account, it will exit the method and print an error message. DELETE working but test new stuff
+	 */
+	public void createFirstAccount(String user, String pass) throws SQLException {
+		
+		// Prevents using method when not the first account in database
+		if(!isDatabaseEmpty()) {
+			System.err.println("Can't create first account, database is NOT empty");
+		}
+		// Prevents very long usernames
+		if(user.length() > 50) {
+			System.err.println("Cannot create account username is over 50 characters");
+			return;
+		}
+		// Prevents very long passwords
+		if(pass.length() > 50) {
+			System.err.println("Cannot create account password is over 50 characters");
+			return;
+		}
+		
+		
+		// Query inserts placeholder variables ? for username and password columns into a new row in accounts database
+		query = "INSERT INTO accounts (username, password, is_student, is_instructor, is_admin, is_key) VALUES (?, ?, ?, ?, ?, ?)";
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			// Set the placeholder ? variables
+			pstmt.setString(1, user);
+			pstmt.setString(2, pass);
+			pstmt.setInt(3, 0);					// is_student = false
+			pstmt.setInt(4, 0);					// is_instructor = false
+			pstmt.setInt(5, 1);					// is_admin = true
+			pstmt.setInt(6, 0);					// is_key = false
+			pstmt.executeUpdate();				// Execute query
+		}
+		
+		// Print results
+		if(doesLoginExist(user, pass))
+			System.out.println("user and pass successfully inserted into accounts database!");
+		else 
+			System.err.println("user and pass failed to be inserted into database");
+	}
+
+	
+	/**********
+	 * Creates the first account in accounts database with provided username and password.
+	 * If there is already an account, it will exit the method and print an error message. DELETE working
+	 */
+	public void createAccountWithKey(String user, String pass, String key) throws SQLException {
+		
+		// Prevents duplicate usernames
+		if(doesUsernameExist(user)) {
+			System.err.println("Cannot create account because username already exists");
+			return;
+		}
+		// Prevents very long usernames
+		if(user.length() > 50) {
+			System.err.println("Cannot create account username is over 50 characters");
+			return;
+		}
+		// Prevents very long passwords
+		if(pass.length() > 50) {
+			System.err.println("Cannot create account password is over 50 characters");
+			return;
+		}
+		
+		
+		// Query inserts placeholder variables ? into accounts database where the password is a key and matches key param
+		String query = "UPDATE accounts "
+				+ "SET username = ?, password = ?, is_key = false "
+				+ "WHERE is_key = true AND password = ?";
+		
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			// Set the placeholder ? variables
+			pstmt.setString(1, user);
+			pstmt.setString(2, pass);
+			pstmt.setString(3, key);
+			pstmt.executeUpdate();				// Execute query
+		}
+		
+		// Print results
+		if(doesLoginExist(user, pass))
+			System.out.println("user and pass successfully inserted into accounts database!");
+		else 
+			System.err.println("user and pass failed to be inserted into database");
+	}
+
+	
+	/**********
+	 * Updates accounts database column values in an existing row where the username matches the given user String.
+	 * If username already exists, it will exit the method and print an error message. DELETE working
+	 */
+	public void updateAccountInformation(String user, String email, String firstName, String middleName, 
+			String lastName, String prefName) throws SQLException{
+		
+		// Checks if username doesn't exist
+		if(!doesUsernameExist(user)) {
+			System.err.println("Cannot update account, username does not exist in accounts database");
+			return;
+		}
+		// Checks if email exists
+		if(doesEmailExist(email)) {
+			System.err.println("Cannot update account, email already exists in database");
+			return;
+		}
+		// Prevents very long emails
+		if(email.length() > 50) {
+			System.err.println("Cannot update account, email is over 50 characters");
+			return;
+		}
+		// Prevents very long first names
+		if(firstName.length() > 50) {
+			System.err.println("Cannot update account, first name is over 50 characters");
+			return;
+		}
+		// Prevents very long middle names
+		if(middleName.length() > 50) {
+			System.err.println("Cannot update account, middle name is over 50 characters");
+			return;
+		}
+		// Prevents very long last names
+		if(lastName.length() > 50) {
+			System.err.println("Cannot update account, last name is over 50 characters");
+			return;
+		}
+		// Prevents very long preferred names
+		if(prefName != null && prefName.length() > 50) {
+			System.err.println("Cannot update account, preferred name is over 50 characters");
+			return;
+		}
+		
+		String query;
+		// Set query WITHOUT preferred name
+		if(prefName == null || prefName == "") {
+			query = "UPDATE accounts "			// update accounts database
+					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, display_name = ? "
+					+ "WHERE username = ?";					// Update info where username column = placeholder variable ?
+		}
+		// Set query WITH preferred name
+		else {
+			query = "UPDATE accounts "			// update accounts database
+					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, preferred_name = ?, display_name = ? "
+					+ "WHERE username = ?";					// Update info where username column = placeholder variable ?
+		}
+		
+		
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			// Set the placeholder ? variables
+			pstmt.setString(1, email);
+			pstmt.setString(2, firstName);
+			pstmt.setString(3, middleName);
+			pstmt.setString(4, lastName);
+			
+			// Set placeholder variables WITHOUT preferred name
+			if(prefName == null || prefName == "") {
+				pstmt.setString(5, firstName);			// Use first name as display name and leave preferred name empty
+				pstmt.setString(6, user);				// Update the above info at the row where username = user
+			}
+			// Set placeholder variables WITH preferred name
+			else {										// If preferred name is given:
+				pstmt.setString(5, prefName);			// Set preferred name column
+				pstmt.setString(6, prefName);			// Use preferred name as display name
+				pstmt.setString(7, user);				// Update the above info at the row where username = user
+			}
+			
+			pstmt.executeUpdate();						// execute query
+		}
+		System.out.println("Successfully updated " + user + "'s account!");
+	}
+
+	
+	/**********************************************************************************************
+
+	Private Methods
+	
+	**********************************************************************************************/
+	
+	/**********
+	 * Creates a table called accounts and initializes columns
+	 * From Instructor's DatabaseHelper class DELETE working
+	 */
+	private void createTables() throws SQLException {
+		query = "CREATE TABLE IF NOT EXISTS accounts ("
+				+ "username VARCHAR(50) PRIMARY KEY UNIQUE, "
+				+ "password VARCHAR(50), "		// VARCHAR(#) is a string with a max of # characters
+				+ "email VARCHAR(50) UNIQUE, "
+				+ "first_name VARCHAR(50),"
+				+ "middle_name VARCHAR(50),"
+				+ "last_name VARCHAR(50),"
+				+ "preferred_name VARCHAR(50),"
+				+ "display_name VARCHAR(50),"
+				+ "is_key BIT," 					// BIT is used for boolean, 0 is false, 1 is true
+				+ "is_student BIT,"
+				+ "is_instructor BIT,"
+				+ "is_admin BIT,"
+				+ "expiration TIMESTAMP)";			// TIMESTAMP is an exact date and time (when key expires)
+		statement.execute(query);
+	}
+	
+	
+	// DELETE for testing
+	private void createFullAccountTester(String user, String pass, String email, 
+			boolean isStudent, boolean isInstructor, boolean isAdmin, boolean isKey) throws SQLException {
+		
+		// Prevents duplicate usernames
+		if(doesUsernameExist(user)) {
+			System.err.println("Cannot create account because username already exists");
+			return;
+		}
+		// Prevents duplicate emails
+		if(doesEmailExist(email)) {
+			System.err.println("Cannot create account because email already exists");
+			return;
+		}
+		// Prevents very long usernames
+		if(user.length() > 50) {
+			System.err.println("Cannot create account username is over 50 characters");
+			return;
+		}
+		// Prevents very long passwords
+		if(pass.length() > 50) {
+			System.err.println("Cannot create account password is over 50 characters");
+			return;
+		}
+		// Prevents very long emails
+		if(email.length() > 50) {
+			System.err.println("Cannot create account email is over 50 characters");
+			return;
+		}
+			
+		
+		
+		query = "INSERT INTO accounts (username, password, email, is_student, is_instructor, is_admin, is_key) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, user);
+			pstmt.setString(2, pass);
+			pstmt.setString(3, email);
+			
+			if(isStudent) pstmt.setInt(4, 1);
+			else pstmt.setInt(4, 0);
+			
+			if(isInstructor) pstmt.setInt(5, 1);
+			else pstmt.setInt(5, 0);
+			
+			if(isAdmin) pstmt.setInt(6, 1);
+			else pstmt.setInt(6, 0);
+			
+			if(isKey) pstmt.setInt(7, 1);
+			else pstmt.setInt(7, 0);
+			
 			pstmt.executeUpdate();
 		}
 	}
-	*/
 	
+	
+	// DELETE for testing
+	private void printAccounts() throws SQLException{
+		// get entire accounts table
+		query = "SELECT * FROM accounts"; 
+		statement = connection.createStatement();
+		resultSet = statement.executeQuery(query); 
+		
+		System.out.println("Printing Accounts: ");
+
+		// while the row exists
+		while(resultSet.next()) { 
+			// Retrieve by column name 
+			String user = resultSet.getString("username"); 
+			String pass = resultSet.getString("password"); 
+			String email = resultSet.getString("email"); 
+			String fName = resultSet.getString("first_name");
+			String mName = resultSet.getString("middle_name");
+			String lName = resultSet.getString("last_name");
+			String pName = resultSet.getString("preferred_name");
+			String dName = resultSet.getString("display_name");
+			int isKey = resultSet.getInt("is_key"); 
+
+			// Display values 
+			System.out.println("Account: ");
+			System.out.println("Username: " + user); 
+			System.out.println("Password: " + pass); 
+			System.out.println("Email: " + email); 
+			System.out.println("First Name: " + fName); 
+			System.out.println("Middle Name: " + mName); 
+			System.out.println("Last Name: " + lName); 
+			System.out.println("Preferred Name: " + pName); 
+			System.out.println("Display Name: " + dName); 
+			System.out.println("isKey: " + isKey); 
+		} 
+	}
 	
 }

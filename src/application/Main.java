@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
+import java.sql.SQLException;	// To catch errors for database
+
 public class Main extends Application {
 	
 	/* This is the default start method generated when class was created, feel free to delete
@@ -52,6 +54,25 @@ public class Main extends Application {
 	
 	
 	public static void main(String[] args) {
+		
+		// Reference to database
+		AccountDatabase database = new AccountDatabase();
+		
+		// Start database connection
+		try {
+			database.connectToDatabase();
+		}
+		// Print error if database couldn't connect
+		catch (SQLException e) {
+			System.err.println("Database error: " + e.getMessage());
+			e.printStackTrace();
+		}
+		// Close database connection when software is closed
+		finally {
+			System.out.println("Closing Database Connection");
+			database.closeConnection();
+		}
+		
 		launch(args);
 	}
 }
