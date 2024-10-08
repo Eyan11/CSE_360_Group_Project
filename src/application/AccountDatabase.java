@@ -13,10 +13,10 @@ public class AccountDatabase {
 	private final String PASS = ""; 
 
 	// Reusable variables to execute queries
-	private String query = "";
-	private Connection connection = null;
-	private Statement statement = null; 
-	private ResultSet resultSet = null;
+	private static String query = "";
+	private static Connection connection = null;
+	private static Statement statement = null; 
+	private static ResultSet resultSet = null;
 	
 	
 	/**********************************************************************************************
@@ -75,7 +75,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if there is at least one row of data in accounts database
 	 */
-	public boolean isDatabaseEmpty() throws SQLException {
+	public static boolean isDatabaseEmpty() throws SQLException {
 		// Counts total number of rows in accounts database
 		query = "SELECT COUNT(*) AS count FROM accounts";
 		resultSet = statement.executeQuery(query);
@@ -91,7 +91,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if the given username and password exist in the same row in accounts database
 	 */
-	public boolean doesLoginExist(String user, String pass) throws SQLException {
+	public static boolean doesLoginExist(String user, String pass) throws SQLException {
 		// Query gets all data in accounts database where username and password equal placeholder variable ?
 		query = "SELECT * FROM accounts WHERE username = ? AND password = ?";
 		// Prepare the previous query to be executed
@@ -109,7 +109,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if the given key exists and is_key is true in database DELETE untested changes
 	 */
-	public boolean doesKeyExist(String key) throws SQLException {
+	public static boolean doesKeyExist(String key) throws SQLException {
 		// Query gets all data in accounts database where is_key and password equal placeholder variable ?
 		query = "SELECT * FROM accounts WHERE is_key = true AND password = ?";
 		// Prepare the previous query to be executed
@@ -126,7 +126,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if the given username exists in the accounts database
 	 */
-	public boolean doesUsernameExist(String user) {
+	public static boolean doesUsernameExist(String user) {
 		// Query finds total number of rows in accounts database where username is equal to placeholder variable ?
 	    query = "SELECT COUNT(*) FROM accounts WHERE username = ?";
 	    // Prepare the previous query to be executed
@@ -148,7 +148,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if the given email exists in the accounts database
 	 */
-	public boolean doesEmailExist(String email) {
+	public static boolean doesEmailExist(String email) {
 		// Query finds total number of rows in accounts database where email is equal to placeholder variable ?
 	    query = "SELECT COUNT(*) FROM accounts WHERE email = ?";
 	    // Prepare the previous query to be executed
@@ -170,7 +170,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if a given user has the student role
 	 */
-	public boolean isStudentRole(String user) {
+	public static boolean isStudentRole(String user) {
 		// Query finds total number of rows in accounts database 
 		// where username is equal to placeholder variable ? and is_student is true
 	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_student = true";
@@ -193,7 +193,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if a given user has the instructor role
 	 */
-	public boolean isInstructorRole(String user) {
+	public static boolean isInstructorRole(String user) {
 		// Query finds total number of rows in accounts database 
 		// where username is equal to placeholder variable ? and is_instructor is true
 	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_instructor = true";
@@ -216,7 +216,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if a given user has the admin role
 	 */
-	public boolean isAdminRole(String user) {
+	public static boolean isAdminRole(String user) {
 		// Query finds total number of rows in accounts database 
 		// where username is equal to placeholder variable ? and is_admin is true
 	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_admin = true";
@@ -239,7 +239,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if a given user has updated their account information
 	 */
-	public boolean isAccountUpdated(String user) {
+	public static boolean isAccountUpdated(String user) {
 		// Query finds total number of rows in accounts database 
 		// where username is equal to placeholder variable ? and is_account_updated is true
 	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_account_updated = true";
@@ -272,7 +272,7 @@ public class AccountDatabase {
 	 * Creates the first account in accounts database with provided username and password.
 	 * If there is already an account, it will exit the method and print an error message. DELETE working but test new stuff
 	 */
-	public void createFirstAccount(String user, String pass) throws SQLException {
+	public static void createFirstAccount(String user, String pass) throws SQLException {
 		
 		// Prevents using method when not the first account in database
 		if(!isDatabaseEmpty()) {
@@ -318,7 +318,7 @@ public class AccountDatabase {
 	 * Creates the first account in accounts database with provided username and password.
 	 * If there is already an account, it will exit the method and print an error message. DELETE working
 	 */
-	public void createAccountWithKey(String user, String pass, String key) throws SQLException {
+	public static void createAccountWithKey(String user, String pass, String key) throws SQLException {
 		
 		// Prevents duplicate usernames
 		if(doesUsernameExist(user)) {
@@ -364,7 +364,7 @@ public class AccountDatabase {
 	 * Updates accounts database column values in an existing row where the username matches the given user String.
 	 * If username already exists, it will exit the method and print an error message. DELETE working
 	 */
-	public void updateAccountInformation(String user, String email, String firstName, String middleName, 
+	public static void updateAccountInformation(String user, String email, String firstName, String middleName, 
 			String lastName, String prefName) throws SQLException{
 		
 		// Checks if username doesn't exist
