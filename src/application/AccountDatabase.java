@@ -5,12 +5,12 @@ import java.sql.*;
 public class AccountDatabase {
 	
 	// JDBC driver name and database URL 
-	static final String JDBC_DRIVER = "org.h2.Driver";   
-	static final String DB_URL = "jdbc:h2:~/accountDatabase"; 
+	private final String JDBC_DRIVER = "org.h2.Driver";   
+	private final String DB_URL = "jdbc:h2:~/accountDatabase"; 
 
 	//  Database credentials 
-	static final String USER = "sa"; 
-	static final String PASS = ""; 
+	private final String USER = "sa"; 
+	private final String PASS = ""; 
 
 	// Reusable variables to execute queries
 	private String query = "";
@@ -236,6 +236,31 @@ public class AccountDatabase {
 	}
 	
 	
+	/**********
+	 * Checks if a given user has updated their account information
+	 */
+	public boolean isAccountUpdated(String user) {
+		// Query finds total number of rows in accounts database 
+		// where username is equal to placeholder variable ? and is_account_updated is true
+	    query = "SELECT COUNT(*) FROM accounts WHERE username = ? AND is_account_updated = true";
+	    // Prepare the previous query to be executed
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        pstmt.setString(1, user);				// Set the ? placeholder variable in query to user
+	        resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
+	        
+	        if (resultSet.next()) {					// Move resultSet cursor to first row
+	            return resultSet.getInt(1) > 0;		// If returned at least 1 row, user has updated account info
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();					// print trace of exception
+	    }
+	    return false; 								// If an error occurs, assume user has NOT updated account info
+	}
+	
+	
+	
+	
 	/**********************************************************************************************
 
 	Public Setter Methods To Update or Add Accounts to Database
@@ -266,7 +291,7 @@ public class AccountDatabase {
 		
 		
 		// Query inserts placeholder variables ? for username and password columns into a new row in accounts database
-		query = "INSERT INTO accounts (username, password, is_student, is_instructor, is_admin, is_key) VALUES (?, ?, ?, ?, ?, ?)";
+		query = "INSERT INTO accounts (username, password, is_student, is_instructor, is_admin, is_key, is_account_updated) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		// Prepare the previous query to be executed
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			
@@ -277,6 +302,7 @@ public class AccountDatabase {
 			pstmt.setInt(4, 0);					// is_instructor = false
 			pstmt.setInt(5, 1);					// is_admin = true
 			pstmt.setInt(6, 0);					// is_key = false
+			pstmt.setInt(6, 0);					// is_account_updated = false
 			pstmt.executeUpdate();				// Execute query
 		}
 		
@@ -313,7 +339,7 @@ public class AccountDatabase {
 		
 		// Query inserts placeholder variables ? into accounts database where the password is a key and matches key param
 		String query = "UPDATE accounts "
-				+ "SET username = ?, password = ?, is_key = false "
+				+ "SET username = ?, password = ?, is_key = false, is_account_updated = false "
 				+ "WHERE is_key = true AND password = ?";
 		
 		// Prepare the previous query to be executed
@@ -381,13 +407,13 @@ public class AccountDatabase {
 		// Set query WITHOUT preferred name
 		if(prefName == null || prefName == "") {
 			query = "UPDATE accounts "			// update accounts database
-					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, display_name = ? "
+					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, display_name = ?, is_account_updated = true "
 					+ "WHERE username = ?";					// Update info where username column = placeholder variable ?
 		}
 		// Set query WITH preferred name
 		else {
 			query = "UPDATE accounts "			// update accounts database
-					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, preferred_name = ?, display_name = ? "
+					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, preferred_name = ?, display_name = ?, is_account_updated = true "
 					+ "WHERE username = ?";					// Update info where username column = placeholder variable ?
 		}
 		
@@ -443,6 +469,7 @@ public class AccountDatabase {
 				+ "is_student BIT,"
 				+ "is_instructor BIT,"
 				+ "is_admin BIT,"
+				+ "is_account_updated BIT,"
 				+ "expiration TIMESTAMP)";			// TIMESTAMP is an exact date and time (when key expires)
 		statement.execute(query);
 	}
