@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
-import java.sql.SQLException;	// To catch errors for database
 
 public class Main extends Application {
 	
@@ -36,6 +35,8 @@ public class Main extends Application {
 	@Override
 	public void start(Stage theStage) throws Exception {
 		
+		AccountDatabase.connectToDatabase();		// Communicates to AccountDatabase when application is opened
+		
 		theStage.setTitle("Group Project");			// Label the stage (a window)
 		
 		Pane theRoot = new Pane();							// Create a pane within the window
@@ -54,20 +55,15 @@ public class Main extends Application {
 	
 	
 	public static void main(String[] args) {
-		
-		// Reference to database
-		AccountDatabase database = new AccountDatabase();
-		
-		// Start database connection
-		try {
-			database.connectToDatabase();
-		}
-		// Print error if database couldn't connect
-		catch (SQLException e) {
-			System.err.println("Database error: " + e.getMessage());
-			e.printStackTrace();
-		}
-		
 		launch(args);
 	}
+	
+	
+	/**********
+	 * Communicates to the AccountDatabase when application is closed
+	 */
+    @Override
+    public void stop() {
+        AccountDatabase.closeConnection();
+    }
 }

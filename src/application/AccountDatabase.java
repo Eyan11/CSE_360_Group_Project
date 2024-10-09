@@ -1,43 +1,62 @@
 package application;
 
-import java.sql.*;
+import java.sql.*; // For SQL related objects
+import java.util.Random; // For random key generator
+
+/**
+ * <p> AccountDatabase. </p>
+ * 
+ * <p> Description: Manages the H2 database which stores all account information.</p>
+ * 
+ * <p> Source: Lynn Rober Carter from FirstDatabase project, DatabaseHelper class, 
+ * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007
+ * 
+ * @author Eyan Martucci
+ * 
+ * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ *  
+ */
 
 public class AccountDatabase {
 	
 	// JDBC driver name and database URL 
-	private final String JDBC_DRIVER = "org.h2.Driver";   
-	private final String DB_URL = "jdbc:h2:~/accountDatabase"; 
+	private static final String JDBC_DRIVER = "org.h2.Driver";   
+	private static final String DB_URL = "jdbc:h2:~/accountDatabase"; 
 
 	//  Database credentials 
-	private final String USER = "sa"; 
-	private final String PASS = ""; 
+	private static final String USER = "sa"; 
+	private static final String PASS = ""; 
 
-	// Reusable variables to execute queries
+	// Reusable variables to communicate with database
 	private static String query = "";
 	private static Connection connection = null;
 	private static Statement statement = null; 
 	private static ResultSet resultSet = null;
 	
+	// For random key generator
+	private final String KEY_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_#$@";
+	private final int KEY_LENGTH = 15;
+	private Random random;
+	
 	
 	/**********************************************************************************************
 
-	Public Methods For Database Connection
+	Private Methods For Database Connection
 	
 	**********************************************************************************************/
 	
 	
 	/**********
-	 * Starts the connection to the SQL database DELETE working
+	 * Starts the connection to the H2 database.
 	 */
-	public void connectToDatabase() throws SQLException {
+	public static void connectToDatabase() throws SQLException {
 		try {
 			Class.forName(JDBC_DRIVER); // Load the JDBC driver
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			System.out.println("Connection Successful!");
 			statement = connection.createStatement(); 
 			
-			createTables();  // Create accounts database if it doesn't exist on local machine
-			System.out.println("Created Tables if none existed"); // DELETE working
+			createTable();  // Create accounts database if it doesn't exist on local machine
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
@@ -47,22 +66,27 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Closes the connection to the SQL database when the program is closed DELETE working
+	 * Closes the connection to the H2 database.
 	 */
-	public void closeConnection() {
+	public static void closeConnection() {
 		// Close statement
-		try{ 
-			if(statement!=null) statement.close(); 
-		} catch(SQLException se2) { 
+		try { 
+			if(statement!=null) 
+				statement.close(); 
+		} 
+		catch(SQLException se2) { 
 			se2.printStackTrace();
 		} 
+		
 		// Close connection
 		try { 
-			if(connection!=null) connection.close(); 
-		} catch(SQLException se){ 
+			if(connection!=null) 
+				connection.close(); 
+			System.out.println("CLOSING CONNECTION TO DATABASE");
+		} 
+		catch(SQLException se){ 
 			se.printStackTrace(); 
 		} 
-		System.out.println("CLOSING CONNECTION TO DATABASE");
 	}
 	
 	
@@ -74,7 +98,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if there is at least one row of data in accounts database
+	 * Checks if there is at least one row of data in database.
 	 */
 	public static boolean isDatabaseEmpty() throws SQLException {
 		// Counts total number of rows in accounts database
@@ -90,7 +114,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if the given username and password exist in the same row in accounts database
+	 * Checks if the given username and password exist in the same row in the database.
 	 */
 	public static boolean doesLoginExist(String user, String pass) throws SQLException {
 		// Query gets all data in accounts database where username and password equal placeholder variable ?
@@ -108,7 +132,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if the given key exists and is_key is true in database DELETE untested changes
+	 * Checks if the given key exists and is_key is true in the database.
 	 */
 	public static boolean doesKeyExist(String key) throws SQLException {
 		// Query gets all data in accounts database where is_key and password equal placeholder variable ?
@@ -116,7 +140,7 @@ public class AccountDatabase {
 		// Prepare the previous query to be executed
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			
-			pstmt.setString(1, key);				// Second ? = key
+			pstmt.setString(1, key);				// password = key
 			
 			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
 			return resultSet.next();				// Returns if first row exists or not			
@@ -125,7 +149,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if the given username exists in the accounts database
+	 * Checks if a given username exists in the database.
 	 */
 	public static boolean doesUsernameExist(String user) {
 		// Query finds total number of rows in accounts database where username is equal to placeholder variable ?
@@ -147,7 +171,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if the given email exists in the accounts database
+	 * Checks if a given email exists in the accounts database.
 	 */
 	public static boolean doesEmailExist(String email) {
 		// Query finds total number of rows in accounts database where email is equal to placeholder variable ?
@@ -169,7 +193,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if a given user has the student role
+	 * Checks if a given username has the student role.
 	 */
 	public static boolean isStudentRole(String user) {
 		// Query finds total number of rows in accounts database 
@@ -192,7 +216,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if a given user has the instructor role
+	 * Checks if a given username has the instructor role
 	 */
 	public static boolean isInstructorRole(String user) {
 		// Query finds total number of rows in accounts database 
@@ -215,7 +239,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if a given user has the admin role
+	 * Checks if a given username has the admin role.
 	 */
 	public static boolean isAdminRole(String user) {
 		// Query finds total number of rows in accounts database 
@@ -238,7 +262,7 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * Checks if a given user has updated their account information
+	 * Checks if a given username has updated their account information.
 	 */
 	public static boolean isAccountUpdated(String user) {
 		// Query finds total number of rows in accounts database 
@@ -271,7 +295,7 @@ public class AccountDatabase {
 	
 	/**********
 	 * Creates the first account in accounts database with provided username and password.
-	 * If there is already an account, it will exit the method and print an error message. DELETE working but test new stuff
+	 * If there is already an account, it will exit the method and print an error message.
 	 */
 	public static void createFirstAccount(String user, String pass) throws SQLException {
 		
@@ -309,15 +333,15 @@ public class AccountDatabase {
 		
 		// Print results
 		if(doesLoginExist(user, pass))
-			System.out.println("user and pass successfully inserted into accounts database!");
+			System.out.println("First user and pass successfully inserted into accounts database!");
 		else 
-			System.err.println("user and pass failed to be inserted into database");
+			System.err.println("First user and pass failed to be inserted into database");
 	}
 
 	
 	/**********
-	 * Creates the first account in accounts database with provided username and password.
-	 * If there is already an account, it will exit the method and print an error message. DELETE working
+	 * Updates account username and password to the account corresponding to the given key in database.
+	 * If key doesn't exist in database, or username already exists, it will exit with error message.
 	 */
 	public static void createAccountWithKey(String user, String pass, String key) throws SQLException {
 		
@@ -338,7 +362,8 @@ public class AccountDatabase {
 		}
 		
 		
-		// Query inserts placeholder variables ? into accounts database where the password is a key and matches key param
+		// Query inserts placeholder variables ? into accounts database 
+		// where the password is a key and matches key param
 		String query = "UPDATE accounts "
 				+ "SET username = ?, password = ?, is_key = false, is_account_updated = false "
 				+ "WHERE is_key = true AND password = ?";
@@ -355,15 +380,15 @@ public class AccountDatabase {
 		
 		// Print results
 		if(doesLoginExist(user, pass))
-			System.out.println("user and pass successfully inserted into accounts database!");
+			System.out.println("New user and pass successfully inserted into accounts database!");
 		else 
-			System.err.println("user and pass failed to be inserted into database");
+			System.err.println("New user and pass failed to be inserted into database");
 	}
 
 	
 	/**********
-	 * Updates accounts database column values in an existing row where the username matches the given user String.
-	 * If username already exists, it will exit the method and print an error message. DELETE working
+	 * Updates additional account information to the account corresponding to the given username in database.
+	 * If username doesn't exist, or email already exists, it will exit and print an error message.
 	 */
 	public static void updateAccountInformation(String user, String email, String firstName, String middleName, 
 			String lastName, String prefName) throws SQLException{
@@ -409,13 +434,13 @@ public class AccountDatabase {
 		if(prefName == null || prefName == "") {
 			query = "UPDATE accounts "			// update accounts database
 					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, display_name = ?, is_account_updated = true "
-					+ "WHERE username = ?";					// Update info where username column = placeholder variable ?
+					+ "WHERE username = ?";		// Update info where username column = placeholder variable ?
 		}
 		// Set query WITH preferred name
 		else {
 			query = "UPDATE accounts "			// update accounts database
 					+ "SET email = ?, first_name = ?, middle_name = ?, last_name = ?, preferred_name = ?, display_name = ?, is_account_updated = true "
-					+ "WHERE username = ?";					// Update info where username column = placeholder variable ?
+					+ "WHERE username = ?";		// Update info where username column = placeholder variable ?
 		}
 		
 		
@@ -442,7 +467,44 @@ public class AccountDatabase {
 			
 			pstmt.executeUpdate();						// execute query
 		}
-		System.out.println("Successfully updated " + user + "'s account!");
+		System.out.println("Successfully updated " + user + "'s account");
+	}
+	
+	
+	/**********
+	 * Adds a random unique key and user roles into database, then returns the key.
+	 */
+	public String inviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin) throws SQLException{
+		
+		// generate random unique key
+		String key = generateKey();
+		
+		// Query inserts placeholder variables ? for below columns into a new row in accounts database
+		query = "INSERT INTO accounts (password, is_student, is_instructor, is_admin, is_key, is_account_updated, expiration) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			// Set the placeholder ? variables
+			pstmt.setString(1, key);				// password = key
+			pstmt.setInt(2, isStudent ? 1 : 0);		// is_student = isStudents
+			pstmt.setInt(3, isInstructor ? 1 : 0);	// is_instructor = isInstructor
+			pstmt.setInt(4, isAdmin ? 1 : 0);		// is_admin = isAdmin
+			pstmt.setInt(5, 1);						// is_key = true
+			pstmt.setInt(6, 0);						// is_account_updated = false
+			// expiration = current Day:Month:Year Hour:Minute:Second
+			pstmt.setTimestamp(6, new java.sql.Timestamp(new java.util.Date().getTime()));
+			pstmt.executeUpdate();					// Execute query
+		}
+		
+		// Print results
+		if(doesKeyExist(key)) {
+			System.out.println("Key and roles successfully added to database!");
+			return key;
+		}
+		else  {
+			System.err.println("Key and roles failed to be added to database");
+			return "";
+		}
 	}
 
 	
@@ -453,10 +515,9 @@ public class AccountDatabase {
 	**********************************************************************************************/
 	
 	/**********
-	 * Creates a table called accounts and initializes columns
-	 * From Instructor's DatabaseHelper class DELETE working
+	 * Creates a table called accounts and initializes columns.
 	 */
-	private void createTables() throws SQLException {
+	private static void createTable() throws SQLException {
 		query = "CREATE TABLE IF NOT EXISTS accounts ("
 				+ "username VARCHAR(50) PRIMARY KEY UNIQUE, "
 				+ "password VARCHAR(50), "		// VARCHAR(#) is a string with a max of # characters
@@ -473,11 +534,64 @@ public class AccountDatabase {
 				+ "is_account_updated BIT,"
 				+ "expiration TIMESTAMP)";			// TIMESTAMP is an exact date and time (when key expires)
 		statement.execute(query);
+		System.out.println("'accounts' table created if it did not already exist");
 	}
 	
 	
-	// DELETE for testing
-	private void createFullAccountTester(String user, String pass, String email, 
+	/**********
+	 * Deletes the entire accounts table in database
+	 */
+	private void deleteTable() throws SQLException {
+		query = "DROP TABLE accounts";		// delete accounts table
+		statement.execute(query);			// execute query
+		System.out.print("'accounts' table deleted");
+	}
+	
+	
+	/**********
+	 * Generates a random key with a-z, A-z, and 0-9 characters of length 15
+	 */
+	private String generateKey() throws SQLException{
+		String newKey = "";
+		random = new Random();
+		int randValue;
+		
+		// Loop while the newKey is empty or already exists in database to prevent duplicate keys
+		while(newKey == "" || doesKeyExist(newKey)) {
+			
+			newKey = "";	// Reset key
+			
+			// Loop length is length of key
+			for(int i = 0; i < KEY_LENGTH; i++) {
+				
+				// generates random int from 0 to length of KEY_CHARS - 1
+				randValue = random.nextInt(KEY_CHARS.length());
+				// add the character at randValue location in string to the newKey
+				newKey += KEY_CHARS.substring(randValue, randValue + 1);
+			}
+		}
+		
+		return newKey;	// successfully generated unique key
+	}
+	
+	
+	/**********
+	 * Deletes the entire accounts table in database
+	 */
+	private void testDatabase() throws SQLException {
+		deleteTable();
+		createTable();
+		createFirstAccount("First user", "123");	// test first account creation
+		createFirstAccount("Second account", "123");
+		
+		//createAccountTest("Bob", "123", "Bob@gmail.com", true, false, false, false);
+	}
+	
+	
+	/**********
+	 * Creates a new account in account database for testing purposes.
+	 */
+	private void createAccountTest(String user, String pass, String email, 
 			boolean isStudent, boolean isInstructor, boolean isAdmin, boolean isKey) throws SQLException {
 		
 		// Prevents duplicate usernames
@@ -506,39 +620,43 @@ public class AccountDatabase {
 			return;
 		}
 			
-		
-		
+		// Query creates a new row in database with provided parameters
 		query = "INSERT INTO accounts (username, password, email, is_student, is_instructor, is_admin, is_key) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setString(1, user);
 			pstmt.setString(2, pass);
 			pstmt.setString(3, email);
 			
-			if(isStudent) pstmt.setInt(4, 1);
-			else pstmt.setInt(4, 0);
+			if(isStudent) pstmt.setInt(4, 1);		// is_student = true
+			else pstmt.setInt(4, 0);				// is_student = false
 			
-			if(isInstructor) pstmt.setInt(5, 1);
-			else pstmt.setInt(5, 0);
+			if(isInstructor) pstmt.setInt(5, 1);	// is_instructor = true
+			else pstmt.setInt(5, 0);				// is_instructor = false
 			
-			if(isAdmin) pstmt.setInt(6, 1);
-			else pstmt.setInt(6, 0);
+			if(isAdmin) pstmt.setInt(6, 1);			// is_admin = true
+			else pstmt.setInt(6, 0);				// is_admin = false
 			
-			if(isKey) pstmt.setInt(7, 1);
-			else pstmt.setInt(7, 0);
+			if(isKey) pstmt.setInt(7, 1);			// is_key = true
+			else pstmt.setInt(7, 0);				// is_key = false
 			
-			pstmt.executeUpdate();
+			pstmt.executeUpdate();					// execute query
 		}
+		System.out.println("Created test account for '" + user + "'");
 	}
 	
 	
-	// DELETE for testing
-	private void printAccounts() throws SQLException{
+	/**********
+	 * Prints all account information for all accounts in account database for testing purposes.
+	 */
+	private void printAccountsTest() throws SQLException{
 		// get entire accounts table
 		query = "SELECT * FROM accounts"; 
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery(query); 
 		
-		System.out.println("Printing Accounts: ");
+		System.out.println("----------------------------------------------------");
+		System.out.println("Printing All Accounts: \n");
+		System.out.println("----------------------------------------------------");
 
 		// while the row exists
 		while(resultSet.next()) { 
@@ -564,11 +682,8 @@ public class AccountDatabase {
 			System.out.println("Preferred Name: " + pName); 
 			System.out.println("Display Name: " + dName); 
 			System.out.println("isKey: " + isKey); 
+			System.out.println("----------------------------------------------------\n");
 		} 
 	}
-	
-	private void close()
-	{
-		closeConnection();
-	}
+
 }
