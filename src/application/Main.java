@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 
 public class Main extends Application {
@@ -35,6 +36,43 @@ public class Main extends Application {
 	@Override
 	public void start(Stage theStage) throws Exception {
 		
+      
+		
+	/* ADMIN TESTING
+		StackPane root = new StackPane(); 
+        AdminHome adminHome = new AdminHome(root);  // Call the AdminHome constructor
+
+        Scene scene = new Scene(root, 400, 400);  // Create the scene
+        theStage.setTitle("Admin Home");
+        theStage.setScene(scene);
+        theStage.show();
+        
+     */ 
+		
+		
+     /* STUDENT INSTRUCTOR HOMEPAGE TESTING
+	   StackPane root = new StackPane(); 
+        StudentInstructorHomePage studentInstructorHomePage = new StudentInstructorHomePage(root);  // Call the constructor to set up the GUI
+
+        Scene scene = new Scene(root, 400, 300);  // Create the scene
+        theStage.setTitle("Student/Instructor Home");
+        theStage.setScene(scene);
+        theStage.show();
+        
+        */
+		
+//	 SELECT ROLE TESTING
+	   Pane root = new Pane();  // Create the root Pane
+        SelectRole selectRole = new SelectRole(root);  // Call the SelectRole constructor to set up the GUI
+
+        Scene scene = new Scene(root, 300, 300);  // Create the scene
+        theStage.setTitle("Select Role");
+        theStage.setScene(scene);
+        theStage.show();
+
+	 
+  /*      
+				
 		AccountDatabase.connectToDatabase();		// Communicates to AccountDatabase when application is opened
 		
 		theStage.setTitle("Group Project");			// Label the stage (a window)
@@ -45,7 +83,7 @@ public class Main extends Application {
 		
 		theStage.setScene(theScene);						// Set the scene on the stage
 		
-		theStage.show();									// Show the stage to the user
+		theStage.show();			*/						// Show the stage to the user
 		
 		// When the stage is shown to the user, the pane within the window is visible.  This means
 		// that the labels, fields, and buttons of the Graphical User Interface (GUI) are visible 
