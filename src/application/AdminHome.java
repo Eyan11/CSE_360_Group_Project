@@ -49,8 +49,6 @@ public class AdminHome{
         launch(args);
     }
 
-	private static void launch(String[] args) {
-		// TODO Auto-generated method stub
+		
 		
 	}
-}

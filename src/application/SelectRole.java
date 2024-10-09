@@ -11,6 +11,13 @@ public class SelectRole {
 
     //previous logic: already have determined user role
     private String userRole = "Student"; //hard-coded for now, could be "Instructor" or "Admin"
+    
+    
+    
+    /* implement using a construotr that calls that method
+     * pass in the username, Pane
+     * check username role
+     */
 
     public void start(Stage primaryStage) {
         // Title Text
