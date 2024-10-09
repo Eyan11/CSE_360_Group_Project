@@ -43,6 +43,9 @@ public class LoginGUI
 	private Label newUserLabel = new Label("New User?");
 	private Label keyLabel = new Label("One-Time Key:");
 	
+	//private Label loginErrorMessage = new Label("Oops! Incorrect Password or Username, Please Try Again");
+	//private Label keyErrorMessage = new Label("Oops! Incorrect One-Time Key, Please Try Again");
+	
 	// text field for user input
 	private TextField usernameText = new TextField();
 	private TextField passwordText = new TextField();
@@ -71,15 +74,15 @@ public class LoginGUI
 		
 		//Label asking if user is a returning user, left aligned
 		setupUI.SetupLabelUI(returningUserLabel, "Arial", 28, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 25, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 10, Color.BLACK);
 				
 		//Label asking for user name input, left aligned
 		setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 				
 		//Label asking for password input, left aligned
 		setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 175, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 115, Color.BLACK);
 				
 		//Label asking if user has a one-time key, left aligned
 		setupUI.SetupLabelUI(newUserLabel, "Arial", 28, WINDOW_WIDTH-10, 
@@ -87,7 +90,14 @@ public class LoginGUI
 				
 		//Label asking for one-time key input, left aligned
 		setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 325, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 290, Color.BLACK);
+		
+		/*
+		setupUI.SetupLabelUI(loginErrorMessage, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 175, Color.RED);
+		setupUI.SetupLabelUI(keyErrorMessage, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 355, Color.RED);
+		*/
 		
 		/*
 		 * TextField Creations 
@@ -95,13 +105,13 @@ public class LoginGUI
 		
 		//TextField that will take user name from user
 		setupUI.SetupTextFieldUI(usernameText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 125, true);
+				Pos.BASELINE_LEFT, 10, 75, true);
 		//TextField that will take password from user
 		setupUI.SetupTextFieldUI(passwordText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 200, true);
+				Pos.BASELINE_LEFT, 10, 135, true);
 		//TextField that will take key from user
 		setupUI.SetupTextFieldUI(keyText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 350, true);
+				Pos.BASELINE_LEFT, 10, 315, true);
 		
 		/*
 		 * Button Creations
@@ -109,13 +119,13 @@ public class LoginGUI
 		 * figure out dimensions for login button
 		 */
 		
-		//Button that should be pressed when key is inputed in keyText TextField
-		setupUI.SetupButtonUI(verifyKeyButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 400, false, Color.BLACK);
-		
 		//Button that should be pressed when password is inputed passwordText TextField
 		setupUI.SetupButtonUI(loginButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 400, false, Color.BLACK);
+        		Pos.CENTER, 10, 185, false, Color.BLACK);
+		
+		//Button that should be pressed when key is inputed in keyText TextField
+		setupUI.SetupButtonUI(verifyKeyButton, "Arial", 14, WINDOW_WIDTH-20, 
+        		Pos.CENTER, 10, 365, false, Color.BLACK);
 		
 		//Sends all previously established settings for the pane to the scene for setup
 		theRoot.getChildren().addAll(returningUserLabel, usernameLabel, passwordLabel,
@@ -140,9 +150,9 @@ public class LoginGUI
 				{
 					//keep the user name and password label black or change to black if user inputed information earlier
 					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
+							Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 175, Color.BLACK);
+							Pos.BASELINE_LEFT, 10, 115, Color.BLACK);
 							
 					//IF first time login, send user to UpdateAccountInformationGUI
 					if(LoginEvaluator.firstTimeLogin(userInput))
@@ -173,9 +183,9 @@ public class LoginGUI
 				{
 					//change color of user name and password label to red, indicating an error
 					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 100, Color.RED);
+							Pos.BASELINE_LEFT, 10, 50, Color.RED);
 					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 175, Color.RED);
+							Pos.BASELINE_LEFT, 10, 115, Color.RED);
 				}
 			}
 		});
@@ -193,7 +203,7 @@ public class LoginGUI
 				{
 					//keep key label black or change to black if user inputed incorrect info earlier
 					setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 325, Color.BLACK);
+							Pos.BASELINE_LEFT, 10, 290, Color.BLACK);
 					
 					//IF new user, send user to CreateAccountGUI
 					if(!LoginEvaluator.accountCreation(keyInput))
@@ -217,7 +227,7 @@ public class LoginGUI
 				{
 					//change color of key label to red, indicating an error
 					setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 325, Color.RED);
+							Pos.BASELINE_LEFT, 10, 290, Color.RED);
 				}
 			}
 		});
