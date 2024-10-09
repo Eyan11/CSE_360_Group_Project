@@ -6,130 +6,127 @@ import javafx.scene.control.Button; // For Button object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
 import javafx.scene.paint.Color; // To set color of UI elements
 
-//import javafx.stage.Stage;
-//import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Pane; // For Pane object
+import javafx.event.ActionEvent; // For ActionEvent object
+import javafx.event.EventHandler; // For EventHandler object
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+/*******
+ * <p> LoginGUI Class </p>
+ * 
+ * <p> Description: Login User Interface which accepts user name, password, and one-time key </p>
+ * 
+ * @author Julio Salazar
+ * 
+ * @version 1.00 10/9/2024 Phase 1 Implementation and Documentation
+ * 
+ */
 
 public class LoginGUI
 {
 	/*
-	 * Variable Declaration
+	 * Variable Declarations
 	 */
 
-	// The width/height of the pop-up window for the user interface
+	//The width/height of the pop-up window for the user interface
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	// will store login input for evaluation
-	String userInput = "";
-	String passwordInput = "";
-	String keyInput = "";
+	//will store login input for evaluation
+	private String userInput = "";
+	private String passwordInput = "";
+	private String keyInput = "";
 	
-	// non-interactive text that will appear on login interface
-	Label returningUserLabel = new Label("Returning User?");
-	Label usernameLabel = new Label("Username:");
-	Label passwordLabel = new Label("Password:");
-	Label newUserLabel = new Label("New User?");
-	Label keyLabel = new Label("One-Time Key:");
+	//non-interactive text that will appear on login interface
+	private Label returningUserLabel = new Label("Returning User?");
+	private Label usernameLabel = new Label("Username:");
+	private Label passwordLabel = new Label("Password:");
+	private Label newUserLabel = new Label("New User?");
+	private Label keyLabel = new Label("One-Time Key:");
 	
 	// text field for user input
-	TextField usernameText = new TextField();
-	TextField passwordText = new TextField();
-	TextField keyText = new TextField();
+	private TextField usernameText = new TextField();
+	private TextField passwordText = new TextField();
+	private TextField keyText = new TextField();
 	
-	// interactive button for user to login or verify key
-	Button loginButton = new Button("Login");
-	Button verifyKeyButton = new Button("Verify Key");
+	//interactive button for user to login or verify key
+	private Button loginButton = new Button("Login");
+	private Button verifyKeyButton = new Button("Verify Key");
 	
+	//declaration of SetupUIElements Object
 	public SetupUIElements setupUI;
 	
-	 /**
-	  * Constructor w/ Parameter for GUI
-	  * @param userPane
-	  */
+	/**
+	 * Constructor w/ Parameter for GUI
+	 * @param userPane
+	 */
 	
 	public LoginGUI(Pane theRoot)
-	{
-		
-		/*
-		Stage updateStage = new Stage();
-		updateStage.setTitle("Login Page");
-		*/
-		
+	{	
 		//utilizes the SetUpElements class for Labels, TextFields, and Buttons
 		setupUI = new SetupUIElements();
 		
 		/*
-		 * Label Declarations
+		 * Label Creations
 		 */
 		
-		// Label asking if user is a returning user, left aligned
+		//Label asking if user is a returning user, left aligned
 		setupUI.SetupLabelUI(returningUserLabel, "Arial", 28, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 25, Color.BLACK);
 				
-		// Label asking for user name input, left aligned
+		//Label asking for user name input, left aligned
 		setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
 				
-		// Label asking for password input, left aligned
+		//Label asking for password input, left aligned
 		setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 175, Color.BLACK);
 				
-		// Label asking if user has a one-time key, left aligned
+		//Label asking if user has a one-time key, left aligned
 		setupUI.SetupLabelUI(newUserLabel, "Arial", 28, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 250, Color.BLACK);
 				
-		// Label asking for one-time key input, left aligned
+		//Label asking for one-time key input, left aligned
 		setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 325, Color.BLACK);
 		
 		/*
-		 * TextField Declarations 
+		 * TextField Creations 
 		 */
 		
-		// TextField that will take user name from user
+		//TextField that will take user name from user
 		setupUI.SetupTextFieldUI(usernameText, "Arial", 18, WINDOW_WIDTH-20,
 				Pos.BASELINE_LEFT, 10, 125, true);
-		// TextField that will take password from user
+		//TextField that will take password from user
 		setupUI.SetupTextFieldUI(passwordText, "Arial", 18, WINDOW_WIDTH-20,
 				Pos.BASELINE_LEFT, 10, 200, true);
-		// TextField that will take key from user
+		//TextField that will take key from user
 		setupUI.SetupTextFieldUI(keyText, "Arial", 18, WINDOW_WIDTH-20,
 				Pos.BASELINE_LEFT, 10, 350, true);
 		
 		/*
-		 * Button Declarations
-		 * FOR ME: figure out dimensions for login button
+		 * Button Creations
+		 * FOR JULIO: 
+		 * figure out dimensions for login button
 		 */
 		
-		// Button that should be pressed when key is inputed in keyText TextField
+		//Button that should be pressed when key is inputed in keyText TextField
 		setupUI.SetupButtonUI(verifyKeyButton, "Arial", 14, WINDOW_WIDTH-20, 
         		Pos.CENTER, 10, 400, false, Color.BLACK);
 		
-		// Button that should be pressed when password is inputed passwordText TextField
-		//setupButtonUI(loginButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		//Pos.CENTER, 10, 400, false, Color.BLACK);
+		//Button that should be pressed when password is inputed passwordText TextField
+		setupUI.SetupButtonUI(loginButton, "Arial", 14, WINDOW_WIDTH-20, 
+        		Pos.CENTER, 10, 400, false, Color.BLACK);
 		
-		// Sends all previously established settings for the pane to the scene for setup
+		//Sends all previously established settings for the pane to the scene for setup
 		theRoot.getChildren().addAll(returningUserLabel, usernameLabel, passwordLabel,
 				newUserLabel, keyLabel, usernameText, passwordText, keyText, loginButton,
-				verifyKeyButton); 
-
-		/*
-		Scene userScene = new Scene(theRoot, 800, 500);
-		userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		updateStage.setScene(userScene);
-		updateStage.show();
-		*/
+				verifyKeyButton);
 		
 		/*
 		 * Button Functionality
 		 */
 		
-		// button logic for password verification button
+		//button logic for password verification button
 		loginButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
@@ -139,10 +136,9 @@ public class LoginGUI
 				passwordInput = passwordText.getText();
 						
 				//utilize the password checker method in LoginEvaluator class
-				//check if userInput and passwordInput is in database
-				if(LoginEvaluator.PasswordChecker(userInput, passwordInput))
+				if(LoginEvaluator.PasswordChecker(userInput, passwordInput)) // check if userInput and passwordInput is in database
 				{
-					//keep the user name and password label black or change to black if user inputed info earlier
+					//keep the user name and password label black or change to black if user inputed information earlier
 					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
 							Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
 					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -173,9 +169,9 @@ public class LoginGUI
 						System.err.println("PASSWORD CHECKER ERROR");
 					}
 				}
-				else // ERROR MESSAGE
+				else // ERROR MESSAGE / Error Indication
 				{
-					// change color of user name and password label to red, indicating an error message
+					//change color of user name and password label to red, indicating an error
 					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
 							Pos.BASELINE_LEFT, 10, 100, Color.RED);
 					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -192,9 +188,8 @@ public class LoginGUI
 				//grabs input from one-time key text field
 				keyInput = keyText.getText();
 				
-				// utilize one time key checker in LoginEvaluator class
-				// check if one time key is in databases
-				if(LoginEvaluator.OneTimeKeyChecker(keyInput))
+				//utilize one time key checker in LoginEvaluator class
+				if(LoginEvaluator.OneTimeKeyChecker(keyInput)) // check if one time key is in databases
 				{
 					//keep key label black or change to black if user inputed incorrect info earlier
 					setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -206,20 +201,21 @@ public class LoginGUI
 						//CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
 					}
 					/*
+					 * IF existing user, send user to ResetPasswordGUI
+					 * ResetPasswordGUI will not be implemented in Phase 1
 					else if(LoginEvaluator.resetPassword(keyInput))
 					{
 						
 					}
-					//IF existing user, send user to ResetPasswordGUI
-					//ResetPasswordGUI will not be implemented in Phase 1
 					*/
-					else
+					else // key doesn't fit either scenario
 					{
 						System.err.println("KEY CHECKER ERROR");
 					}
 				}
-				else // ERROR MESSAGE
+				else // ERROR MESSAGE / Error Indication
 				{
+					//change color of key label to red, indicating an error
 					setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 							Pos.BASELINE_LEFT, 10, 325, Color.RED);
 				}
