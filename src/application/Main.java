@@ -31,7 +31,7 @@ public class Main extends Application {
 	public final static double WINDOW_WIDTH = 500;
 	/** The height of the pop-up window for the user interface */
 	public final static double WINDOW_HEIGHT = 430;
-	//10-8-24 1150 pm test
+	
 	// new start function based on PasswordEvaluationGUITestbed
 	@Override
 	public void start(Stage theStage) throws Exception {
