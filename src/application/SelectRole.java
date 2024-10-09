@@ -1,27 +1,19 @@
 package application;
 
-import javafx.application.Application;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 public class SelectRole {
 
-    // previous logic: already have determined user role
-    private String userRole = "Student"; // hard-coded for now
-    
-    // Instantiate 
-    public SetupUIElements setupUI = new SetupUIElements();
+    private SetupUIElements setupUI = new SetupUIElements();
 
-    // Constructor
-    public SelectRole(Pane root) {
+    // Constructor that takes in the username to determine user roles
+    public SelectRole(StackPane root, String username) {
         // Create "Select Role" text
         Text title = new Text("Select Role");
         title.setFont(new Font("Arial", 32));  // Set font
@@ -37,32 +29,35 @@ public class SelectRole {
         setupUI.SetupButtonUI(instructorButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(adminButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
 
-        // disable buttons based on the user's role
-        setButtonAccess(studentButton, instructorButton, adminButton);
+        // Disable buttons based on the user's role by calling the role-checking methods
+        setButtonAccess(studentButton, instructorButton, adminButton, username);
 
         // VBox Layout
         VBox vbox = new VBox(10); // Spacing of 10
-        vbox.setAlignment(Pos.CENTER); //center
+        vbox.setAlignment(Pos.CENTER); // Center layout
         vbox.getChildren().addAll(title, studentButton, instructorButton, adminButton);
 
-        // Add all elements to the root Pane
+        // Add all elements to the root StackPane
+        root.setAlignment(Pos.CENTER);  // Center everything in the StackPane
         root.getChildren().add(vbox);
     }
 
     // Logic to enable/disable buttons based on the user role
-    private void setButtonAccess(Button studentBtn, Button instructorBtn, Button adminBtn) {
-        switch (userRole) {
-            case "Student":
-                instructorBtn.setDisable(true); // Disable "Instructor" button
-                adminBtn.setDisable(true); // Disable "Admin" button
-                break;
-            case "Instructor":
-                adminBtn.setDisable(true); // Disable "Admin" button
-                break;
-            case "Admin":
-                // No action needed, all buttons are enabled for Admin
-                break;
+    private void setButtonAccess(Button studentBtn, Button instructorBtn, Button adminBtn, String username) {
+        // Check the user's roles using the AccountDatabase methods
+        boolean isStudent = AccountDatabase.isStudentRole(username);
+        boolean isInstructor = AccountDatabase.isInstructorRole(username);
+        boolean isAdmin = AccountDatabase.isAdminRole(username);
+
+        // Enable or disable buttons based on the user's role
+        if (!isStudent) {
+            studentBtn.setDisable(true);
+        }
+        if (!isInstructor) {
+            instructorBtn.setDisable(true);
+        }
+        if (!isAdmin) {
+            adminBtn.setDisable(true);
         }
     }
 }
-
