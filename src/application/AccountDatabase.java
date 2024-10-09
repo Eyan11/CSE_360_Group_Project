@@ -62,6 +62,7 @@ public class AccountDatabase {
 		} catch(SQLException se){ 
 			se.printStackTrace(); 
 		} 
+		System.out.println("CLOSING CONNECTION TO DATABASE");
 	}
 	
 	
@@ -566,4 +567,8 @@ public class AccountDatabase {
 		} 
 	}
 	
+	private void close()
+	{
+		closeConnection();
+	}
 }

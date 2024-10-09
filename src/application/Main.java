@@ -67,11 +67,6 @@ public class Main extends Application {
 			System.err.println("Database error: " + e.getMessage());
 			e.printStackTrace();
 		}
-		// Close database connection when software is closed
-		finally {
-			System.out.println("Closing Database Connection");
-			database.closeConnection();
-		}
 		
 		launch(args);
 	}

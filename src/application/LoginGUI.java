@@ -1,17 +1,13 @@
 package application;
 
-import javafx.scene.control.Label; // For Label obj
-import javafx.scene.control.TextField; // For TextField obj
-import javafx.scene.control.Button; // For Button obj
-//import javafx.scene.control.CheckBox; // For CheckBox obj
-//import javafx.scene.text.Font; // To set font and font size
-import javafx.geometry.Pos; // For Pos obj (vector2 coordinate used to describe position)
+import javafx.scene.control.Label; // For Label object
+import javafx.scene.control.TextField; // For TextField object
+import javafx.scene.control.Button; // For Button object
+import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
 import javafx.scene.paint.Color; // To set color of UI elements
 
-//import javafx.application.Application;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-//import javafx.scene.layout.BorderPane;
+//import javafx.stage.Stage;
+//import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
 import javafx.event.ActionEvent;
@@ -19,7 +15,9 @@ import javafx.event.EventHandler;
 
 public class LoginGUI
 {
-	// Variables
+	/*
+	 * Variable Declaration
+	 */
 
 	// The width/height of the pop-up window for the user interface
 	public final static double WINDOW_WIDTH = 500;
@@ -48,18 +46,25 @@ public class LoginGUI
 	
 	public SetupUIElements setupUI;
 	
-	 // Constructor w/ Parameter
-	 //@param userPane
+	 /**
+	  * Constructor w/ Parameter for GUI
+	  * @param userPane
+	  */
 	
 	public LoginGUI(Pane theRoot)
 	{
+		
+		/*
 		Stage updateStage = new Stage();
 		updateStage.setTitle("Login Page");
+		*/
 		
 		//utilizes the SetUpElements class for Labels, TextFields, and Buttons
 		setupUI = new SetupUIElements();
 		
-		//Label Declarations
+		/*
+		 * Label Declarations
+		 */
 		
 		// Label asking if user is a returning user, left aligned
 		setupUI.SetupLabelUI(returningUserLabel, "Arial", 28, WINDOW_WIDTH-10, 
@@ -81,7 +86,9 @@ public class LoginGUI
 		setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 325, Color.BLACK);
 		
-		//TextField Declarations
+		/*
+		 * TextField Declarations 
+		 */
 		
 		// TextField that will take user name from user
 		setupUI.SetupTextFieldUI(usernameText, "Arial", 18, WINDOW_WIDTH-20,
@@ -93,8 +100,10 @@ public class LoginGUI
 		setupUI.SetupTextFieldUI(keyText, "Arial", 18, WINDOW_WIDTH-20,
 				Pos.BASELINE_LEFT, 10, 350, true);
 		
-		//Button Declarations
-		//FOR ME: figure out dimensions for login button
+		/*
+		 * Button Declarations
+		 * FOR ME: figure out dimensions for login button
+		 */
 		
 		// Button that should be pressed when key is inputed in keyText TextField
 		setupUI.SetupButtonUI(verifyKeyButton, "Arial", 14, WINDOW_WIDTH-20, 
@@ -109,12 +118,73 @@ public class LoginGUI
 				newUserLabel, keyLabel, usernameText, passwordText, keyText, loginButton,
 				verifyKeyButton); 
 
+		/*
 		Scene userScene = new Scene(theRoot, 800, 500);
 		userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		updateStage.setScene(userScene);
 		updateStage.show();
+		*/
 		
-		//button logic for the ont-time key verification
+		/*
+		 * Button Functionality
+		 */
+		
+		// button logic for password verification button
+		loginButton.setOnAction(new EventHandler<>()
+		{
+			public void handle(ActionEvent event) 
+			{
+				//grabs input from user name and password text field
+				userInput = usernameText.getText();
+				passwordInput = passwordText.getText();
+						
+				//utilize the password checker method in LoginEvaluator class
+				//check if userInput and passwordInput is in database
+				if(LoginEvaluator.PasswordChecker(userInput, passwordInput))
+				{
+					//keep the user name and password label black or change to black if user inputed info earlier
+					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
+							Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
+					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
+							Pos.BASELINE_LEFT, 10, 175, Color.BLACK);
+							
+					//IF first time login, send user to UpdateAccountInformationGUI
+					if(LoginEvaluator.firstTimeLogin(userInput))
+					{
+						//UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(theRoot);
+					}
+					//IF administrator logins AND has updated account info, send user to AdminHomeGUI
+					else if(LoginEvaluator.adminLogin(userInput))
+					{
+						//AdminHome adminHome = new AdminHome();
+					}
+					//IF user has two roles (administrator and Student/Instructor), send user to SelectRoleGUI
+					else if(LoginEvaluator.multipleRoles(userInput))
+					{
+						//SelectRole selectRole = new SelectRole(theRoot, userInput);
+					}
+					//IF user is Student/Instructor with updated account info, send user to StudentInstructorHomeGUI
+					else if(LoginEvaluator.studentInstructorRole(userInput))
+					{
+						//StudentInstructorHomePage shHome = new StudentInstructorHomePage(theRoot, userInput);
+					}
+					else
+					{
+						System.err.println("PASSWORD CHECKER ERROR");
+					}
+				}
+				else // ERROR MESSAGE
+				{
+					// change color of user name and password label to red, indicating an error message
+					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
+							Pos.BASELINE_LEFT, 10, 100, Color.RED);
+					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
+							Pos.BASELINE_LEFT, 10, 175, Color.RED);
+				}
+			}
+		});
+		
+		//button logic for the one-time key verification button
 		verifyKeyButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
@@ -130,51 +200,28 @@ public class LoginGUI
 					setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 							Pos.BASELINE_LEFT, 10, 325, Color.BLACK);
 					
-					//WAITING on AccountDatabase Class
 					//IF new user, send user to CreateAccountGUI
+					if(!LoginEvaluator.accountCreation(keyInput))
+					{
+						//CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
+					}
+					/*
+					else if(LoginEvaluator.resetPassword(keyInput))
+					{
+						
+					}
 					//IF existing user, send user to ResetPasswordGUI
 					//ResetPasswordGUI will not be implemented in Phase 1
+					*/
+					else
+					{
+						System.err.println("KEY CHECKER ERROR");
+					}
 				}
 				else // ERROR MESSAGE
 				{
 					setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 							Pos.BASELINE_LEFT, 10, 325, Color.RED);
-				}
-			}
-		});
-		
-		//button logic for the password verification
-		loginButton.setOnAction(new EventHandler<>()
-		{
-			public void handle(ActionEvent event) 
-			{
-				//grabs input from username and password text field
-				userInput = usernameText.getText();
-				passwordInput = passwordText.getText();
-				
-				//utilize the password checker method in LoginEvaluator class
-				//check if userInput and passwordInput is in database
-				if(LoginEvaluator.PasswordChecker(userInput, passwordInput))
-				{
-					//keep the username and password label black or change to black if user inputed info earlier
-					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
-					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 175, Color.BLACK);
-					
-					//WAITING on AccountDatabase Class
-					//IF first time login, send user to UpdateAccountInformationGUI
-					//IF admin logins AND has updated account info, send user to AdminHomeGUI
-					//IF user has two roles (admin or Student/Instructor), send user to SelectRoleGUI
-					//IF user is Student/Instructor with updated account info, send user to StudentInstructotHomeGUI
-				}
-				else // ERROR MESSAGE
-				{
-					// change color of username and password label to red, indicating an error message
-					setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 100, Color.RED);
-					setupUI.SetupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
-							Pos.BASELINE_LEFT, 10, 175, Color.RED);
 				}
 			}
 		});
