@@ -35,6 +35,7 @@ public class UpdateAccountInformationGUI {
 	public final static double WINDOW_HEIGHT = 430;
 	
 	/** String inputs */
+	private String user; // Passed in from previous step
 	private String emailInput;
 	private String firstNameInput;
 	private String middleNameInput;
@@ -64,7 +65,7 @@ public class UpdateAccountInformationGUI {
 	/** Constructors
 	 */
 	
-	UpdateAccountInformationGUI(Pane userPane) {
+	UpdateAccountInformationGUI(Pane userPane, String user) { // user passed in from previous step
 		Stage updateStage = new Stage();
 		updateStage.setTitle("User Info Update");
         
@@ -193,6 +194,9 @@ public class UpdateAccountInformationGUI {
 	            		
 	            		// DEVELOPER NOTE: Critical step
 	            		// Pass info onto the next part!
+	            		AccountDatabase userAccount = new AccountDatabase(); // Object made from AccountDatabase.java (the next part)
+		            	userAccount.updateAccountInformation(user, emailString, firstString, middleString, lastString, preferredString);
+
 	            		
 	            		//DEVELOPER NOTE: Critical step
 	            		// If preferred name box is filled in (i.e. not empty)
