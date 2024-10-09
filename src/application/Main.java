@@ -61,19 +61,20 @@ public class Main extends Application {
         
         */
 		
-		/*	 SELECT ROLE TESTING
-	   Pane root = new Pane();  // Create the root Pane
-        SelectRole selectRole = new SelectRole(root);  // Call the SelectRole constructor to set up the GUI
+	/*		 SELECT ROLE TESTING
+		StackPane root = new StackPane();  // Use StackPane instead of Pane
+		SelectRole selectRole = new SelectRole(root);  // Call the SelectRole constructor to set up the GUI
 
-        Scene scene = new Scene(root, 300, 200);  // Create the scene
-        theStage.setTitle("Select Role");
-        theStage.setScene(scene);
-        theStage.show();
+		Scene scene = new Scene(root, 300, 200);  // Create the scene
+		theStage.setTitle("Select Role");
+		theStage.setScene(scene);
+		theStage.show();
+
+   */     
         
-        */
 
 	 
-       
+      
 				
 		AccountDatabase.connectToDatabase();		// Communicates to AccountDatabase when application is opened
 		
@@ -87,6 +88,7 @@ public class Main extends Application {
 		
 		theStage.show();									// Show the stage to the user
 		
+		 
 		// When the stage is shown to the user, the pane within the window is visible.  This means
 		// that the labels, fields, and buttons of the Graphical User Interface (GUI) are visible 
 		// and it is now possible for the user to select input fields and enter values into them, 
