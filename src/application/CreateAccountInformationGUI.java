@@ -1,18 +1,20 @@
 package application;
 
-import java.lang.*;
-import javafx.application.Application;
-import javafx.scene.Scene;
+//import java.lang.*;
+import java.sql.SQLException;
+
+//import javafx.application.Application;
+//import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.TextFlow;
+//import javafx.scene.text.FontPosture;
+//import javafx.scene.text.TextFlow;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.stage.Stage;
+//import javafx.stage.Stage;
 //import passwordEvaluationTestbed.PasswordEvaluationGUITestbed;
 
 // ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
@@ -159,6 +161,17 @@ public class CreateAccountInformationGUI {
 	            		//DEVELOPER NOTE: Critical step
 	            		// If preferred name box is filled in (i.e. not empty)
 	            		if(passwordString.equals(confirmString)) {
+	            			usernameInput = usernameText.getText();
+	            			passwordInput = passwordText.getText();
+	            			
+	            			try {
+	            				AccountDatabase.createFirstAccount(usernameInput, passwordInput);
+	            			}
+	            			//catch SQL error
+	            			catch(SQLException e) {
+	            				System.err.println("JDBC Driver not found: " + e.getMessage());
+	            			}
+	            			
 	            			userPane.getChildren().clear();  // Clear the current root
 	            			LoginGUI login = new LoginGUI(userPane);
 	            		} else {
