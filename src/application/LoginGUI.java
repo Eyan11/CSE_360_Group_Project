@@ -10,6 +10,9 @@ import javafx.scene.layout.Pane; // For Pane object
 import javafx.event.ActionEvent; // For ActionEvent object
 import javafx.event.EventHandler; // For EventHandler object
 
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+
 /*******
  * <p> LoginGUI Class </p>
  * 
@@ -158,25 +161,50 @@ public class LoginGUI
 					if(LoginEvaluator.firstTimeLogin(userInput))
 					{
 						theRoot.getChildren().clear();  // Clear the current root
-						UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(theRoot, userInput);
+						
+						Pane newRoot = new Pane();
+						UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(newRoot, userInput);
+						
+						//
+					    Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
 					}
 					//IF administrator logins AND has updated account info, send user to AdminHomeGUI
 					else if(LoginEvaluator.adminLogin(userInput))
 					{
 						theRoot.getChildren().clear();  // Clear the current root
+						
+						Pane newRoot = new Pane();
 						AdminHome adminHome = new AdminHome(theRoot);
+						
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
 					}
 					//IF user has two roles (administrator and Student/Instructor), send user to SelectRoleGUI
 					else if(LoginEvaluator.multipleRoles(userInput))
 					{
 						theRoot.getChildren().clear();  // Clear the current root
+						
+						Pane newRoot = new Pane();
 						SelectRole selectRole = new SelectRole(theRoot, userInput);
+						
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
 					}
 					//IF user is Student/Instructor with updated account info, send user to StudentInstructorHomeGUI
 					else if(LoginEvaluator.studentInstructorRole(userInput))
 					{
 						theRoot.getChildren().clear();  // Clear the current root
+						
+						Pane newRoot = new Pane();
 						StudentInstructorHomePage shHome = new StudentInstructorHomePage(theRoot);
+						
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
 					}
 					else
 					{
@@ -213,7 +241,13 @@ public class LoginGUI
 					if(!LoginEvaluator.accountCreation(keyInput))
 					{
 						theRoot.getChildren().clear();  // Clear the current root
+						
+						Pane newRoot = new Pane();
 						CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
+						
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
 					}
 					/*
 					 * IF existing user, send user to ResetPasswordGUI

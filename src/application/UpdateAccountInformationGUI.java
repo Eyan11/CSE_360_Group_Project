@@ -1,13 +1,13 @@
 package application;
-import java.lang.*;
-import javafx.application.Application;
+//import java.lang.*;
+//import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.TextFlow;
+//import javafx.scene.text.FontPosture;
+//import javafx.scene.text.TextFlow;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -150,7 +150,6 @@ public class UpdateAccountInformationGUI {
         updateButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
             	
-            	
 	            	// Retrieve TextField input
 	            	String emailString = emailText.getText();
 	            	String firstString = firstNameText.getText();
@@ -189,7 +188,6 @@ public class UpdateAccountInformationGUI {
 	            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
 	            	// 				   onto then next part. Thank you.
 	            	else {
-	            		
 	            		//Eliminate error indicator
 	            		setupButtonUI(updateButton, "Arial", 14, WINDOW_WIDTH-20, 
 	            				Pos.CENTER, 10, 400, Color.GREEN);
@@ -212,6 +210,26 @@ public class UpdateAccountInformationGUI {
 	            		//AccountDatabase userAccount = new AccountDatabase(); // Object made from AccountDatabase.java (the next part)
 	            		try {
 	            			AccountDatabase.updateAccountInformation(user, emailString, firstString, middleString, lastString, preferredString);
+	            			
+	            			/**
+	            			 * Transitions to different home pages
+	            			 */
+	            			
+	            			if(LoginEvaluator.adminLogin(user)) // check if user is an admin
+	            			{
+	            				userPane.getChildren().clear();  // Clear the current root
+	    						AdminHome adminHome = new AdminHome(userPane);
+	            			}
+	            			else if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
+	            			{
+	            				userPane.getChildren().clear();  // Clear the current root
+	    						SelectRole selectRole = new SelectRole(userPane, user);
+	            			}
+	            			else if(LoginEvaluator.studentInstructorRole(user)) // user is student or instructor
+	            			{
+	            				userPane.getChildren().clear();  // Clear the current root
+	    						SelectRole selectRole = new SelectRole(userPane, user);
+	            			}
 	            		}
 	            		catch(SQLException e) {
 	            			System.err.println("Error: " + e.getMessage());
@@ -484,6 +502,4 @@ public class UpdateAccountInformationGUI {
 		prefNameInput = prefName;
 		
 	}*/
-	
-	
 }
