@@ -66,9 +66,12 @@ public class SelectRole {
     // Logic to enable/disable buttons based on the user role
     private void setButtonAccess(Button studentBtn, Button instructorBtn, Button adminBtn, String username) {
         // Check the user's roles using the AccountDatabase methods
-        boolean isStudent = AccountDatabase.isStudentRole(username);
-        boolean isInstructor = AccountDatabase.isInstructorRole(username);
-        boolean isAdmin = AccountDatabase.isAdminRole(username);
+//        boolean isStudent = AccountDatabase.isStudentRole(username);
+//        boolean isInstructor = AccountDatabase.isInstructorRole(username);
+//        boolean isAdmin = AccountDatabase.isAdminRole(username);
+    	 boolean isStudent = false; 
+         boolean isInstructor = false; 
+         boolean isAdmin = true;
 
         // Enable or disable buttons based on the user's role
         if (!isStudent) {
