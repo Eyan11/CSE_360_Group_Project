@@ -11,34 +11,44 @@ public class DatabaseTestingAutomation {
 	private static Statement statement = null; 
 	private static ResultSet resultSet = null;
 	
-	private boolean actualResult;
+	private static boolean actualResult;
 	/** Total number of test cases that had matching expectations and results */
 	private static int numPassed = 0;
 	/** Total number of test cases that had different expectations and results */
 	private static int numFailed = 0;
 	
-	private String[] keyArr = new String[3];
-	private int i = 0;
-	private String key = "";
+	private static String[] keyArr = new String[3];
+	private static int i = 0;
+	private static String key = "";
 	
 	
 	/**********
 	 * Starts the testing automatotion
 	 */
-	private void performTestEvaluations() throws SQLException {
-		// Reset accounts table
+	//public static void main(String[] args) throws SQLException {
+	public static void performTestEvaluations() throws SQLException {
+
+		// Wipe all stored database rows on local machine and create a new accounts table
+		AccountDatabase.createTable();
 		AccountDatabase.deleteTable();
 		AccountDatabase.createTable();
 		
+		// *** Test isDatabaseEmpty() **************************************
+		testIsDatabaseEmpty(true);
+		// *****************************************************************
+		
 		// *** Test createFirstAccount() ***********************************
-		testCreateFirstAccount("First user", "123", true);
-		testCreateFirstAccount("Second account", "123", false);
+		testCreateFirstAccount("Name1", "pass1", true);
+		testCreateFirstAccount("Ignore1", "123", false); // Can't create first account if account already exists
+		// *****************************************************************
+		
+		// *** Test isDatabaseEmpty() **************************************
+		testIsDatabaseEmpty(false);
 		// *****************************************************************
 		
 		// *** Test inviteUser() *******************************************
-		testInviteUser(true, false, false, true);
-		testInviteUser(false, false, true, true);
-		testInviteUser(false, true, true, true);
+		testInviteUser(true, false, false, true); // this is username = Name2
+		testInviteUser(false, true, true, true); // this is username = Name3
 		testInviteUser(false, false, false, false); // No roles
 		testInviteUser(true, true, false, false); // BOTH student and Instructor roles
 		// *****************************************************************
@@ -51,13 +61,65 @@ public class DatabaseTestingAutomation {
 		// *****************************************************************
 		
 		// *** Test createAccountWithKey() *********************************
-		testCreateAccountWithKey("Name1", "123", keyArr[0], true);
-		testCreateAccountWithKey("Name1", "123", keyArr[1], false); // Duplicate name
-		testCreateAccountWithKey("Name2", "123", keyArr[1], true);
-		testCreateAccountWithKey("NotAdded", "123", "", false); // Wrong key
-		testCreateAccountWithKey("Name1", "123", "12310871241241KJSDFHSF", false); // Wrong key
+		testCreateAccountWithKey("Name2", "pass2", keyArr[0], true);
+		testCreateAccountWithKey("Name2", "123", keyArr[1], false); // Duplicate username
+		testCreateAccountWithKey("Name3", "pass3", keyArr[1], true);
+		testCreateAccountWithKey("Ignore", "123", "", false); // Wrong key
+		testCreateAccountWithKey("Ignore", "123", "12310871241241KJSDFHSF", false); // Wrong key
 		// *****************************************************************
 		
+		// *** Test updateAccountInformation() ****************************
+		testUpdateAccountInformation("Name1", "email1", "fname", "mname", "lname", "pname", true);
+		testUpdateAccountInformation("Ignore", "email1", "fname", "mname", "lname", "pname", false); // Username doesn't exist
+		testUpdateAccountInformation("Name2", "email1", "fname", "mname", "lname", "pname", false); // Duplicate email
+		testUpdateAccountInformation("Name2", "email2", "fname", "mname", "lname", "", true);
+		// *****************************************************************
+		
+		// **** Test doesLoginExist() **************************************
+		testDoesLoginExist("Name1", "pass1", true);
+		testDoesLoginExist("Name2", "pass2", true);
+		testDoesLoginExist("Ignore", "pass1", false); // Username is wrong
+		testDoesLoginExist("Name3", "Ignore", false); // Password is wrong
+		// *****************************************************************
+		
+		// *** Test doesUsernameExist() ************************************
+		testDoesUsernameExist("Name1", true);
+		testDoesUsernameExist("Name3", true);
+		testDoesUsernameExist("Ignore", false); // Wrong username
+		// *****************************************************************
+		
+		// **** Test doesEmailExist() **************************************
+		testDoesEmailExist("email2", true);
+		testDoesEmailExist("email3", true);
+		testDoesEmailExist("Ignore", false); // Wrong email
+		// *****************************************************************
+		
+		// *** Test isStudentRole() ****************************************
+		testIsStudentRole("Name1", false); // Doesn't have student role
+		testIsStudentRole("Name2", true);
+		testIsStudentRole("Ignore", false); // Wrong username
+		// *****************************************************************
+		
+		// *** Test isInstructorRole() *************************************
+		testIsInstructorRole("Name1", false); // Doesn't have instructor role
+		testIsInstructorRole("Name2", true);
+		testIsInstructorRole("Ignore", false); // Wrong username
+		// *****************************************************************
+		
+		// *** Test isAdminRole() *****************************************
+		testIsAdminRole("Name1", true);
+		testIsAdminRole("Name2", false); // Doesn't have admin role
+		testIsAdminRole("Ignore", false); // Wrong username
+		// *****************************************************************
+		
+		// *** Test isAccountUpdated() *****************************************
+		testIsAccountUpdated("Name1", true);
+		testIsAccountUpdated("Name3", false);  // Account not updated
+		testIsAccountUpdated("Ignore", false); // Wrong username
+		// *****************************************************************
+		
+		// Print all accounts in database (not an actual test case, just to to check data in database)
+		testPrintAccounts();
 		
 		// Print Results
 		System.out.println("-----------------------------------------------------------");
@@ -77,7 +139,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the createFirstAccount() method in AccountDatabase class.
 	 */
-	private void testCreateFirstAccount(String user, String pass, boolean expectedResult) throws SQLException{
+	private static void testCreateFirstAccount(String user, String pass, boolean expectedResult) throws SQLException{
 		
 		// Attempt to create first account and get result
 		actualResult = AccountDatabase.createFirstAccount(user, pass);
@@ -97,7 +159,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the createAccountWithKey() method in AccountDatabase class.
 	 */
-	private void testCreateAccountWithKey(String user, String pass, String key, boolean expectedResult) throws SQLException{
+	private static void testCreateAccountWithKey(String user, String pass, String key, boolean expectedResult) throws SQLException{
 		
 		// Attempt to create account with a key and get result
 		actualResult = AccountDatabase.createAccountWithKey(user, pass, key);
@@ -117,7 +179,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the updateAccountInformation() method in AccountDatabase class.
 	 */
-	private void testUpdateAccountInformation(String user, String email, String firstName, String middleName, 
+	private static void testUpdateAccountInformation(String user, String email, String firstName, String middleName, 
 			String lastName, String prefName, boolean expectedResult) throws SQLException{
 		
 		// Attempt to update account information
@@ -138,7 +200,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the inviteUser() method in AccountDatabase class.
 	 */
-	private void testInviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin, boolean expectedResult) throws SQLException{
+	private static void testInviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin, boolean expectedResult) throws SQLException{
 		
 		// Attempt to invite user and use return key
 		key = AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
@@ -168,7 +230,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the isDatabaseEmpty() method in AccountDatabase class.
 	 */
-	private void testIsDatabaseEmpty(boolean expectedResult) throws SQLException{
+	private static void testIsDatabaseEmpty(boolean expectedResult) throws SQLException{
 		
 		// Check if database is empty and return result
 		actualResult = AccountDatabase.isDatabaseEmpty();
@@ -188,7 +250,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the doesLoginExist() method in AccountDatabase class.
 	 */
-	private void testDoesLoginExist(String user, String pass, boolean expectedResult) throws SQLException{
+	private static void testDoesLoginExist(String user, String pass, boolean expectedResult) throws SQLException{
 		
 		// Check if login exists and return result
 		actualResult = AccountDatabase.doesLoginExist(user, pass);
@@ -208,7 +270,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the doesKeyExist() method in AccountDatabase class.
 	 */
-	private void testDoesKeyExist(String key, boolean expectedResult) throws SQLException{
+	private static void testDoesKeyExist(String key, boolean expectedResult) throws SQLException{
 		
 		// Check if key exists and return result
 		actualResult = AccountDatabase.doesKeyExist(key);
@@ -228,7 +290,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the doesUsernameExist() method in AccountDatabase class.
 	 */
-	private void testDoesUsernameExist(String user, boolean expectedResult) throws SQLException{
+	private static void testDoesUsernameExist(String user, boolean expectedResult) throws SQLException{
 		
 		// Check if username exists and return result
 		actualResult = AccountDatabase.doesUsernameExist(user);
@@ -248,7 +310,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the doesEmailExist() method in AccountDatabase class.
 	 */
-	private void testDoesEmailExist(String email, boolean expectedResult) throws SQLException{
+	private static void testDoesEmailExist(String email, boolean expectedResult) throws SQLException{
 		
 		// Check if email exists and return result
 		actualResult = AccountDatabase.doesEmailExist(email);
@@ -268,7 +330,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the isStudentRole() method in AccountDatabase class.
 	 */
-	private void testIsStudentRole(String user, boolean expectedResult) throws SQLException{
+	private static void testIsStudentRole(String user, boolean expectedResult) throws SQLException{
 		
 		// Check user has student role and return result
 		actualResult = AccountDatabase.isStudentRole(user);
@@ -288,7 +350,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the isInstructorRole() method in AccountDatabase class.
 	 */
-	private void testIsInstructorRole(String user, boolean expectedResult) throws SQLException{
+	private static void testIsInstructorRole(String user, boolean expectedResult) throws SQLException{
 		
 		// Check user has instructor role and return result
 		actualResult = AccountDatabase.isInstructorRole(user);
@@ -306,9 +368,9 @@ public class DatabaseTestingAutomation {
 	
 	
 	/**********
-	 * Tests the functionality of the isAdmin() method in AccountDatabase class.
+	 * Tests the functionality of the isAdminRole() method in AccountDatabase class.
 	 */
-	private void testIsAdmin(String user, boolean expectedResult) throws SQLException{
+	private static void testIsAdminRole(String user, boolean expectedResult) throws SQLException{
 		
 		// Check user has admin role and return result
 		actualResult = AccountDatabase.isAdminRole(user);
@@ -328,7 +390,7 @@ public class DatabaseTestingAutomation {
 	/**********
 	 * Tests the functionality of the isAccountUpdated() method in AccountDatabase class.
 	 */
-	private void testIsAccountUpdated(String user, boolean expectedResult) throws SQLException{
+	private static void testIsAccountUpdated(String user, boolean expectedResult) throws SQLException{
 		
 		// Check account has updated information and return result
 		actualResult = AccountDatabase.isAccountUpdated(user);
@@ -345,83 +407,10 @@ public class DatabaseTestingAutomation {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/**********
-	 * Creates a new account in account database for testing purposes.
-	 */
-	private void createAccountTest(String user, String pass, String email, 
-			boolean isStudent, boolean isInstructor, boolean isAdmin, boolean isKey) throws SQLException {
-		
-		// Prevents duplicate usernames
-		if(AccountDatabase.doesUsernameExist(user)) {
-			System.err.println("Cannot create account because username already exists");
-			return;
-		}
-		// Prevents duplicate emails
-		if(AccountDatabase.doesEmailExist(email)) {
-			System.err.println("Cannot create account because email already exists");
-			return;
-		}
-		// Prevents very long usernames
-		if(user.length() > 50) {
-			System.err.println("Cannot create account username is over 50 characters");
-			return;
-		}
-		// Prevents very long passwords
-		if(pass.length() > 50) {
-			System.err.println("Cannot create account password is over 50 characters");
-			return;
-		}
-		// Prevents very long emails
-		if(email.length() > 50) {
-			System.err.println("Cannot create account email is over 50 characters");
-			return;
-		}
-			
-		// Query creates a new row in database with provided parameters
-		query = "INSERT INTO accounts (username, password, email, is_student, is_instructor, is_admin, is_key) VALUES (?, ?, ?, ?, ?, ?, ?)";
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			pstmt.setString(1, user);
-			pstmt.setString(2, pass);
-			pstmt.setString(3, email);
-			
-			if(isStudent) pstmt.setInt(4, 1);		// is_student = true
-			else pstmt.setInt(4, 0);				// is_student = false
-			
-			if(isInstructor) pstmt.setInt(5, 1);	// is_instructor = true
-			else pstmt.setInt(5, 0);				// is_instructor = false
-			
-			if(isAdmin) pstmt.setInt(6, 1);			// is_admin = true
-			else pstmt.setInt(6, 0);				// is_admin = false
-			
-			if(isKey) pstmt.setInt(7, 1);			// is_key = true
-			else pstmt.setInt(7, 0);				// is_key = false
-			
-			pstmt.executeUpdate();					// execute query
-		}
-		System.out.println("Created test account for '" + user + "'");
-	}
-	
-	
 	/**********
 	 * Prints all account information for all accounts in account database for testing purposes.
 	 */
-	private void printAccountsTest() throws SQLException{
+	private static void testPrintAccounts() throws SQLException{
 		// get entire accounts table
 		query = "SELECT * FROM accounts"; 
 		statement = connection.createStatement();
