@@ -2,6 +2,21 @@ package application;
 
 import java.sql.*; // For SQL related objects
 
+/**
+ * <p> DatabaseTestingAutomation. </p>
+ * 
+ * <p> Description: Tests all functionalities of the AccountDatabase class.</p>
+ * 
+ * <p> Source: Lynn Robert Carter from PasswordEvaluatorTestbedWithGUI project, 
+ * 				PasswordEvaluationTestingAutomation class, 
+ * 				available at: https://canvas.asu.edu/courses/193728/assignments/5505672?module_item_id=14493167
+ * 
+ * @author Eyan Martucci
+ * 
+ * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ *  
+ */
+
 public class DatabaseTestingAutomation {
 
 	
@@ -11,21 +26,22 @@ public class DatabaseTestingAutomation {
 	private static Statement statement = null; 
 	private static ResultSet resultSet = null;
 	
+	// Temporary variable to store return value
 	private static boolean actualResult;
-	/** Total number of test cases that had matching expectations and results */
+	// Total number of test cases that had matching expectations and results
 	private static int numPassed = 0;
-	/** Total number of test cases that had different expectations and results */
+	// Total number of test cases that had different expectations and results
 	private static int numFailed = 0;
 	
+	// To store one-time keys in order to create accounts with them
 	private static String[] keyArr = new String[3];
 	private static int i = 0;
 	private static String key = "";
 	
 	
 	/**********
-	 * Starts the testing automatotion
+	 * Starts the testing automation
 	 */
-	//public static void main(String[] args) throws SQLException {
 	public static void performTestEvaluations() throws SQLException {
 
 		// Wipe all stored database rows on local machine and create a new accounts table
@@ -106,13 +122,13 @@ public class DatabaseTestingAutomation {
 		testIsInstructorRole("Ignore", false); // Wrong username
 		// *****************************************************************
 		
-		// *** Test isAdminRole() *****************************************
+		// *** Test isAdminRole() ******************************************
 		testIsAdminRole("Name1", true);
 		testIsAdminRole("Name2", false); // Doesn't have admin role
 		testIsAdminRole("Ignore", false); // Wrong username
 		// *****************************************************************
 		
-		// *** Test isAccountUpdated() *****************************************
+		// *** Test isAccountUpdated() *************************************
 		testIsAccountUpdated("Name1", true);
 		testIsAccountUpdated("Name3", false);  // Account not updated
 		testIsAccountUpdated("Ignore", false); // Wrong username
