@@ -44,7 +44,7 @@ public class AdminHome {
         title.setLayoutX((WINDOW_WIDTH - title.getLayoutBounds().getWidth()) / 2);
 
 
-        title.setLayoutY(50);  // Set a fixed vertical position (adjust if needed)
+        title.setLayoutY(50);  // Set a fixed vertical
 
 
         // Buttons for Admin actions
