@@ -57,6 +57,7 @@ public class AccountDatabase {
 			statement = connection.createStatement(); 
 			
 			// Wipe all stored database rows on local machine and create a new accounts table
+			createTable();
 			deleteTable();
 			createTable();
 		} 
