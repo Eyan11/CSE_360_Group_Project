@@ -159,7 +159,8 @@ public class CreateAccountInformationGUI {
 	            		//DEVELOPER NOTE: Critical step
 	            		// If preferred name box is filled in (i.e. not empty)
 	            		if(passwordString.equals(confirmString)) {
-	            			System.out.println("account made!");
+	            			userPane.getChildren().clear();  // Clear the current root
+	            			LoginGUI login = new LoginGUI(userPane);
 	            		} else {
 	            			errorLabel.setText("passwords dont match");
 	            			setupLabelUI(errorLabel, "Arial", 14,WINDOW_WIDTH - 10, Pos.BASELINE_LEFT, 10, 300, Color.RED);
