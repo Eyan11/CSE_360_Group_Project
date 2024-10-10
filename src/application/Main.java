@@ -18,10 +18,12 @@ public class Main extends Application {
 	@Override
 	public void start(Stage theStage) throws Exception {
 		
+		// Communicates to AccountDatabase when application is opened
+		AccountDatabase.connectToDatabase();
+		
 		theStage.setTitle("Group Project");			// Label the stage (a window)
 		
 		Pane theRoot = new Pane();							// Create a pane within the window
-		
 		
 		theStage.show();		// Show the stage to the user
         if (AccountDatabase.isDatabaseEmpty()) {
@@ -41,10 +43,18 @@ public class Main extends Application {
 		// and it is now possible for the user to select input fields and enter values into them, 
 		// click on buttons, and read the labels, the results, and the error messages.
 	}
-
-	AccountDatabase accountdatabase = new AccountDatabase(); 
+	
 	
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	
+	/**********
+	 * Communicates to the AccountDatabase when application is closed
+	 */
+	@Override
+	public void stop() {
+		AccountDatabase.closeConnection();
 	}
 }
