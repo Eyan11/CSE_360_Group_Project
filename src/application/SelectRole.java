@@ -9,6 +9,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class SelectRole {
+	
+	public final static double WINDOW_WIDTH = 500;
+	public final static double WINDOW_HEIGHT = 430;
 
     private SetupUIElements setupUI = new SetupUIElements();
 

@@ -11,6 +11,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class AdminHome {
+	
+	public final static double WINDOW_WIDTH = 500;
+	public final static double WINDOW_HEIGHT = 430;
 
     public SetupUIElements setupUI;
 

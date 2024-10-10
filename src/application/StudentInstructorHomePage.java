@@ -10,11 +10,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class StudentInstructorHomePage {
+	public final static double WINDOW_WIDTH = 500;
+	public final static double WINDOW_HEIGHT = 430;
 
     public SetupUIElements setupUI;
 
     // Constructor for setting up the Student/Instructor Home GUI
     public StudentInstructorHomePage(StackPane root) {
+    	
+
+
         // Instantiate SetupUIElements
         setupUI = new SetupUIElements();
 
