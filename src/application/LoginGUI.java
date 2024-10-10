@@ -157,12 +157,12 @@ public class LoginGUI
 					//IF first time login, send user to UpdateAccountInformationGUI
 					if(LoginEvaluator.firstTimeLogin(userInput))
 					{
-						//UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(theRoot);
+						//UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(theRoot, userInput);
 					}
 					//IF administrator logins AND has updated account info, send user to AdminHomeGUI
 					else if(LoginEvaluator.adminLogin(userInput))
 					{
-						//AdminHome adminHome = new AdminHome();
+						//AdminHome adminHome = new AdminHome(theRoot);
 					}
 					//IF user has two roles (administrator and Student/Instructor), send user to SelectRoleGUI
 					else if(LoginEvaluator.multipleRoles(userInput))
@@ -172,7 +172,7 @@ public class LoginGUI
 					//IF user is Student/Instructor with updated account info, send user to StudentInstructorHomeGUI
 					else if(LoginEvaluator.studentInstructorRole(userInput))
 					{
-						//StudentInstructorHomePage shHome = new StudentInstructorHomePage(theRoot, userInput);
+						//StudentInstructorHomePage shHome = new StudentInstructorHomePage(theRoot);
 					}
 					else
 					{
@@ -208,7 +208,7 @@ public class LoginGUI
 					//IF new user, send user to CreateAccountGUI
 					if(!LoginEvaluator.accountCreation(keyInput))
 					{
-						//CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
+						CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
 					}
 					/*
 					 * IF existing user, send user to ResetPasswordGUI
