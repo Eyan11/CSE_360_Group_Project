@@ -1,5 +1,4 @@
 package application;
-
 import java.lang.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -16,12 +15,26 @@ import javafx.stage.Stage;
 import java.sql.SQLException;	// To catch errors for database
 //import passwordEvaluationTestbed.PasswordEvaluationGUITestbed;
 
+
+/**
+ * <p> UpdateAccountInformationGUI Class </p>
+ * 
+ * <p> Description: The Java/FX-based user interface for updating user account information 
+ * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 1).</p>
+ * 
+ * <p> Copyright: Evan Espinosa © 2024 </p>
+ * 
+ * @author Evan Espinosa
+ * 
+ * @version 1.00		2024-09-10 The JavaFX-based GUI for the implementation of the user's update account information page
+ *  
+ */
+
+
 // ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
 // However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 // (especially before changing anything!)
-
 // DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
-
 //public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
 public class UpdateAccountInformationGUI {
 	
@@ -41,7 +54,7 @@ public class UpdateAccountInformationGUI {
 	private String firstNameInput;
 	private String middleNameInput;
 	private String lastNameInput;
-	private String prefNameInput;
+	private String prefNameInput = "";
 	
 	/** Text to appear as a part of the window (text field indicators, etc. */
 	private Label sceneLabel = new Label("Update User Info Window");
@@ -51,7 +64,6 @@ public class UpdateAccountInformationGUI {
 	private Label lastName = new Label("Enter last name here");
 	private Label prefName = new Label("Enter preferred name here");
 	private Label errorLabel = new Label("Please fill in the required entries (see red)");
-
 	/** Text fields for user input */
 	private TextField emailText = new TextField();
 	private TextField firstNameText = new TextField();
@@ -66,6 +78,8 @@ public class UpdateAccountInformationGUI {
 	/** Constructors
 	 */
 	
+	/** Constructor for setting up the user's GUI for the update account info page
+	 */
 	UpdateAccountInformationGUI(Pane userPane, String user) { // user passed in from previous step
 		Stage updateStage = new Stage();
 		updateStage.setTitle("User Info Update");
@@ -193,7 +207,7 @@ public class UpdateAccountInformationGUI {
 	            				Pos.BASELINE_LEFT, 10, 250, Color.GREEN);
 	            		userPane.getChildren().remove(errorLabel);
 	            		
-	            		// DEVELOPER NOTE: Critical step
+	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
 	            		//AccountDatabase userAccount = new AccountDatabase(); // Object made from AccountDatabase.java (the next part)
 	            		try {
@@ -202,35 +216,19 @@ public class UpdateAccountInformationGUI {
 	            		catch(SQLException e) {
 	            			System.err.println("Error: " + e.getMessage());
 	            		}
-
 	            		
-	            		//DEVELOPER NOTE: Critical step
+	            		//DEVELOPER NOTE: Critical step v2 (Experimental implementation idea, keeping for future reference in the coming phases)
+	            		//                (maybe not needed?)
 	            		// If preferred name box is filled in (i.e. not empty)
-	            		if(preferredString != "") {
+	            		/*if(preferredString != "") {
 	            			// Replace first name in user display menu with preferred name
 	            			// someName.somePlace() == preferredString; // Something like this (I think)
-	            		}
+	            		}*/
 	            	}
             }
         });
 	}
 	
-	
-	/*public void userInfo() {
-		
-	}*/
-	
-	
-	/*public void userInfo(String email, String firstName, String middleName, String lastName, String prefName){
-		
-		// Constructor variable names are different from constructor input names to prevent variable shadowing
-		emailInput = email;
-		firstNameInput = firstName;
-		middleNameInput = middleName;
-		lastNameInput = lastName;
-		prefNameInput = prefName;
-		
-	}*/
 	
 	/**
 	 * Methods
@@ -247,7 +245,6 @@ public class UpdateAccountInformationGUI {
 		l.setLayoutY(y);
 		l.setTextFill(color);
 	}
-
 	/**********
 	 * Private local method to initialize the standard fields for a text field
 	 */
@@ -281,7 +278,7 @@ public class UpdateAccountInformationGUI {
 	}*/
 	
 	/**********
-	 * Private local method to check for valid text field input for all text fields
+	 * Private local method to check for valid text field input for all text fields (returns F if all necessary fields are NOT filled, T otherwise)
 	 */
 	// Checks all necessary entries for not being empty. If any are empty, returns false to button function for error display.
 	// Otherwise, if all necessary entries are filled, returns true and sends to button function for pushing info to the next step!
@@ -321,7 +318,8 @@ public class UpdateAccountInformationGUI {
 	
 	
 	
-	
+	/** Method used for testing all implementations and development stages of UpdateAccountInformationGUI (kept for future testing purposes)
+	 */
 	// DEVELOPER NOTE: start method left here in case future changes want to be made, they can easily be tested here and through
 	// defining the function of main simply as "launch(args)". NOTE: You might have to comment out UpdateAccountInfoGUI in order to test using this.
 	
@@ -468,6 +466,24 @@ public class UpdateAccountInformationGUI {
         });
         
     }*/
+	
+	/** Method used for testing early implementations of UpdateAccountInformationGUI (kept for future testing purposes)
+	 */
+	/*public void userInfo() {
+		
+	}*/
+	
+	
+	/*public void userInfo(String email, String firstName, String middleName, String lastName, String prefName){
+		
+		// Constructor variable names are different from constructor input names to prevent variable shadowing
+		emailInput = email;
+		firstNameInput = firstName;
+		middleNameInput = middleName;
+		lastNameInput = lastName;
+		prefNameInput = prefName;
+		
+	}*/
 	
 	
 }
