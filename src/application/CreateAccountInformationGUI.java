@@ -22,6 +22,19 @@ import javafx.stage.Stage;
 // DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
 
 //public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
+/**
+ * <p> SetUpUIElements. </p>
+ * 
+ * <p> Description: A JavaFX helper class to initialize the properties of UI elements.</p>
+ * 
+ * <p> Source: Lynn Robert Carter from InClassDocumentationProject1 project, UserInterface class, 
+ * 				available at: https://canvas.asu.edu/courses/193728/files/93600828?module_item_id=14807672 
+ * 
+ * @author Cadon Duong 
+ * 
+ * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ *  
+ */
 public class CreateAccountInformationGUI {
 	
 	
@@ -35,11 +48,6 @@ public class CreateAccountInformationGUI {
 	public final static double WINDOW_HEIGHT = 430;
 	
 	/** String inputs */
-	//private String emailInput;
-	//private String firstNameInput;
-	//private String middleNameInput;
-	//private String lastNameInput;
-	//private String prefNameInput;
 	private String usernameInput;
 	private String passwordInput;
 	private String confirmInput;
@@ -50,84 +58,35 @@ public class CreateAccountInformationGUI {
 	private Label usernameLabel = new Label("Enter username here");
 	private Label passwordLabel = new Label("Enter password here");
 	private Label confirmLabel = new Label("Re-type password to confirm");
-	//private Label emailLabel = new Label("Enter email here");
-	//private Label firstName = new Label("Enter first name here");
-	//private Label middleName = new Label("Enter middle name here");
-	//private Label lastName = new Label("Enter last name here");
-	//private Label prefName = new Label("Enter preferred name here");
 	private Label errorLabel = new Label("Please fill in the required entries (see red)");
 
 	/** Text fields for user input */
-	//private TextField emailText = new TextField();
-	//private TextField firstNameText = new TextField();
-	//private TextField middleNameText = new TextField();
-	//private TextField lastNameText = new TextField();
-	//private TextField prefNameText = new TextField();
 	private TextField usernameText = new TextField();
 	private TextField passwordText = new TextField();
 	private TextField confirmText = new TextField();
-	
-	//private Button updateButton = new Button("Button test");	
-	//updateButton.setText("Update");
-	
 	
 	/** Constructors
 	 */
 	
 	CreateAccountInformationGUI(Pane userPane) {
 		Stage updateStage = new Stage();
-		updateStage.setTitle("User Info Update");
-        
-        
-        //setupUI = new SetupUIElements();
-        
-        // NOTE: Not needed, see updateStage.setTitle() ^
+		updateStage.setTitle("User Info Update");                  
+       // NOTE: Not needed, see updateStage.setTitle() ^
         // Label the Scene with the name of the testbed, centered at the top of the pane
 		setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
 				Pos.CENTER, 0, 10, Color.GREEN);
+		// Label the username input field with a title just above it, left aligned
 		setupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
+		// Label the password input field with a title just above it, left aligned
 		setupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
+		// Label the confirm input field with a title just above it, left aligned
 		setupLabelUI(confirmLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
-		// Label the email input field with a title just above it, left aligned
-		//setupLabelUI(emailLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				//Pos.BASELINE_LEFT, 10, 25, Color.GREEN);
-		
-		// Label the first name input field with a title just above it, left aligned
-		//setupLabelUI(firstName, "Arial", 14, WINDOW_WIDTH-10, 
-				//Pos.BASELINE_LEFT, 10, 100, Color.GREEN);
-		
-		// Label the middle name input field with a title just above it, left aligned
-		//setupLabelUI(middleName, "Arial", 14, WINDOW_WIDTH-10, 
-			//	Pos.BASELINE_LEFT, 10, 175, Color.GREEN);
-		
-		// Label the last name input field with a title just above it, left aligned
-		//setupLabelUI(lastName, "Arial", 14, WINDOW_WIDTH-10, 
-			//	Pos.BASELINE_LEFT, 10, 250, Color.GREEN);
-		
-		// Label the preferred name input field with a title just above it, left aligned
-		//setupLabelUI(prefName, "Arial", 14, WINDOW_WIDTH-10, 
-				//Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
 		
 		// Establish the text input operand field and when anything changes in the user inputs,
 		// the code will process the entire input to ensure that it is valid or an error.
-		//setupTextUI(emailText, "Arial", 18, WINDOW_WIDTH-20,
-			//	Pos.BASELINE_LEFT, 10, 50, true);
-		
-		//setupTextUI(firstNameText, "Arial", 18, WINDOW_WIDTH-20,
-		//		Pos.BASELINE_LEFT, 10, 125, true);
-		
-		//setupTextUI(middleNameText, "Arial", 18, WINDOW_WIDTH-20,
-		//		Pos.BASELINE_LEFT, 10, 200, true);
-		
-		//setupTextUI(lastNameText, "Arial", 18, WINDOW_WIDTH-20,
-		//		Pos.BASELINE_LEFT, 10, 275, true);
-		
-		//setupTextUI(prefNameText, "Arial", 18, WINDOW_WIDTH-20,
-		//		Pos.BASELINE_LEFT, 10, 350, true);
-		
 		setupTextUI(usernameText, "Arial", 18, WINDOW_WIDTH-20,
 				Pos.BASELINE_LEFT, 10, 350, true);
 		
@@ -160,11 +119,6 @@ public class CreateAccountInformationGUI {
             	
             	
 	            	// Retrieve TextField input
-	            	//String emailString = emailText.getText();
-	            	//String firstString = firstNameText.getText();
-	            	//String lastString = lastNameText.getText();
-	            	//String middleString = middleNameText.getText();
-	            	//String preferredString = prefNameText.getText();
             	String usernameString = usernameText.getText();
             	String passwordString = passwordText.getText();
             	String confirmString = confirmText.getText();
@@ -177,22 +131,7 @@ public class CreateAccountInformationGUI {
 	            	// and highlight all necessary entry boxes
 	            	if(pass == false) {
 	            		userPane.getChildren().add(errorLabel);
-	            		//setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		//Pos.CENTER, 10, 430, Color.RED);
-	            		//setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				//Pos.BASELINE_LEFT, 10, 400, Color.RED);
-	            		
-	            		//setupLabelUI(emailLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				//Pos.BASELINE_LEFT, 10, 25, Color.RED);
-	            		
-	            		//setupLabelUI(firstName, "Arial", 14, WINDOW_WIDTH-10, 
-	            			//	Pos.BASELINE_LEFT, 10, 100, Color.RED);
-	            		
-	            		//setupLabelUI(middleName, "Arial", 14, WINDOW_WIDTH-10, 
-	            				//Pos.BASELINE_LEFT, 10, 175, Color.RED);
-	            		
-	            		//setupLabelUI(lastName, "Arial", 14, WINDOW_WIDTH-10, 
-	            				//Pos.BASELINE_LEFT, 10, 250, Color.RED);
+
 	            		setupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-20, 
                 		Pos.CENTER, 10, 430, Color.RED);
 	            		
@@ -206,25 +145,11 @@ public class CreateAccountInformationGUI {
 	            	}
 	            	
 	            	// If all necessary entries are filled, reset scene formatting and send info to next step!
-	            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
+	            	// DEVELOPER NOTE: Please let Cadon know what steps need to be incorporated so I can add whatever is necessary to pass 
 	            	// 				   onto then next part. Thank you.
 	            	else {
 	            		
 	            		//Eliminate error indicator
-	            		//setupButtonUI(updateButton, "Arial", 14, WINDOW_WIDTH-20, 
-	            			//	Pos.CENTER, 10, 400, Color.GREEN);
-	            		// Reset color values to green
-	            		//setupLabelUI(emailLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				//Pos.BASELINE_LEFT, 10, 25, Color.GREEN);
-	            		
-	            		//setupLabelUI(firstName, "Arial", 14, WINDOW_WIDTH-10, 
-	            				//Pos.BASELINE_LEFT, 10, 100, Color.GREEN);
-	            		
-	            		//setupLabelUI(middleName, "Arial", 14, WINDOW_WIDTH-10, 
-	            			//	Pos.BASELINE_LEFT, 10, 175, Color.GREEN);
-	            		
-	            		//setupLabelUI(lastName, "Arial", 14, WINDOW_WIDTH-10, 
-	            			//	Pos.BASELINE_LEFT, 10, 250, Color.GREEN);
 	            		setupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-20, 
 	                    		Pos.CENTER, 10, 430, Color.RED);
 	    	            		
@@ -257,29 +182,7 @@ public class CreateAccountInformationGUI {
 	}
 	
 	
-	/*public void userInfo() {
-		
-	}*/
-	
-	
-	/*public void userInfo(String email, String firstName, String middleName, String lastName, String prefName){
-		
-		// Constructor variable names are different from constructor input names to prevent variable shadowing
-		emailInput = email;
-		firstNameInput = firstName;
-		middleNameInput = middleName;
-		lastNameInput = lastName;
-		prefNameInput = prefName;
-		
-	}*/
-	
-	/**
-	 * Methods
-	 */
-	
-	/**********
-	 * Private local method to initialize the standard fields for a label
-	 */
+
 	private void setupLabelUI(Label l, String font, double fontSize, double minWidth, Pos pos, double x, double y, Color color){
 		l.setFont(Font.font(font, fontSize));
 		l.setMinWidth(minWidth);
