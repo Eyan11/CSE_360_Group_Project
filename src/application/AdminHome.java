@@ -15,9 +15,6 @@ import javafx.scene.text.Text; // For displaying text in the UI
  * <p> Description: A JavaFX class responsible for displaying the admin home GUI and providing buttons 
  * for admin-related actions such as inviting users, resetting accounts, and more.</p>
  * 
- * <p> Source: Lynn Rober Carter from InClassDocumentationProject1 project, UserInterface class, 
- * 				available at: https://canvas.asu.edu/courses/193728/files/93600828?module_item_id=14807672 
- * 
  * @author Sriram Nesan
  * 
  * @version 1.00		10/9/2024 Phase 1 implementation and documentation

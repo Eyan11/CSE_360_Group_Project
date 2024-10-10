@@ -15,9 +15,6 @@ import javafx.scene.text.Text; // For displaying text in the UI
  * <p> Description: A JavaFX class responsible for displaying the Student/Instructor home page GUI, 
  * and providing logout functionality for the user.</p>
  * 
- * <p> Source: Lynn Rober Carter from InClassDocumentationProject1 project, UserInterface class, 
- * 				available at: https://canvas.asu.edu/courses/193728/files/93600828?module_item_id=14807672 
- * 
  * @author Sriram Nesan
  * 
  * @version 1.00		10/9/2024 Phase 1 implementation and documentation
