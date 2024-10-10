@@ -56,7 +56,9 @@ public class AccountDatabase {
 			System.out.println("Connection Successful!");
 			statement = connection.createStatement(); 
 			
-			createTable();  // Create accounts database if it doesn't exist on local machine
+			// Wipe all stored database rows on local machine and create a new accounts table
+			deleteTable();
+			createTable();
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
@@ -328,7 +330,7 @@ public class AccountDatabase {
 			pstmt.setInt(4, 0);					// is_instructor = false
 			pstmt.setInt(5, 1);					// is_admin = true
 			pstmt.setInt(6, 0);					// is_key = false
-			pstmt.setInt(6, 0);					// is_account_updated = false
+			pstmt.setInt(7, 0);					// is_account_updated = false
 			pstmt.executeUpdate();				// Execute query
 		}
 		

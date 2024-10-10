@@ -39,22 +39,23 @@ public class DatabaseTestingAutomation {
 		testInviteUser(true, false, false, true);
 		testInviteUser(false, false, true, true);
 		testInviteUser(false, true, true, true);
-		testInviteUser(false, false, false, false);
-		testInviteUser(true, true, false, false);
-		testInviteUser(true, true, true, false);
+		testInviteUser(false, false, false, false); // No roles
+		testInviteUser(true, true, false, false); // BOTH student and Instructor roles
 		// *****************************************************************
 		
 		// *** Test doesKeyExist() *****************************************
 		testDoesKeyExist(keyArr[0], true);
 		testDoesKeyExist(keyArr[1], true);
-		testDoesKeyExist("", false);
-		testDoesKeyExist("crmc4324c7y23m4c087234SEKFJ", false);
+		testDoesKeyExist("", false); // Wrong key
+		testDoesKeyExist("crmc4324c7y23m4c087234SEKFJ", false); // Wrong key
 		// *****************************************************************
 		
 		// *** Test createAccountWithKey() *********************************
 		testCreateAccountWithKey("Name1", "123", keyArr[0], true);
+		testCreateAccountWithKey("Name1", "123", keyArr[1], false); // Duplicate name
 		testCreateAccountWithKey("Name2", "123", keyArr[1], true);
-		testCreateAccountWithKey("NotAdded", "123", keyArr[1], true);
+		testCreateAccountWithKey("NotAdded", "123", "", false); // Wrong key
+		testCreateAccountWithKey("Name1", "123", "12310871241241KJSDFHSF", false); // Wrong key
 		// *****************************************************************
 		
 		
