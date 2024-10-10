@@ -69,31 +69,29 @@ public class CreateAccountInformationGUI {
 	 */
 	
 	CreateAccountInformationGUI(Pane userPane) {
-		Stage updateStage = new Stage();
-		updateStage.setTitle("User Info Update");                  
+		                
        // NOTE: Not needed, see updateStage.setTitle() ^
         // Label the Scene with the name of the testbed, centered at the top of the pane
 		setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
 				Pos.CENTER, 0, 10, Color.GREEN);
 		// Label the username input field with a title just above it, left aligned
 		setupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 100, Color.GREEN);
 		// Label the password input field with a title just above it, left aligned
 		setupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 200, Color.GREEN);
 		// Label the confirm input field with a title just above it, left aligned
 		setupLabelUI(confirmLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 300, Color.GREEN);
 		
 		// Establish the text input operand field and when anything changes in the user inputs,
 		// the code will process the entire input to ensure that it is valid or an error.
 		setupTextUI(usernameText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 350, true);
-		
+				Pos.BASELINE_LEFT, 10, 125, true);
 		setupTextUI(passwordText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 350, true);
+				Pos.BASELINE_LEFT, 10, 225, true);
 		setupTextUI(confirmText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 350, true);
+				Pos.BASELINE_LEFT, 10, 325, true);
 		
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
@@ -103,13 +101,6 @@ public class CreateAccountInformationGUI {
         
         // Sends all previously established settings for the pane to the scene for setup
         userPane.getChildren().addAll(usernameLabel, usernameText, passwordLabel, passwordText, confirmLabel, confirmText, sceneLabel, createButton);
- 
- 
-        
-        Scene userScene = new Scene(userPane, 800, 500);
-        userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-        updateStage.setScene(userScene);
-        updateStage.show();
         
         // Establishes the button logic for each press
         // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
