@@ -33,7 +33,7 @@ public class AdminHome {
     public SetupUIElements setupUI;
 
     // Constructor for setting up the AdminHome GUI
-    public AdminHome(Pane root) {  // Change to Pane
+    public AdminHome(Pane root) {
         // Instantiate
         setupUI = new SetupUIElements();
 
@@ -41,6 +41,11 @@ public class AdminHome {
         Text title = new Text("Admin Home");
         title.setFont(new Font("Arial", 32));  // Set font
         title.setFill(Color.BLACK);  // Set the text color
+        title.setLayoutX((WINDOW_WIDTH - title.getLayoutBounds().getWidth()) / 2);
+
+
+        title.setLayoutY(50);  // Set a fixed vertical position (adjust if needed)
+
 
         // Buttons for Admin actions
         Button inviteUserButton = new Button("Invite User");
@@ -58,24 +63,33 @@ public class AdminHome {
         setupUI.SetupButtonUI(manageRolesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(logoutButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
 
-        // VBox Layout for the title
-        VBox topVBox = new VBox();
-        topVBox.setAlignment(Pos.TOP_CENTER); // Align at the top, centered horizontally
-        topVBox.getChildren().add(title);
+        // Manually set layout positions for buttons
+        inviteUserButton.setLayoutX(150);
+        inviteUserButton.setLayoutY(100);
 
-        // VBox for the buttons
-        VBox buttonVBox = new VBox(10); // 10 spacing
-        buttonVBox.setAlignment(Pos.CENTER); // Center
-        buttonVBox.getChildren().addAll(inviteUserButton, resetAccountButton, deleteAccountButton, listUsersButton, manageRolesButton, logoutButton);
+        resetAccountButton.setLayoutX(150);
+        resetAccountButton.setLayoutY(150);
+
+        deleteAccountButton.setLayoutX(150);
+        deleteAccountButton.setLayoutY(200);
+
+        listUsersButton.setLayoutX(150);
+        listUsersButton.setLayoutY(250);
+
+        manageRolesButton.setLayoutX(150);
+        manageRolesButton.setLayoutY(300);
+
+        logoutButton.setLayoutX(150);
+        logoutButton.setLayoutY(350);
 
         // Add both title and button layout to root
-        root.getChildren().addAll(topVBox, buttonVBox);  // Add both
+        root.getChildren().addAll(title, inviteUserButton, resetAccountButton, deleteAccountButton, listUsersButton, manageRolesButton, logoutButton);
 
         // Handle logout functionality
         handleLogout(logoutButton, root);
     }
 
-    private void handleLogout(Button logoutButton, Pane root) {  
+    private void handleLogout(Button logoutButton, Pane root) {
         // Event handler for the logout button
         logoutButton.setOnAction(event -> {
             // LoginGUI
@@ -84,3 +98,4 @@ public class AdminHome {
         });
     }
 }
+
