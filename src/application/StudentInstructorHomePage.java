@@ -2,7 +2,7 @@ package application;
 
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.control.Button; // For Button object
-import javafx.scene.layout.StackPane; // For layout that allows UI elements to be stacked
+import javafx.scene.layout.Pane; // Changed from StackPane to Pane
 import javafx.scene.layout.VBox; // For layout that arranges UI elements vertically
 import javafx.scene.paint.Color; // For setting color of UI elements
 import javafx.scene.text.Font; // For setting font of text elements
@@ -23,23 +23,21 @@ import javafx.scene.text.Text; // For displaying text in the UI
 
 
 public class StudentInstructorHomePage {
-	
-	/*
-	 * Variable Declarations
-	 */
-	
-	public final static double WINDOW_WIDTH = 500;
-	public final static double WINDOW_HEIGHT = 430;
-	
-	
-	//declaration of SetupUIElements Object
+
+    /*
+     * Variable Declarations
+     */
+    
+    public final static double WINDOW_WIDTH = 500;
+    public final static double WINDOW_HEIGHT = 430;
+    
+    
+    // Declaration of SetupUIElements Object
     public SetupUIElements setupUI;
 
     // Constructor for setting up the Student/Instructor Home GUI
-    public StudentInstructorHomePage(StackPane root) {
-    	
-
-
+    public StudentInstructorHomePage(Pane root) {  // Changed StackPane to Pane
+        
         // Instantiate SetupUIElements
         setupUI = new SetupUIElements();
 
@@ -58,12 +56,22 @@ public class StudentInstructorHomePage {
         topVBox.setSpacing(20);
         topVBox.getChildren().add(homeText);
 
-        // StackPane Layout for the "Logout" button
-        StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.CENTER); // Center the button
-        stackPane.getChildren().add(logoutButton);
+        // Pane Layout for the "Logout" button
+        Pane buttonPane = new Pane();  // Changed from StackPane to Pane
+        buttonPane.getChildren().add(logoutButton); // Add the logout button
 
-        // Combine the top VBox and the StackPane
-        root.getChildren().addAll(topVBox, stackPane);
+        // Combine the top VBox and the Pane for buttons
+        root.getChildren().addAll(topVBox, buttonPane);  // Combine both layouts
+
+        handleLogout(logoutButton, root);  // Handle logout event
+    }
+
+    private void handleLogout(Button logoutButton, Pane root) {  // Changed StackPane to Pane
+        // Event handler for the logout button
+        logoutButton.setOnAction(event -> {
+            // LoginGUI
+            root.getChildren().clear();  // Clear the current root
+            LoginGUI loginPage = new LoginGUI(root);  // Create a new instance of LoginGUI
+        });
     }
 }

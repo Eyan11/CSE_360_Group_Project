@@ -2,7 +2,7 @@ package application;
 
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.control.Button; // For Button object
-import javafx.scene.layout.StackPane; // For layout that allows UI elements to be stacked
+import javafx.scene.layout.Pane; // Change from StackPane to Pane
 import javafx.scene.layout.VBox; // For layout that arranges UI elements vertically
 import javafx.scene.paint.Color; // For setting color of UI elements
 import javafx.scene.text.Font; // For setting font of text elements
@@ -21,28 +21,25 @@ import javafx.scene.text.Text; // For displaying text in the UI
  *  
  */
 
-
 public class AdminHome {
-	
-	/*
-	 * Variable Declarations
-	 */
-	
-	public final static double WINDOW_WIDTH = 500;
-	public final static double WINDOW_HEIGHT = 430;
-	
-	
-	//declaration of SetupUIElements Object
+
+    /*
+     * Variable Declarations
+     */
+    public final static double WINDOW_WIDTH = 500;
+    public final static double WINDOW_HEIGHT = 430;
+
+    // Declaration of SetupUIElements Object
     public SetupUIElements setupUI;
 
     // Constructor for setting up the AdminHome GUI
-    public AdminHome(StackPane root) {
+    public AdminHome(Pane root) {  // Change to Pane
         // Instantiate
         setupUI = new SetupUIElements();
 
-        // Create "Admin Home"
+        // Create "Admin Home" title
         Text title = new Text("Admin Home");
-        title.setFont(new Font("Arial", 32)); // font size and font
+        title.setFont(new Font("Arial", 32));  // Set font
         title.setFill(Color.BLACK);  // Set the text color
 
         // Buttons for Admin actions
@@ -63,15 +60,27 @@ public class AdminHome {
 
         // VBox Layout for the title
         VBox topVBox = new VBox();
-        topVBox.setAlignment(Pos.TOP_CENTER); // align
+        topVBox.setAlignment(Pos.TOP_CENTER); // Align at the top, centered horizontally
         topVBox.getChildren().add(title);
 
-        // centered vertically and horizontally
-        VBox buttonVBox = new VBox(10); //10 spacing
-        buttonVBox.setAlignment(Pos.CENTER); // Center 
+        // VBox for the buttons
+        VBox buttonVBox = new VBox(10); // 10 spacing
+        buttonVBox.setAlignment(Pos.CENTER); // Center
         buttonVBox.getChildren().addAll(inviteUserButton, resetAccountButton, deleteAccountButton, listUsersButton, manageRolesButton, logoutButton);
 
         // Add both title and button layout to root
-        root.getChildren().addAll(topVBox, buttonVBox); // Add both
+        root.getChildren().addAll(topVBox, buttonVBox);  // Add both
+
+        // Handle logout functionality
+        handleLogout(logoutButton, root);
+    }
+
+    private void handleLogout(Button logoutButton, Pane root) {  
+        // Event handler for the logout button
+        logoutButton.setOnAction(event -> {
+            // LoginGUI
+            root.getChildren().clear();  // Clear the current root
+            LoginGUI loginPage = new LoginGUI(root);  // Create a new instance of LoginGUI
+        });
     }
 }

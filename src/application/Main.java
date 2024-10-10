@@ -35,6 +35,16 @@ public class Main extends Application {
 	// new start function based on PasswordEvaluationGUITestbed
 	@Override
 	public void start(Stage theStage) throws Exception {
+		
+		StackPane root = new StackPane(); 
+        AdminHome adminHome = new AdminHome(root);  // Call the AdminHome constructor
+
+        Scene scene = new Scene(root, 400, 400);  // Create the scene
+        theStage.setTitle("Admin Home");
+        theStage.setScene(scene);
+        theStage.show();
+		
+		
 	 
 		// When the stage is shown to the user, the pane within the window is visible.  This means
 		// that the labels, fields, and buttons of the Graphical User Interface (GUI) are visible 
