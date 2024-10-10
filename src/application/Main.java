@@ -40,11 +40,19 @@ public class Main extends Application {
 		
 		Pane theRoot = new Pane();							// Create a pane within the window
 		
-		Scene theScene = new Scene(theRoot, WINDOW_WIDTH, WINDOW_HEIGHT);	// Create the scene	
 		
-		theStage.setScene(theScene);						// Set the scene on the stage
+		theStage.show();		// Show the stage to the user
+        if (AccountDatabase.isDatabaseEmpty()) {
+           //theRoot = switchToCreateAccountInformationGUI(); 
+        	CreateAccountInformationGUI createAccountGUI = new CreateAccountInformationGUI(theRoot);
+        } else {
+        	LoginGUI loginGUI = new LoginGUI(theRoot); 
+        }
+			Scene mainScene = new Scene(theRoot, WINDOW_WIDTH, WINDOW_HEIGHT);	// Create the scene	
+			
+			theStage.setScene(mainScene);	// Set the scene on the stage
+			theStage.show(); //showing current screen (login or register)
 		
-		theStage.show();									// Show the stage to the user
 		
 		// When the stage is shown to the user, the pane within the window is visible.  This means
 		// that the labels, fields, and buttons of the Graphical User Interface (GUI) are visible 
@@ -52,6 +60,36 @@ public class Main extends Application {
 		// click on buttons, and read the labels, the results, and the error messages.
 	}
 	
+		
+	//private Scene mainScene () {
+		//if (there are already users) then 
+		//Button teacherloginButton = new Button("Teacher Login"); //name isntructor
+		//teacherloginButton.setOnAction (event -> LoginGUI(theRoot) );
+		//Button studentloginButton = new Button("Student Login");
+		//studentloginButton.setOnAction (event -> LoginGUI(theRoot) );
+		//Button adminloginButton = new Button("Admin Login");
+		//adminloginButton.setOnAction (event -> LoginGUI(theRoot) );
+		//else (create new account) {
+		//Button registerButton = new Button("Register");
+		//registerButton.setOnAction (event -> CreateAccountInformation (theRoot) );
+		//VBox buttonsBox = new VBox (10, teacherloginButton, studentloginButton, adminloginButton, registerButton);
+		//}
+		
+	//}
+	AccountDatabase accountdatabase = new AccountDatabase(); 
+	//make ^^ for loginGUI
+	//and for createaccountinfogui
+/*	if (accountdatabase.isDatabaseEmpty() == true) {
+		go to CreateAccountInformationGUI
+	}
+	else 
+	{
+		go to LoginGUI
+	}
+	*/
+
+
+
 	
 	public static void main(String[] args) {
 		
@@ -67,6 +105,7 @@ public class Main extends Application {
 			System.err.println("Database error: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 		
 		launch(args);
 	}
