@@ -1,18 +1,40 @@
 package application;
 
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
+import javafx.geometry.Pos; // For positioning UI elements
+import javafx.scene.control.Button; // For Button object
+import javafx.scene.layout.StackPane; // For layout that allows UI elements to be stacked
+import javafx.scene.layout.VBox; // For layout that arranges UI elements vertically
+import javafx.scene.paint.Color; // For setting color of UI elements
+import javafx.scene.text.Font; // For setting font of text elements
+import javafx.scene.text.Text; // For displaying text in the UI
+
+
+/**
+ * <p> SelectRole. </p>
+ * 
+ * <p> Description: A JavaFX class responsible for displaying the role selection GUI and enabling or 
+ * disabling buttons based on the user's role, using data from the AccountDatabase.</p>
+ * 
+ * <p> Source: Lynn Rober Carter from InClassDocumentationProject1 project, UserInterface class, 
+ * 				available at: https://canvas.asu.edu/courses/193728/files/93600828?module_item_id=14807672 
+ * 
+ * @author Sriram Nesan
+ * 
+ * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ *  
+ */
+
 
 public class SelectRole {
+	
+	/*
+	 * Variable Declarations
+	 */
 	
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 
+	//declaration of SetupUIElements Object
     private SetupUIElements setupUI = new SetupUIElements();
 
     // Constructor that takes in the username to determine user roles
