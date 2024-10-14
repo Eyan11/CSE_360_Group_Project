@@ -60,6 +60,11 @@ public class AccountDatabase {
 			createTable();
 			deleteTable();
 			createTable();
+			
+			//createFirstAccount("Bob", "1234");
+			//String key = inviteUser(true, false, false);
+			//System.out.println("Key: " + key);
+			//System.out.println(getExpirationDate("key"));
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
@@ -121,7 +126,7 @@ public class AccountDatabase {
 	 */
 	public static boolean doesLoginExist(String user, String pass) throws SQLException {
 		// Query gets all data in accounts database where username and password equal placeholder variable ?
-		query = "SELECT * FROM accounts WHERE username = ? AND password = ?";
+		query = "SELECT * FROM accounts WHERE username = ? AND password = ? AND is_key = false";
 		// Prepare the previous query to be executed
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			
@@ -287,6 +292,63 @@ public class AccountDatabase {
 	}
 	
 	
+	/**********
+	 * TODO Method not finished yet
+	 * Checks if current time is past the expiration time for a given key
+	 * Returns true if expired OR key does not exist in account database
+	 */
+	public static boolean isKeyExpired(String key) throws SQLException{
+		// Prevents using method if key does NOT exist
+		if(!doesKeyExist(key)) {
+			System.err.println("Cannot check if key is expired because key does not exist in account database");
+			return true;
+		}
+		
+		// Query gets all data in accounts database where is_key is true and password equals placeholder variable ?
+		query = "SELECT expiration FROM accounts WHERE is_key = true AND password = ?";
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			String key_expiration = "";
+			//String cur_time = new java.sql.Timestamp(new java.util.Date().getTime());
+			pstmt.setString(1, key);				// password = key
+			
+			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
+			if(resultSet.next()) {					// If first row exists			
+				key_expiration = resultSet.getString(1);	// Get expiration date of first row
+				
+				// TODO compare current time to expiration time
+				//		This method is NOT finished yet
+			}
+		}
+		return true;									// If error occurred, assume query failed
+	}
+	
+	
+	/**********
+	 * Returns the expiration date of a given key
+	 */
+	public static String getExpirationDate(String key) throws SQLException {
+		// Prevents using method if key does NOT exist
+		if(!doesKeyExist(key)) {
+			System.err.println("Cannot get expiration date because key does not exist in account database");
+			return "";
+		}
+		
+		// Query gets all data in accounts database where is_key is true and password equals placeholder variable ?
+		query = "SELECT expiration FROM accounts WHERE is_key = true AND password = ?";
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			pstmt.setString(1, key);				// password = key
+			
+			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
+			if(resultSet.next()) {					// If first row exists			
+				return resultSet.getString(1);		// Return expiration date of first row
+			}
+		}
+		return "";									// If error occurred, assume query failed
+	}
 	
 	
 	/**********************************************************************************************
@@ -486,7 +548,7 @@ public class AccountDatabase {
 	
 	/**********
 	 * Adds a random unique key and user roles into database, then returns the key.
-	 * Returning an empty string means inviteUser failed.
+	 * Returns an empty string when invite failed.
 	 */
 	public static String inviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin) throws SQLException{
 		
@@ -506,19 +568,21 @@ public class AccountDatabase {
 		String key = generateKey();
 		
 		// Query inserts placeholder variables ? for below columns into a new row in accounts database
-		query = "INSERT INTO accounts (password, is_student, is_instructor, is_admin, is_key, is_account_updated, expiration) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		query = "INSERT INTO accounts (username, password, is_student, is_instructor, "
+				+ "is_admin, is_key, is_account_updated, expiration) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		// Prepare the previous query to be executed
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			
 			// Set the placeholder ? variables
-			pstmt.setString(1, key);				// password = key
-			pstmt.setInt(2, isStudent ? 1 : 0);		// is_student = isStudents
-			pstmt.setInt(3, isInstructor ? 1 : 0);	// is_instructor = isInstructor
-			pstmt.setInt(4, isAdmin ? 1 : 0);		// is_admin = isAdmin
-			pstmt.setInt(5, 1);						// is_key = true
-			pstmt.setInt(6, 0);						// is_account_updated = false
+			pstmt.setString(1, key);				// username = key (since username can't be null and has to be unique)
+			pstmt.setString(2, key);				// password = key
+			pstmt.setInt(3, isStudent ? 1 : 0);		// is_student = isStudents
+			pstmt.setInt(4, isInstructor ? 1 : 0);	// is_instructor = isInstructor
+			pstmt.setInt(5, isAdmin ? 1 : 0);		// is_admin = isAdmin
+			pstmt.setInt(6, 1);						// is_key = true
+			pstmt.setInt(7, 0);						// is_account_updated = false
 			// expiration = current Day:Month:Year Hour:Minute:Second
-			pstmt.setTimestamp(6, new java.sql.Timestamp(new java.util.Date().getTime()));
+			pstmt.setTimestamp(8, new java.sql.Timestamp(new java.util.Date().getTime()));
 			pstmt.executeUpdate();					// Execute query
 		}
 		
@@ -533,12 +597,92 @@ public class AccountDatabase {
 		}
 	}
 
+
+	/**********
+	 * Replaces a user's password with a one-time key, then returns the key
+	 * Returns an empty string when reset failed
+	 */
+	public static String resetUser(String user) throws SQLException {
+		// Checks if username doesn't exist
+		if(!doesUsernameExist(user)) {
+			System.err.println("Cannot reset account, username does not exist in accounts database");
+			return "";
+		}
+		
+		
+		// generate random unique key
+		String key = generateKey();
+		
+		// Query inserts placeholder variables ? into accounts database 
+		// where the username matches user parameter
+		String query = "UPDATE accounts "
+				+ "SET password = ?, is_key = true, expiration = ? "
+				+ "WHERE username = ?";
+		
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			// Set the placeholder ? variables
+			pstmt.setString(1, key);			// set password = key
+			// expiration = current Day:Month:Year Hour:Minute:Second
+			pstmt.setTimestamp(2, new java.sql.Timestamp(new java.util.Date().getTime()));
+			pstmt.setString(3, user);			// update account where username = user
+			pstmt.executeUpdate();				// Execute query
+		}
+		
+		// Print results
+		if(doesLoginExist(user, key)) {
+			System.out.println("User successfully reset in accounts database!");
+			return key;
+		}
+		else {
+			System.err.println("User failed to be reset in accounts database");
+			return "";
+		}
+		
+	}
+	
+	
+	/**********
+	 * Removes a user's account from database
+	 */
+	public static boolean deleteUser(String user) throws SQLException {
+		// Checks if username doesn't exist
+		if(!doesUsernameExist(user)) {
+			System.err.println("Cannot delete account, username does not exist in accounts database");
+			return false;
+		}
+
+		
+		// Query inserts placeholder variables ? into accounts database 
+		// where the username matches user parameter
+		String query = "DELETE FROM accounts WHERE username = ?";
+		
+		PreparedStatement pstmt = connection.prepareStatement(query);
+		
+		// Set the placeholder ? variables
+		pstmt.setString(1, user);	// Delete account where username = user
+		pstmt.executeUpdate();		// Execute query
+		
+		// Print results
+		if(!doesUsernameExist(user)) {
+			System.out.println("Successfully deleted account");
+			return true;
+		}
+		else {
+			System.err.println("Failed to delete account");
+			return false;
+		}	
+	}
+	
 	
 	/**********************************************************************************************
 
 	 Public Methods To Create/Delete 'accounts' Table
 	
 	**********************************************************************************************/
+	
+	
 	
 	/**********
 	 * Creates a table called accounts and initializes columns.
