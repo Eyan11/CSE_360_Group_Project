@@ -62,6 +62,7 @@ public class AccountDatabase {
 			createTable();
 			deleteTable();
 			createTable();
+			DatabaseTestingAutomation.performTestEvaluations();
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
@@ -715,7 +716,7 @@ public class AccountDatabase {
 	
 	/**********************************************************************************************
 
-	 Public Methods To Create/Delete 'accounts' Table
+	 Public Methods To Create/Delete 'accounts' Table and Print All Accounts
 	
 	**********************************************************************************************/
 	
@@ -751,7 +752,58 @@ public class AccountDatabase {
 	public static void deleteTable() throws SQLException {
 		query = "DROP TABLE accounts";		// delete accounts table
 		statement.execute(query);			// execute query
-		System.out.print("'accounts' table deleted");
+		System.out.println("'accounts' table deleted");
+	}
+	
+	/**********
+	 * Prints all account information for all accounts in account database for testing purposes.
+	 */
+	public static void printAccountsToConsole() throws SQLException{
+		// get entire accounts table
+		query = "SELECT * FROM accounts"; 
+		statement = connection.createStatement();
+		resultSet = statement.executeQuery(query); 
+		
+		System.out.println("----------------------------------------------------");
+		System.out.println("Printing All Accounts: \n");
+		System.out.println("----------------------------------------------------");
+		
+		// while the row exists
+		while(resultSet.next()) { 
+			// Retrieve by column name 
+			String user = resultSet.getString("username"); 
+			String pass = resultSet.getString("password"); 
+			String email = resultSet.getString("email"); 
+			String fName = resultSet.getString("first_name");
+			String mName = resultSet.getString("middle_name");
+			String lName = resultSet.getString("last_name");
+			String pName = resultSet.getString("preferred_name");
+			String dName = resultSet.getString("display_name");
+			int isKey = resultSet.getInt("is_key"); 
+			int isStudent = resultSet.getInt("is_student");
+			int isInstructor = resultSet.getInt("is_instructor");
+			int isAdmin = resultSet.getInt("is_admin");
+			int isAccountUpdated = resultSet.getInt("is_account_updated");
+			Timestamp expiration = resultSet.getTimestamp("expiration");
+
+			// Display values 
+			System.out.println("Account: ");
+			System.out.println("Username: " + user); 
+			System.out.println("Password: " + pass); 
+			System.out.println("Email: " + email); 
+			System.out.println("First Name: " + fName); 
+			System.out.println("Middle Name: " + mName); 
+			System.out.println("Last Name: " + lName); 
+			System.out.println("Preferred Name: " + pName); 
+			System.out.println("Display Name: " + dName); 
+			System.out.println("isKey: " + isKey); 
+			System.out.println("isStudent: " + isStudent); 
+			System.out.println("isInstructor: " + isInstructor); 
+			System.out.println("isAdmin: " + isAdmin); 
+			System.out.println("isAccountUpdated: " + isAccountUpdated); 
+			System.out.println("key expiration: " + expiration); 
+			System.out.println("----------------------------------------------------\n");
+		} 
 	}
 	
 	
@@ -787,5 +839,4 @@ public class AccountDatabase {
 		
 		return newKey;	// successfully generated unique key
 	}
-	
 }

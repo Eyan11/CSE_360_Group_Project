@@ -45,9 +45,9 @@ public class DatabaseTestingAutomation {
 	public static void performTestEvaluations() throws SQLException {
 
 		// Wipe all stored database rows on local machine and create a new accounts table
-		AccountDatabase.createTable();
-		AccountDatabase.deleteTable();
-		AccountDatabase.createTable();
+		//AccountDatabase.createTable();
+		//AccountDatabase.deleteTable();
+		//AccountDatabase.createTable();
 		
 		// *** Test isDatabaseEmpty() **************************************
 		testIsDatabaseEmpty(true);
@@ -106,7 +106,7 @@ public class DatabaseTestingAutomation {
 		
 		// **** Test doesEmailExist() **************************************
 		testDoesEmailExist("email2", true);
-		testDoesEmailExist("email3", true);
+		testDoesEmailExist("email1", true);
 		testDoesEmailExist("Ignore", false); // Wrong email
 		// *****************************************************************
 		
@@ -118,7 +118,7 @@ public class DatabaseTestingAutomation {
 		
 		// *** Test isInstructorRole() *************************************
 		testIsInstructorRole("Name1", false); // Doesn't have instructor role
-		testIsInstructorRole("Name2", true);
+		testIsInstructorRole("Name3", true);
 		testIsInstructorRole("Ignore", false); // Wrong username
 		// *****************************************************************
 		
@@ -135,13 +135,16 @@ public class DatabaseTestingAutomation {
 		// *****************************************************************
 		
 		// Print all accounts in database (not an actual test case, just to to check data in database)
-		testPrintAccounts();
+		AccountDatabase.printAccountsToConsole();
 		
 		// Print Results
 		System.out.println("-----------------------------------------------------------");
-		System.out.println("\n\n\n Restults: ");
+		System.out.println("\n\nRestults: ");
 		System.out.println("Number of tests that passed: " + numPassed);
-		System.out.println("Number of tests that failed" + numFailed);
+		System.out.println("Number of tests that failed: " + numFailed);
+		
+		AccountDatabase.deleteTable();
+		AccountDatabase.createTable();
 	}
 	
 	
@@ -225,16 +228,17 @@ public class DatabaseTestingAutomation {
 		if(key == "")
 			actualResult = false;
 		// If key then invite succeeded
-		else
+		else {
 			actualResult = true;
+			// Store key for future test cases
+			keyArr[i] = key;
+			i++;
+		}
 		
 		// Return if test passed or failed and track
 		if(actualResult == expectedResult) {
 			numPassed++;
 			System.out.println("inviteUser() passed!");
-			// Store key for future test cases
-			keyArr[i] = key;
-			i++;
 		}
 		else {
 			numFailed++;
@@ -420,47 +424,5 @@ public class DatabaseTestingAutomation {
 			numFailed++;
 			System.out.println("isAccountUpdated() failed!");
 		}
-	}
-	
-	
-	/**********
-	 * Prints all account information for all accounts in account database for testing purposes.
-	 */
-	private static void testPrintAccounts() throws SQLException{
-		// get entire accounts table
-		query = "SELECT * FROM accounts"; 
-		statement = connection.createStatement();
-		resultSet = statement.executeQuery(query); 
-		
-		System.out.println("----------------------------------------------------");
-		System.out.println("Printing All Accounts: \n");
-		System.out.println("----------------------------------------------------");
-
-		// while the row exists
-		while(resultSet.next()) { 
-			// Retrieve by column name 
-			String user = resultSet.getString("username"); 
-			String pass = resultSet.getString("password"); 
-			String email = resultSet.getString("email"); 
-			String fName = resultSet.getString("first_name");
-			String mName = resultSet.getString("middle_name");
-			String lName = resultSet.getString("last_name");
-			String pName = resultSet.getString("preferred_name");
-			String dName = resultSet.getString("display_name");
-			int isKey = resultSet.getInt("is_key"); 
-
-			// Display values 
-			System.out.println("Account: ");
-			System.out.println("Username: " + user); 
-			System.out.println("Password: " + pass); 
-			System.out.println("Email: " + email); 
-			System.out.println("First Name: " + fName); 
-			System.out.println("Middle Name: " + mName); 
-			System.out.println("Last Name: " + lName); 
-			System.out.println("Preferred Name: " + pName); 
-			System.out.println("Display Name: " + dName); 
-			System.out.println("isKey: " + isKey); 
-			System.out.println("----------------------------------------------------\n");
-		} 
 	}
 }

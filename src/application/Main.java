@@ -18,8 +18,6 @@ public class Main extends Application {
 	@Override
 	public void start(Stage theStage) throws Exception {
 		
-		// Test all database functionality
-		//DatabaseTestingAutomation.performTestEvaluations();
 		// Communicates to AccountDatabase when application is opened
 		AccountDatabase.connectToDatabase();
 		
