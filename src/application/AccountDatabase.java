@@ -2,6 +2,7 @@ package application;
 
 import java.sql.*; // For SQL related objects
 import java.util.Random; // For random key generator
+import java.util.concurrent.TimeUnit; // For time used in expiration column
 
 /**
  * <p> AccountDatabase. </p>
@@ -13,7 +14,8 @@ import java.util.Random; // For random key generator
  * 
  * @author Eyan Martucci
  * 
- * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ * @version 1.00		10/09/2024 Phase 1 implementation and documentation
+ * @version 1.10		10/14/2024 Updated to include all functionality of phase 1
  *  
  */
 
@@ -60,11 +62,6 @@ public class AccountDatabase {
 			createTable();
 			deleteTable();
 			createTable();
-			
-			//createFirstAccount("Bob", "1234");
-			//String key = inviteUser(true, false, false);
-			//System.out.println("Key: " + key);
-			//System.out.println(getExpirationDate("key"));
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
@@ -100,7 +97,7 @@ public class AccountDatabase {
 	
 	/**********************************************************************************************
 
-	Public Getter Methods To Check Database Values
+	Public Getter Methods To Check/Return Database Values
 	
 	**********************************************************************************************/
 	
@@ -293,9 +290,8 @@ public class AccountDatabase {
 	
 	
 	/**********
-	 * TODO Method not finished yet
 	 * Checks if current time is past the expiration time for a given key
-	 * Returns true if expired OR key does not exist in account database
+	 * Returns true if expired OR key/expiration timestamp does not exist in account database
 	 */
 	public static boolean isKeyExpired(String key) throws SQLException{
 		// Prevents using method if key does NOT exist
@@ -306,22 +302,33 @@ public class AccountDatabase {
 		
 		// Query gets all data in accounts database where is_key is true and password equals placeholder variable ?
 		query = "SELECT expiration FROM accounts WHERE is_key = true AND password = ?";
+		
+		Timestamp key_expiration = null;
+		// Get current timestamp
+		Timestamp cur_time = new Timestamp(System.currentTimeMillis());
+		
 		// Prepare the previous query to be executed
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			
-			String key_expiration = "";
-			//String cur_time = new java.sql.Timestamp(new java.util.Date().getTime());
+
 			pstmt.setString(1, key);				// password = key
 			
 			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
 			if(resultSet.next()) {					// If first row exists			
-				key_expiration = resultSet.getString(1);	// Get expiration date of first row
+				key_expiration = resultSet.getTimestamp(1);	// Get expiration date of first row
 				
-				// TODO compare current time to expiration time
-				//		This method is NOT finished yet
+				// Prevent checking timestamp of null value
+				if(key_expiration == null) {
+					System.err.println("Can't check if key is expired because expiration timestamp is null");
+					return true;
+				}
 			}
 		}
-		return true;									// If error occurred, assume query failed
+		
+		// Return results
+		if(key_expiration.after(cur_time))
+			return false;	// key is NOT expired
+		else
+			return true;	// key is expired
 	}
 	
 	
@@ -350,6 +357,36 @@ public class AccountDatabase {
 		return "";									// If error occurred, assume query failed
 	}
 	
+	
+	/**********
+	 * Returns the username and display name of every account
+	 * in format of "username1|display_name1,username2|display_name2,..."
+	 */
+	public static String getAllAccountNames() throws SQLException {
+		
+		// Counts total number of rows in accounts database
+		query = "SELECT username, display_name FROM accounts";
+		resultSet = statement.executeQuery(query);
+		
+		// To build a string containing all accounts username and display name
+		String returnString = "";
+		
+		// Loop through every row
+		while (resultSet.next()) {
+			// Get username and separate with |
+			returnString += resultSet.getString("username") + "|";
+			
+			// Get display name if NOT null
+			if(resultSet.getString("display_name") != null)
+				returnString += resultSet.getString("display_name");
+			
+			// Separate each account with ,
+			returnString += ",";
+		}
+		
+		// Return in the format of "username1|display_name1,username2|display_name2,..."
+		return returnString;
+	}
 	
 	/**********************************************************************************************
 
@@ -581,8 +618,8 @@ public class AccountDatabase {
 			pstmt.setInt(5, isAdmin ? 1 : 0);		// is_admin = isAdmin
 			pstmt.setInt(6, 1);						// is_key = true
 			pstmt.setInt(7, 0);						// is_account_updated = false
-			// expiration = current Day:Month:Year Hour:Minute:Second
-			pstmt.setTimestamp(8, new java.sql.Timestamp(new java.util.Date().getTime()));
+			// expiration = current time + 10 min in format: YYYY-MM-DD HH:MI:SS
+			pstmt.setTimestamp(8, new Timestamp(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)));
 			pstmt.executeUpdate();					// Execute query
 		}
 		
@@ -624,8 +661,8 @@ public class AccountDatabase {
 			
 			// Set the placeholder ? variables
 			pstmt.setString(1, key);			// set password = key
-			// expiration = current Day:Month:Year Hour:Minute:Second
-			pstmt.setTimestamp(2, new java.sql.Timestamp(new java.util.Date().getTime()));
+			// expiration = current time + 10 min in format: YYYY-MM-DD HH:MI:SS
+			pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)));
 			pstmt.setString(3, user);			// update account where username = user
 			pstmt.executeUpdate();				// Execute query
 		}
@@ -702,7 +739,7 @@ public class AccountDatabase {
 				+ "is_instructor BIT,"
 				+ "is_admin BIT,"
 				+ "is_account_updated BIT,"
-				+ "expiration TIMESTAMP)";			// TIMESTAMP is an exact date and time (when key expires)
+				+ "expiration TIMESTAMP)";			// TIMESTAMP is when key expires (Format: YYYY-MM-DD HH:MI:SS)
 		statement.execute(query);
 		System.out.println("'accounts' table created if it did not already exist");
 	}
