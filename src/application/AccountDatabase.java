@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit; // For time used in expiration column
  * @author Eyan Martucci
  * 
  * @version 1.00		10/09/2024 Phase 1 implementation and documentation
- * @version 1.10		10/14/2024 Updated to include all functionality of phase 1
+ * @version 1.10		10/15/2024 Updated to include all functionality of phase 1
  *  
  */
 
@@ -62,6 +62,8 @@ public class AccountDatabase {
 			createTable();
 			deleteTable();
 			createTable();
+			
+			// Perform tests on all methods in this class
 			DatabaseTestingAutomation.performTestEvaluations();
 		} 
 		// Connection failed
@@ -336,7 +338,7 @@ public class AccountDatabase {
 	/**********
 	 * Returns the expiration date of a given key
 	 */
-	public static String getExpirationDate(String key) throws SQLException {
+	public static String getKeyExpiration(String key) throws SQLException {
 		// Prevents using method if key does NOT exist
 		if(!doesKeyExist(key)) {
 			System.err.println("Cannot get expiration date because key does not exist in account database");
@@ -473,7 +475,7 @@ public class AccountDatabase {
 		// Query inserts placeholder variables ? into accounts database 
 		// where the password is a key and matches key param
 		String query = "UPDATE accounts "
-				+ "SET username = ?, password = ?, is_key = false, is_account_updated = false "
+				+ "SET username = ?, password = ?, is_key = false, is_account_updated = false, expiration = ? "
 				+ "WHERE is_key = true AND password = ?";
 		
 		// Prepare the previous query to be executed
@@ -482,7 +484,8 @@ public class AccountDatabase {
 			// Set the placeholder ? variables
 			pstmt.setString(1, user);
 			pstmt.setString(2, pass);
-			pstmt.setString(3, key);
+			pstmt.setTimestamp(3, null);		// Remove expiration time stamp
+			pstmt.setString(4, key);
 			pstmt.executeUpdate();				// Execute query
 		}
 		
@@ -669,7 +672,7 @@ public class AccountDatabase {
 		}
 		
 		// Print results
-		if(doesLoginExist(user, key)) {
+		if(doesKeyExist(key)) {
 			System.out.println("User successfully reset in accounts database!");
 			return key;
 		}
@@ -677,7 +680,44 @@ public class AccountDatabase {
 			System.err.println("User failed to be reset in accounts database");
 			return "";
 		}
+	}
+	
+	
+	/**********
+	 * Replaces a user's password with given password
+	 */
+	public static boolean resetPassword(String key, String pass) throws SQLException {
+		// Checks if key doesn't exist
+		if(!doesKeyExist(key)) {
+			System.err.println("Cannot reset password, key does not exist in accounts database");
+			return false;
+		}
+	
 		
+		// Query inserts placeholder variables ? into accounts database 
+		// where the password matches key parameter
+		String query = "UPDATE accounts "
+				+ "SET password = ?, is_key = false, expiration = null "
+				+ "WHERE password = ?";
+		
+		// Prepare the previous query to be executed
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			// Set the placeholder ? variables
+			pstmt.setString(1, pass);			// Set password = pass
+			pstmt.setString(2, key);			// Update account where password = key
+			pstmt.executeUpdate();				// Execute query
+		}
+		
+		// Print results
+		if(!doesKeyExist(key)) {
+			System.out.println("Successfully reset password in accounts database!");
+			return true;
+		}
+		else {
+			System.err.println("Failed to reset password in accounts database");
+			return false;
+		}
 	}
 	
 	

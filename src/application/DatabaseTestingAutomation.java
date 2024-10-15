@@ -13,7 +13,8 @@ import java.sql.*; // For SQL related objects
  * 
  * @author Eyan Martucci
  * 
- * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ * @version 1.00		10/09/2024 Phase 1 implementation and documentation
+ * @version 1.10		10/15/2024 Updated to test additional methods in AccountDatabase version 1.10
  *  
  */
 
@@ -34,16 +35,16 @@ public class DatabaseTestingAutomation {
 	private static int numFailed = 0;
 	
 	// To store one-time keys in order to create accounts with them
-	private static String[] keyArr = new String[3];
+	private static String[] keyArr = new String[5];
 	private static int i = 0;
-	private static String key = "";
+	private static String returnString = "";
 	
 	
 	/**********
-	 * Starts the testing automation
+	 * Starts the testing automation that test 59 test cases
 	 */
 	public static void performTestEvaluations() throws SQLException {
-
+		
 		// Wipe all stored database rows on local machine and create a new accounts table
 		//AccountDatabase.createTable();
 		//AccountDatabase.deleteTable();
@@ -51,6 +52,10 @@ public class DatabaseTestingAutomation {
 		
 		// *** Test isDatabaseEmpty() **************************************
 		testIsDatabaseEmpty(true);
+		// *****************************************************************
+		
+		// *** Test getAllAccountNames() **********************************
+		testGetAllAccountNames(false);	// No accounts exist
 		// *****************************************************************
 		
 		// *** Test createFirstAccount() ***********************************
@@ -63,8 +68,8 @@ public class DatabaseTestingAutomation {
 		// *****************************************************************
 		
 		// *** Test inviteUser() *******************************************
-		testInviteUser(true, false, false, true); // this is username = Name2
-		testInviteUser(false, true, true, true); // this is username = Name3
+		testInviteUser(true, false, false, true); // this is username = Name2 and keyArr[0]
+		testInviteUser(false, true, true, true); // this is username = Name3 and keyArr[1]
 		testInviteUser(false, false, false, false); // No roles
 		testInviteUser(true, true, false, false); // BOTH student and Instructor roles
 		// *****************************************************************
@@ -134,6 +139,41 @@ public class DatabaseTestingAutomation {
 		testIsAccountUpdated("Ignore", false); // Wrong username
 		// *****************************************************************
 		
+		// *** Test resetUser() ********************************************
+		//AccountDatabase.printAccountsToConsole();
+		testResetUser("Name1", true);	// keyArr[2]
+		testResetUser("Ignore", false);	// Username doesn't exist
+		testResetUser("Name1", true);	// Allowed to reset user again (keyArr[3])
+		// *****************************************************************
+		
+		// *** Test deleteUser() *******************************************
+		testDeleteUser("Ignore", false);	// Username doesn't exist
+		testDeleteUser("Name2", true);
+		testDeleteUser("Name2", false);		// Username doesn't exist since just deleted it
+		// *****************************************************************
+		
+		// *** Test isKeyExpired() *****************************************
+		testIsKeyExpired(keyArr[3], false);	// Key exists but is not expired yet
+		testIsKeyExpired("Ignore", true);	// Key doesn't exist (returns true when test fails)
+		// *****************************************************************
+		
+		// *** Test getKeyExpiration() *************************************
+		testGetKeyExpiration(keyArr[3], true);
+		testGetKeyExpiration("Ignore", false);	// Key doesn't exist
+		testGetKeyExpiration(keyArr[2], false);	// Key doesn't exist
+		// *****************************************************************
+		
+		// *** Test resetPassword() ****************************************
+		testResetPassword(keyArr[3], "new pass", true);
+		testResetPassword(keyArr[3], "Ignore", false);	// Account doesn't have a key because it password was just reset
+		testResetPassword("Ignore", "Ignore", false); // Key doesn't exist
+		// *****************************************************************
+		
+		// *** Test getAllAccountNames() **********************************
+		testGetAllAccountNames(true);
+		// *****************************************************************
+		
+		
 		// Print all accounts in database (not an actual test case, just to to check data in database)
 		AccountDatabase.printAccountsToConsole();
 		
@@ -143,6 +183,7 @@ public class DatabaseTestingAutomation {
 		System.out.println("Number of tests that passed: " + numPassed);
 		System.out.println("Number of tests that failed: " + numFailed);
 		
+		// Reset accounts table for GUI usage
 		AccountDatabase.deleteTable();
 		AccountDatabase.createTable();
 	}
@@ -222,16 +263,16 @@ public class DatabaseTestingAutomation {
 	private static void testInviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin, boolean expectedResult) throws SQLException{
 		
 		// Attempt to invite user and use return key
-		key = AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
+		returnString = AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
 		
 		// If no key then invite failed
-		if(key == "")
+		if(returnString == "")
 			actualResult = false;
 		// If key then invite succeeded
 		else {
 			actualResult = true;
 			// Store key for future test cases
-			keyArr[i] = key;
+			keyArr[i] = returnString;
 			i++;
 		}
 		
@@ -243,6 +284,77 @@ public class DatabaseTestingAutomation {
 		else {
 			numFailed++;
 			System.out.println("inviteUser() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the resetUser() method in AccountDatabase class.
+	 */
+	private static void testResetUser(String user, boolean expectedResult) throws SQLException{
+		
+		// Attempt to reset user and use return key
+		returnString = AccountDatabase.resetUser(user);
+		
+		// If no key then reset failed
+		if(returnString == "")
+			actualResult = false;
+		// If key then reset succeeded
+		else {
+			actualResult = true;
+			// Store key for future test cases
+			keyArr[i] = returnString;
+			i++;
+		}
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("resetUser() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("resetUser() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the resetPassword() method in AccountDatabase class.
+	 */
+	private static void testResetPassword(String key, String pass, boolean expectedResult) throws SQLException{
+		
+		// Attempt to reset password and return result
+		actualResult = AccountDatabase.resetPassword(key, pass);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("resetPassword() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("resetPassword() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the deleteUser() method in AccountDatabase class.
+	 */
+	private static void testDeleteUser(String user, boolean expectedResult) throws SQLException{
+		
+		// Attempt to delete user and return result
+		actualResult = AccountDatabase.deleteUser(user);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("deleteUser() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("deleteUser() failed!");
 		}
 	}
 	
@@ -423,6 +535,81 @@ public class DatabaseTestingAutomation {
 		else {
 			numFailed++;
 			System.out.println("isAccountUpdated() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the isKeyExpired() method in AccountDatabase class.
+	 * Also returns true when test fails
+	 */
+	private static void testIsKeyExpired(String key, boolean expectedResult) throws SQLException{
+		
+		// Check if current time stamp is past key expiration time stamp
+		actualResult = AccountDatabase.isKeyExpired(key);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("isKeyExpired() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("isKeyExpired() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the getKeyExpiration() method in AccountDatabase class.
+	 */
+	private static void testGetKeyExpiration(String key, boolean expectedResult) throws SQLException{
+		
+		// Return key expiration time stamp
+		returnString = AccountDatabase.getKeyExpiration(key);
+		
+		// If no expiration time stamp
+		if(returnString == "" || returnString == null)
+			actualResult = false;
+		// If method returned an expiration time stamp
+		else
+			actualResult = true;
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("getKeyExpiration() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("getKeyExpiration() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the getAllAccountNames() method in AccountDatabase class.
+	 */
+	private static void testGetAllAccountNames(boolean expectedResult) throws SQLException{
+		
+		// Return usernames and display names of all accounts
+		returnString = AccountDatabase.getAllAccountNames();
+		
+		// If empty string then no accounts or test failed
+		if(returnString == "" || returnString == null)
+			actualResult = false;
+		// If string is NOT empty
+		else
+			actualResult = true;
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("getAllAccountNames() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("getAllAccountNames() failed!");
 		}
 	}
 }
