@@ -42,6 +42,40 @@ public class AccountDatabase {
 	}
 	
 	
+	/**********
+	 * Creates a table called accounts and initializes columns.
+	 */
+	public static void createTable() throws SQLException {
+		query = "CREATE TABLE IF NOT EXISTS accounts ("
+				+ "username VARCHAR(50) PRIMARY KEY UNIQUE, "
+				+ "password VARCHAR(50), "		// VARCHAR(#) is a string with a max of # characters
+				+ "email VARCHAR(50) UNIQUE, "
+				+ "first_name VARCHAR(50),"
+				+ "middle_name VARCHAR(50),"
+				+ "last_name VARCHAR(50),"
+				+ "preferred_name VARCHAR(50),"
+				+ "display_name VARCHAR(50),"
+				+ "is_key BIT," 					// BIT is used for boolean, 0 is false, 1 is true
+				+ "is_student BIT,"
+				+ "is_instructor BIT,"
+				+ "is_admin BIT,"
+				+ "is_account_updated BIT,"
+				+ "expiration TIMESTAMP)";			// TIMESTAMP is when key expires (Format: YYYY-MM-DD HH:MI:SS)
+		statement.execute(query);
+		System.out.println("'accounts' table created if it did not already exist");
+	}
+	
+	
+	/**********
+	 * Deletes the entire accounts table in database
+	 */
+	public static void deleteTable() throws SQLException {
+		query = "DROP TABLE accounts";		// delete accounts table
+		statement.execute(query);			// execute query
+		System.out.println("'accounts' table deleted");
+	}
+	
+	
 	/**********************************************************************************************
 
 	Public Getter Methods To Check/Return Database Values
@@ -699,44 +733,10 @@ public class AccountDatabase {
 	
 	/**********************************************************************************************
 
-	 Public Methods To Create/Delete 'accounts' Table and Print All Accounts
+	 Public Method to print all accounts to console for testing
 	
 	**********************************************************************************************/
 	
-	
-	
-	/**********
-	 * Creates a table called accounts and initializes columns.
-	 */
-	public static void createTable() throws SQLException {
-		query = "CREATE TABLE IF NOT EXISTS accounts ("
-				+ "username VARCHAR(50) PRIMARY KEY UNIQUE, "
-				+ "password VARCHAR(50), "		// VARCHAR(#) is a string with a max of # characters
-				+ "email VARCHAR(50) UNIQUE, "
-				+ "first_name VARCHAR(50),"
-				+ "middle_name VARCHAR(50),"
-				+ "last_name VARCHAR(50),"
-				+ "preferred_name VARCHAR(50),"
-				+ "display_name VARCHAR(50),"
-				+ "is_key BIT," 					// BIT is used for boolean, 0 is false, 1 is true
-				+ "is_student BIT,"
-				+ "is_instructor BIT,"
-				+ "is_admin BIT,"
-				+ "is_account_updated BIT,"
-				+ "expiration TIMESTAMP)";			// TIMESTAMP is when key expires (Format: YYYY-MM-DD HH:MI:SS)
-		statement.execute(query);
-		System.out.println("'accounts' table created if it did not already exist");
-	}
-	
-	
-	/**********
-	 * Deletes the entire accounts table in database
-	 */
-	public static void deleteTable() throws SQLException {
-		query = "DROP TABLE accounts";		// delete accounts table
-		statement.execute(query);			// execute query
-		System.out.println("'accounts' table deleted");
-	}
 	
 	/**********
 	 * Prints all account information for all accounts in account database for testing purposes.

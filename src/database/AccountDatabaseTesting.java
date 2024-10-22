@@ -19,13 +19,6 @@ import java.sql.*; // For SQL related objects
  */
 
 public class AccountDatabaseTesting {
-
-	
-	// Reusable variables to communicate with database
-	private static String query = "";
-	private static Connection connection = null;
-	private static Statement statement = null; 
-	private static ResultSet resultSet = null;
 	
 	// Temporary variable to store return value
 	private static boolean actualResult;

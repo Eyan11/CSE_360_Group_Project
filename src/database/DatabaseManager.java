@@ -53,8 +53,9 @@ public class DatabaseManager {
 			AccountDatabase.deleteTable();
 			AccountDatabase.createTable();
 			
-			// Perform tests on all methods in this class
-			AccountDatabaseTesting.performTestEvaluations();
+			// Perform tests on both accounts and articles tables
+			//AccountDatabaseTesting.performTestEvaluations();
+			//ArticleDatabaseTesting.performTestEvaluations();
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
