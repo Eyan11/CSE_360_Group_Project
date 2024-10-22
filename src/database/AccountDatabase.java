@@ -1,4 +1,4 @@
-package application;
+package database;
 
 import java.sql.*; // For SQL related objects
 import java.util.Random; // For random key generator
@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit; // For time used in expiration column
 /**
  * <p> AccountDatabase. </p>
  * 
- * <p> Description: Manages the H2 database which stores all account information.</p>
+ * <p> Description: Manages the Account Table in the H2 database.</p>
  * 
  * <p> Source: Lynn Robert Carter from FirstDatabase project, DatabaseHelper class, 
  * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007
@@ -20,16 +20,8 @@ import java.util.concurrent.TimeUnit; // For time used in expiration column
  */
 
 public class AccountDatabase {
-	
-	// JDBC driver name and database URL 
-	private static final String JDBC_DRIVER = "org.h2.Driver";   
-	private static final String DB_URL = "jdbc:h2:~/accountDatabase"; 
 
-	//  Database credentials 
-	private static final String USER = "sa"; 
-	private static final String PASS = ""; 
-
-	// Reusable variables to communicate with database
+	// To communicate with database
 	private static String query = "";
 	private static Connection connection = null;
 	private static Statement statement = null; 
@@ -41,60 +33,12 @@ public class AccountDatabase {
 	private static Random random;
 	
 	
-	/**********************************************************************************************
-
-	Public Methods For Database Connection
-	
-	**********************************************************************************************/
-	
-	
 	/**********
-	 * Starts the connection to the H2 database.
+	 * Sets connection and statement variables so this class can access the database
 	 */
-	public static void connectToDatabase() throws SQLException {
-		try {
-			Class.forName(JDBC_DRIVER); // Load the JDBC driver
-			connection = DriverManager.getConnection(DB_URL, USER, PASS);
-			System.out.println("Connection Successful!");
-			statement = connection.createStatement(); 
-			
-			// Wipe all stored database rows on local machine and create a new accounts table
-			createTable();
-			deleteTable();
-			createTable();
-			
-			// Perform tests on all methods in this class
-			DatabaseTestingAutomation.performTestEvaluations();
-		} 
-		// Connection failed
-		catch (ClassNotFoundException e) {
-			System.err.println("JDBC Driver not found: " + e.getMessage());
-		}
-	}
-	
-	
-	/**********
-	 * Closes the connection to the H2 database.
-	 */
-	public static void closeConnection() {
-		// Close statement
-		try { 
-			if(statement!=null) 
-				statement.close(); 
-		} 
-		catch(SQLException se2) { 
-			se2.printStackTrace();
-		} 
-		
-		// Close connection
-		try { 
-			if(connection!=null) 
-				connection.close(); 
-			System.out.println("CLOSING CONNECTION TO DATABASE");
-		} 
-		catch(SQLException se){ 
-			se.printStackTrace(); 
-		} 
+	public static void setConnection(Connection _connection, Statement _statement) {
+		connection = _connection;
+		statement = _statement;
 	}
 	
 	
@@ -732,8 +676,7 @@ public class AccountDatabase {
 		}
 
 		
-		// Query inserts placeholder variables ? into accounts database 
-		// where the username matches user parameter
+		// Query deletes row from database where username = placeholder variable ?
 		String query = "DELETE FROM accounts WHERE username = ?";
 		
 		PreparedStatement pstmt = connection.prepareStatement(query);

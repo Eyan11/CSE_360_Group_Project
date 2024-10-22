@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import database.DatabaseManager;	// To start database connection in different package
+import database.AccountDatabase;	// To use the account table in database in different package
 
 
 public class Main extends Application {
@@ -19,7 +21,7 @@ public class Main extends Application {
 	public void start(Stage theStage) throws Exception {
 		
 		// Communicates to AccountDatabase when application is opened
-		AccountDatabase.connectToDatabase();
+		DatabaseManager.connectToDatabase();
 		
 		theStage.setTitle("Group Project");			// Label the stage (a window)
 		
@@ -55,6 +57,6 @@ public class Main extends Application {
 	 */
 	@Override
 	public void stop() {
-		AccountDatabase.closeConnection();
+		DatabaseManager.closeConnection();
 	}
 }

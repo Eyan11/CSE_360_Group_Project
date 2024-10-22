@@ -1,9 +1,9 @@
-package application;
+package database;
 
 import java.sql.*; // For SQL related objects
 
 /**
- * <p> DatabaseTestingAutomation. </p>
+ * <p> AccountDatabaseTesting. </p>
  * 
  * <p> Description: Tests all functionalities of the AccountDatabase class.</p>
  * 
@@ -18,7 +18,7 @@ import java.sql.*; // For SQL related objects
  *  
  */
 
-public class DatabaseTestingAutomation {
+public class AccountDatabaseTesting {
 
 	
 	// Reusable variables to communicate with database
@@ -613,3 +613,4 @@ public class DatabaseTestingAutomation {
 		}
 	}
 }
+

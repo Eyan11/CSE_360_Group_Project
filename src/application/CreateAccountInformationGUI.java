@@ -2,7 +2,7 @@ package application;
 
 //import java.lang.*;
 import java.sql.SQLException;
-
+import database.AccountDatabase;	// To use account database in different package
 //import javafx.application.Application;
 //import javafx.scene.Scene;
 import javafx.scene.control.*;

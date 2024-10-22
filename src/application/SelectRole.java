@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox; // For layout that arranges UI elements vertica
 import javafx.scene.paint.Color; // For setting color of UI elements
 import javafx.scene.text.Font; // For setting font of text elements
 import javafx.scene.text.Text; // For displaying text in the UI
+import database.AccountDatabase;	// To use account database in different package
 
 
 /**

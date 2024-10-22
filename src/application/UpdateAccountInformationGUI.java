@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import java.sql.SQLException;	// To catch errors for database
 //import passwordEvaluationTestbed.PasswordEvaluationGUITestbed;
+import database.AccountDatabase;	// To use account database in different package
 
 
 /**
