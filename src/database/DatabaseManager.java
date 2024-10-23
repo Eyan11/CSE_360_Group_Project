@@ -48,14 +48,19 @@ public class DatabaseManager {
 			AccountDatabase.setConnection(connection, statement);	// Let account class access database
 			ArticleDatabase.setConnection(connection, statement);	// Let article class access database
 			
-			// Wipe all stored database rows on local machine and create a new accounts table
+			// Wipe all data in accounts table
 			AccountDatabase.createTable();
 			AccountDatabase.deleteTable();
 			AccountDatabase.createTable();
 			
+			// Wipe all data in articles table
+			ArticleDatabase.createTable();
+			ArticleDatabase.deleteTable();
+			ArticleDatabase.createTable();
+			
 			// Perform tests on both accounts and articles tables
 			//AccountDatabaseTesting.performTestEvaluations();
-			//ArticleDatabaseTesting.performTestEvaluations();
+			ArticleDatabaseTesting.performTestEvaluations();
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {

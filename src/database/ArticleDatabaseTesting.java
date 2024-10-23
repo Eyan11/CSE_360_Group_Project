@@ -29,27 +29,31 @@ public class ArticleDatabaseTesting {
 	
 	
 	/**********
-	 * Starts the testing automation
+	 * Starts the testing automation for ArticleDatabase methods
 	 */
 	public static void performTestEvaluations() throws SQLException {
 		
 		// Wipe all stored database rows on local machine and create a new accounts table
-		ArticleDatabase.createTable();
-		ArticleDatabase.deleteTable();
-		ArticleDatabase.createTable();
+		//ArticleDatabase.createTable();
+		//ArticleDatabase.deleteTable();
+		//ArticleDatabase.createTable();
 		
 		// *** Test isTableEmpty() ***************************************
 		testIsTableEmpty(true);
 		// ***************************************************************
 		
 		// *** Test createArticles() *************************************
-		testCreateArticle("header1", "title1", "description1", "keywords1", "group1", "body1", "references1", true);	// id = 1
+		testCreateArticle("header1", "title1", "description1", "keywords1", "groups1", "body1", "references1", true);	// id = 1
 		testCreateArticle("header1", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);				// Duplicate header
-		testCreateArticle("header2", "title2", "description2", "keywords2", "group2", "body2", "references2", true);	// id = 2
-		testCreateArticle("header3", "title3", "description3", "keywords3", "group3", "body3", "references3", true);	// id = 3
-		testCreateArticle("111111111122222222223333333333444444444455555", "Ignore", "Ignore", "Ignore", 
+		testCreateArticle("header2", "title2", "description2", "keywords2", "groups2", "body2", "references2", true);	// id = 2
+		testCreateArticle("header3", "title3", "description3", "keywords3", "groups3", "body3", "references3", true);	// id = 3
+		testCreateArticle("111111111122222222223333333333444444444455555555556666666666", "Ignore", "Ignore", "Ignore", 
 				"Ignore", "Ignore", "Ignore", false);	// header over 50 characters
-		testCreateArticle("header4", "title4", "description4", "keywords4", "group4", "body4", "references4", true);	// id = 4
+		testCreateArticle("header4", "title4", "description4", "keywords4", "groups4", "body4", "references4", true);	// id = 4
+		// ***************************************************************
+		
+		// *** Test getAllArticles() *************************************
+		testGetAllArticles("1,header1,title1|2,header2,title2|3,header3,title3|4,header4,title4|");
 		// ***************************************************************
 	
 		// *** Test deleteArticle() **************************************
@@ -78,16 +82,19 @@ public class ArticleDatabaseTesting {
 		// ***************************************************************
 		
 		// *** Test getAllArticles() *************************************
-		testGetAllArticles("");	// TODO
+		testGetAllArticles("1,header1,title1|4,header4,title4|");
 		// ***************************************************************
 		
 		// *** Test getArticle() *************************************
-		testGetArticle(1, "");	// TODO
+		testGetArticle(1, "1,header1,title1,description1,keywords1,groups1,body1,references1");
+		testGetArticle(2, "");	// id doesn't exist since deleted
+		testGetArticle(3, "");	// id doesn't exist since deleted
+		testGetArticle(4, "4,header4,title4,description4,keywords4,groups4,body4,references4");
 		// ***************************************************************
 		
 		
 		// Print all articles in database (not an actual test case, just to to check data in database)
-		System.out.println(ArticleDatabase.getAllArticles());
+		System.out.println("Finished Testing, Printing ALl Articles: \n\n" + ArticleDatabase.getAllArticles());
 		
 		// Print Results
 		System.out.println("-----------------------------------------------------------");
@@ -96,8 +103,8 @@ public class ArticleDatabaseTesting {
 		System.out.println("Number of tests that failed: " + numFailed);
 		
 		// Reset accounts table for GUI usage
-		ArticleDatabase.deleteTable();
-		ArticleDatabase.createTable();
+		//ArticleDatabase.deleteTable();
+		//ArticleDatabase.createTable();
 	}
 	
 	
@@ -112,10 +119,10 @@ public class ArticleDatabaseTesting {
 	 * Tests the functionality of the createArticle() method in ArticleDatabase class.
 	 */
 	private static void testCreateArticle(String header, String title, String description, String keywords, 
-			String group, String body, String references, boolean expectedResult) throws SQLException{
+			String groups, String body, String references, boolean expectedResult) throws SQLException {
 		
 		// Create article and return result
-		actualResult = ArticleDatabase.createArticle(header, title, description, keywords, group, body, references);
+		actualResult = ArticleDatabase.createArticle(header, title, description, keywords, groups, body, references);
 		
 		// Return if test passed or failed and track
 		if(actualResult == expectedResult) {
@@ -223,7 +230,7 @@ public class ArticleDatabaseTesting {
 		
 		// Get header and title of all articles
 		actualResultString = ArticleDatabase.getAllArticles();
-		
+				
 		// Return if test passed or failed and track
 		if(actualResultString.equals(expectedString)) {
 			numPassed++;

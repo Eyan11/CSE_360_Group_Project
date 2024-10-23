@@ -36,7 +36,7 @@ public class ArticleDatabase {
 				+ "title VARCHAR(50), "
 				+ "description VARCHAR(100), "
 				+ "keywords VARCHAR(50), "
-				+ "group VARCHAR(50), "
+				+ "groups VARCHAR(50), "
 				+ "body VARCHAR(500), "
 				+ "references VARCHAR(100))";
 		statement.execute(query);
@@ -104,13 +104,14 @@ public class ArticleDatabase {
 		// Select all rows from database where header = placeholder variable ?
 	    String query = "SELECT COUNT(*) FROM articles WHERE header = ?";
 	    PreparedStatement pstmt = connection.prepareStatement(query);
-	        
-        pstmt.setString(1, header);	// title = title
+	    
+	    // Set placeholder ? variable to header
+        pstmt.setString(1, header);
         resultSet = pstmt.executeQuery();
         
         // If the next row exists
         if (resultSet.next()) {
-            // Return true if 1 or more articles have a matching title
+            // Return true if 1 or more articles have a matching header
             return resultSet.getInt(1) > 0;
         }
 
@@ -129,11 +130,11 @@ public class ArticleDatabase {
 	 * Creates a new article and stores in database, returns if successful or not.
 	 */
 	public static boolean createArticle(String header, String title, String description, String keywords, 
-			String group, String body, String references) throws SQLException {
+			String groups, String body, String references) throws SQLException {
 		
 		// Prevent printing an article that does not exist
 		if(doesArticleHeaderExist(header)) {
-			System.err.println("Cannot create article because header: " + title + " already exists in database!");
+			System.err.println("Cannot create article because header: " + header + " already exists in database!");
 			return false;
 		}
 		// Prevents very long header
@@ -156,9 +157,9 @@ public class ArticleDatabase {
 			System.err.println("Cannot create article, keywords are over 50 characters");
 			return false;
 		}
-		// Prevents very long group
-		if(group.length() > 50) {
-			System.err.println("Cannot create article, group is over 50 characters");
+		// Prevents very long groups
+		if(groups.length() > 50) {
+			System.err.println("Cannot create article, groups are over 50 characters");
 			return false;
 		}
 		// Prevents very long body
@@ -174,7 +175,7 @@ public class ArticleDatabase {
 		
 		
 		// Insert a new row into database and fill in the following column values
-		query = "INSERT INTO articles (header, title, description, keywords, group, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		query = "INSERT INTO articles (header, title, description, keywords, groups, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		PreparedStatement pstmt = connection.prepareStatement(query);
 			
 		// Set the placeholder ? variables
@@ -182,19 +183,19 @@ public class ArticleDatabase {
 		pstmt.setString(2, title);
 		pstmt.setString(3, description);
 		pstmt.setString(4, keywords);
-		pstmt.setString(5, group);
+		pstmt.setString(5, groups);
 		pstmt.setString(6, body);
 		pstmt.setString(7, references);
 		pstmt.executeUpdate();		// Execute query
 		
 		// Print and return result
-		if(!doesArticleHeaderExist(title)) {
-			System.err.println("Article not created, an error occured!");
-			return false;
-		}
-		else {
+		if(doesArticleHeaderExist(header)) {
 			System.out.println("Article successfully created!");
 			return true;
+		}
+		else {
+			System.err.println("Article not created, an error occured!");
+			return false;
 		}
 	}
 	
@@ -268,7 +269,7 @@ public class ArticleDatabase {
 	
 	/**********
 	 * Returns the all information about an article given its id number
-	 * in format of "id,header,title,description,keywords,group,body,references"
+	 * in format of "id,header,title,description,keywords,groups,body,references"
 	 */
 	public static String getArticle(int id) throws SQLException {
 		
@@ -296,7 +297,7 @@ public class ArticleDatabase {
         	returnString += resultSet.getString("title") + ",";
         	returnString += resultSet.getString("description") + ","; 
         	returnString += resultSet.getString("keywords") + ",";
-        	returnString += resultSet.getString("group") + ",";
+        	returnString += resultSet.getString("groups") + ",";
         	returnString += resultSet.getString("body") + ",";
         	returnString += resultSet.getString("references"); 
         }
@@ -340,7 +341,7 @@ public class ArticleDatabase {
 			writer.write(resultSet.getString("title") + "\n"); 
 			writer.write(resultSet.getString("description") + "\n"); 
 			writer.write(resultSet.getString("keywords") + "\n"); 
-			writer.write(resultSet.getString("group") + "\n"); 
+			writer.write(resultSet.getString("groups") + "\n"); 
 			writer.write(resultSet.getString("body") + "\n"); 
 			writer.write(resultSet.getString("references") + "\n"); 
 			
@@ -368,7 +369,7 @@ public class ArticleDatabase {
 		}
 		
 		// Temporary strings to collect file contents
-		String idString, header, title, description, keywords, group, body, references = null;
+		String idString, header, title, description, keywords, groups, body, references = null;
 		
 		deleteTable();		// Delete current database
 		createTable();		// Start a new empty database
@@ -381,12 +382,12 @@ public class ArticleDatabase {
 			title = reader.readLine();
 			description = reader.readLine();
 			keywords = reader.readLine();
-			group = reader.readLine();
+			groups = reader.readLine();
 			body = reader.readLine();
 			references = reader.readLine();
 			
 			// Insert a new row into database and fill in the following column values
-			query = "INSERT INTO articles (id, header, title, description, keywords, group, body, references) "
+			query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement pstmt = connection.prepareStatement(query);
 				
@@ -397,7 +398,7 @@ public class ArticleDatabase {
 			pstmt.setString(3, title);
 			pstmt.setString(4, description);
 			pstmt.setString(5, keywords);
-			pstmt.setString(6, group);
+			pstmt.setString(6, groups);
 			pstmt.setString(7, body);
 			pstmt.setString(8, references);
 			pstmt.executeUpdate();		// Execute query
