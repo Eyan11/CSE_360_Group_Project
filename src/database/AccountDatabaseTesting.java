@@ -44,7 +44,7 @@ public class AccountDatabaseTesting {
 		//AccountDatabase.createTable();
 		
 		// *** Test isDatabaseEmpty() **************************************
-		testIsDatabaseEmpty(true);
+		testIsTableEmpty(true);
 		// *****************************************************************
 		
 		// *** Test getAllAccountNames() **********************************
@@ -57,7 +57,7 @@ public class AccountDatabaseTesting {
 		// *****************************************************************
 		
 		// *** Test isDatabaseEmpty() **************************************
-		testIsDatabaseEmpty(false);
+		testIsTableEmpty(false);
 		// *****************************************************************
 		
 		// *** Test inviteUser() *******************************************
@@ -184,7 +184,7 @@ public class AccountDatabaseTesting {
 	
 	/**********************************************************************************************
 
-	Private Helper Methods To Test All Functionalities of AccountDatabase Class
+	Private Helper Methods To Test Setter Methods in AccountDatabase Class
 	
 	**********************************************************************************************/
 	
@@ -351,23 +351,28 @@ public class AccountDatabaseTesting {
 		}
 	}
 	
+	/**********************************************************************************************
+
+	Private Helper Methods To Test Getter Methods in AccountDatabase Class
+	
+	**********************************************************************************************/
 	
 	/**********
-	 * Tests the functionality of the isDatabaseEmpty() method in AccountDatabase class.
+	 * Tests the functionality of the isTableEmpty() method in AccountDatabase class.
 	 */
-	private static void testIsDatabaseEmpty(boolean expectedResult) throws SQLException{
+	private static void testIsTableEmpty(boolean expectedResult) throws SQLException{
 		
-		// Check if database is empty and return result
-		actualResult = AccountDatabase.isDatabaseEmpty();
+		// Check if accounts table is empty and return result
+		actualResult = AccountDatabase.isTableEmpty();
 		
 		// Return if test passed or failed and track
 		if(actualResult == expectedResult) {
 			numPassed++;
-			System.out.println("isDatabaseEmpty() passed!");
+			System.out.println("isTableEmpty() passed!");
 		}
 		else {
 			numFailed++;
-			System.out.println("isDatabaseEmpty() failed!");
+			System.out.println("isTableEmpty() failed!");
 		}
 	}
 	

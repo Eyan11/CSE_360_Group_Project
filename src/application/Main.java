@@ -28,7 +28,7 @@ public class Main extends Application {
 		Pane theRoot = new Pane();							// Create a pane within the window
 		
 		theStage.show();		// Show the stage to the user
-        if (AccountDatabase.isDatabaseEmpty()) {
+        if (AccountDatabase.isTableEmpty()) {
            //theRoot = switchToCreateAccountInformationGUI(); 
         	CreateAccountInformationGUI createAccountGUI = new CreateAccountInformationGUI(theRoot);
         } else {

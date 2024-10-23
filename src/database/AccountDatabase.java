@@ -86,7 +86,7 @@ public class AccountDatabase {
 	/**********
 	 * Checks if there is at least one row of data in database.
 	 */
-	public static boolean isDatabaseEmpty() throws SQLException {
+	public static boolean isTableEmpty() throws SQLException {
 		// Counts total number of rows in accounts database
 		query = "SELECT COUNT(*) AS count FROM accounts";
 		resultSet = statement.executeQuery(query);
@@ -341,7 +341,7 @@ public class AccountDatabase {
 	
 	/**********
 	 * Returns the username and display name of every account
-	 * in format of "username1|display_name1,username2|display_name2,..."
+	 * in format of "username1,display_name1|username2,display_name2|..."
 	 */
 	public static String getAllAccountNames() throws SQLException {
 		
@@ -355,14 +355,14 @@ public class AccountDatabase {
 		// Loop through every row
 		while (resultSet.next()) {
 			// Get username and separate with |
-			returnString += resultSet.getString("username") + "|";
+			returnString += resultSet.getString("username") + ",";
 			
 			// Get display name if NOT null
 			if(resultSet.getString("display_name") != null)
 				returnString += resultSet.getString("display_name");
 			
 			// Separate each account with ,
-			returnString += ",";
+			returnString += "|";
 		}
 		
 		// Return in the format of "username1|display_name1,username2|display_name2,..."
@@ -383,7 +383,7 @@ public class AccountDatabase {
 	public static boolean createFirstAccount(String user, String pass) throws SQLException {
 		
 		// Prevents using method when not the first account in database
-		if(!isDatabaseEmpty()) {
+		if(!isTableEmpty()) {
 			System.err.println("Can't create first account, database is NOT empty");
 			return false;
 		}

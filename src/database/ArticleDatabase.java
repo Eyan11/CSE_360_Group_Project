@@ -36,7 +36,7 @@ public class ArticleDatabase {
 				+ "title VARCHAR(50), "
 				+ "description VARCHAR(100), "
 				+ "keywords VARCHAR(50), "
-				+ "group VARCHAR(50), "		// TODO: maybe change to array
+				+ "group VARCHAR(50), "
 				+ "body VARCHAR(500), "
 				+ "references VARCHAR(100))";
 		statement.execute(query);
@@ -52,7 +52,6 @@ public class ArticleDatabase {
 	}
 
 	
-	
 	/**********************************************************************************************
 
 	 Public Methods To Check Database Information
@@ -61,9 +60,9 @@ public class ArticleDatabase {
 
 
 	/**********
-	 * Checks if there is at least one row of data in database.
+	 * Checks if there is at least one row of data in table.
 	 */
-	public static boolean isDatabaseEmpty() throws SQLException {
+	public static boolean isTableEmpty() throws SQLException {
 		query = "SELECT COUNT(*) AS count FROM articles";
 		resultSet = statement.executeQuery(query);
 		
@@ -129,14 +128,50 @@ public class ArticleDatabase {
 	/**********
 	 * Creates a new article and stores in database, returns if successful or not.
 	 */
-	public static void createArticle(String header, String title, String description, String keywords, 
-			String group, String body, String references) throws SQLException, Exception {
+	public static boolean createArticle(String header, String title, String description, String keywords, 
+			String group, String body, String references) throws SQLException {
 		
 		// Prevent printing an article that does not exist
 		if(doesArticleHeaderExist(header)) {
 			System.err.println("Cannot create article because header: " + title + " already exists in database!");
-			return;
+			return false;
 		}
+		// Prevents very long header
+		if(header.length() > 50) {
+			System.err.println("Cannot create article, header is over 50 characters");
+			return false;
+		}
+		// Prevents very long header
+		if(title.length() > 50) {
+			System.err.println("Cannot create article, title is over 50 characters");
+			return false;
+		}
+		// Prevents very long description
+		if(description.length() > 100) {
+			System.err.println("Cannot create article, description is over 100 characters");
+			return false;
+		}
+		// Prevents very long keywords
+		if(keywords.length() > 50) {
+			System.err.println("Cannot create article, keywords are over 50 characters");
+			return false;
+		}
+		// Prevents very long group
+		if(group.length() > 50) {
+			System.err.println("Cannot create article, group is over 50 characters");
+			return false;
+		}
+		// Prevents very long body
+		if(body.length() > 500) {
+			System.err.println("Cannot create article, body is over 500 characters");
+			return false;
+		}
+		// Prevents very long references
+		if(references.length() > 100) {
+			System.err.println("Cannot create article, references are over 100 characters");
+			return false;
+		}
+		
 		
 		// Insert a new row into database and fill in the following column values
 		query = "INSERT INTO articles (header, title, description, keywords, group, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -152,23 +187,27 @@ public class ArticleDatabase {
 		pstmt.setString(7, references);
 		pstmt.executeUpdate();		// Execute query
 		
-		// Print result
-		if(!doesArticleHeaderExist(title))
+		// Print and return result
+		if(!doesArticleHeaderExist(title)) {
 			System.err.println("Article not created, an error occured!");
-		else
+			return false;
+		}
+		else {
 			System.out.println("Article successfully created!");
+			return true;
+		}
 	}
 	
 	
 	/**********
 	 * Deletes the article that matches the given id parameter
 	 */
-	public static void deleteArticle(int id) throws SQLException {
+	public static boolean deleteArticle(int id) throws SQLException {
 		
 		// Prevent deleting an article that does not exist
 		if(!doesArticleIDExist(id)) {
 			System.err.println("Cannot delete article id: " + id + " because it is not found in database!");
-			return;
+			return false;
 		}
 		
 		// Deletes the row from database where id = placeholder variable ?
@@ -178,61 +217,65 @@ public class ArticleDatabase {
 		pstmt.setInt(1, id);		// id = id
 		pstmt.executeUpdate();		// Execute query
 		
-		// Print result
-		if(doesArticleIDExist(id))
+		// Print and return result
+		if(doesArticleIDExist(id)) {
 			System.err.println("Article not deleted, an error occured!");
-		else
+			return false;
+		}
+		else {
 			System.out.println("Article successfully deleted!");
+			return true;
+		}
 	}
 	
 	
 	/**********************************************************************************************
 
-	 Public Methods To Print Database Information
+	 Public Methods To Return Database Information
 	
 	**********************************************************************************************/
 	
 
 	/**********
-	 * Prints the id, title, and authors for every article in database as a String
+	 * Returns the id, title, and authors for every article in database as a String
+	 * in format of "id1,header1,title1|id2,header2,title2|..."
 	 */
-	public static void printAllArticles() throws SQLException {
+	public static String getAllArticles() throws SQLException {
 		
-		// Prevent printing with an empty database
-		if(isDatabaseEmpty()) {
+		// Prevent getting articles if empty
+		if(isTableEmpty()) {
 			System.err.println("Cannot print all articles because database is empty!");
-			return;
+			return "";
 		}
 		
 		// Select all rows from database
 		query = "SELECT * FROM articles"; 
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery(query); 	// Execute query
+		
+		String returnString = "";
 
 		// While the next row exists, check next row
 		while(resultSet.next()) { 
 			// Get current article info
-			int id  = resultSet.getInt("id"); 
-			String header = resultSet.getString("header"); 		// TODO: update depending on what we want to display
-			String title = resultSet.getString("title");  		// TODO: update depending on what we want to display
-
-			//  Print current article info
-			System.out.print("ID: " + id); 
-			System.out.print(", Header: " + header); 
-			System.out.println(", Title: " + title); 
-		} 
+			returnString += resultSet.getInt("id") + ","; 
+			returnString += resultSet.getString("header") + ","; // TODO: update depending on what we want to display
+			returnString += resultSet.getString("title") + "|";  // TODO: update depending on what we want to display
+		}
+		return returnString;
 	}
 	
 	
 	/**********
-	 * Prints the all information about an article given its id number
+	 * Returns the all information about an article given its id number
+	 * in format of "id,header,title,description,keywords,group,body,references"
 	 */
-	public static void printArticle(int id) throws SQLException, Exception {
+	public static String getArticle(int id) throws SQLException {
 		
-		// Prevent printing an article that does not exist
+		// Prevent getting an article that does not exist
 		if(!doesArticleIDExist(id)) {
 			System.err.println("Cannot print article id: " + id + " because it is not found in database!");
-			return;
+			return "";
 		}
 		
 		// Select the row from database where id = placeholder variable ?
@@ -243,27 +286,21 @@ public class ArticleDatabase {
         pstmt.setInt(1, id);				// id = id
         resultSet = pstmt.executeQuery();	// Execute query
         
+        String returnString = "";
+        
         // While next row exists, check next row
         if (resultSet.next()) {
         	// Get article info
-			String header = resultSet.getString("header"); 
-			String title = resultSet.getString("title"); 
-			String description = resultSet.getString("description"); 
-			String keywords = resultSet.getString("keywords"); 
-			String group = resultSet.getString("group"); 
-			String body = resultSet.getString("body"); 
-			String references = resultSet.getString("references"); 
-
-			// Print article info
-			System.out.println("ID: " + id); 
-			System.out.println("Header: " + header); 
-			System.out.println("Title: " + title); 
-			System.out.println("Description: " + description); 
-			System.out.println("Keywords: " + keywords);
-			System.out.println("Group: \n" + group);
-			System.out.println("Body: \n" + body); 
-			System.out.println("References: \n" + references); 
+        	returnString += id + ",";
+        	returnString += resultSet.getString("header") + ","; 
+        	returnString += resultSet.getString("title") + ",";
+        	returnString += resultSet.getString("description") + ","; 
+        	returnString += resultSet.getString("keywords") + ",";
+        	returnString += resultSet.getString("group") + ",";
+        	returnString += resultSet.getString("body") + ",";
+        	returnString += resultSet.getString("references"); 
         }
+        return returnString;
 	}
 	
 	
@@ -307,10 +344,9 @@ public class ArticleDatabase {
 			writer.write(resultSet.getString("body") + "\n"); 
 			writer.write(resultSet.getString("references") + "\n"); 
 			
-			// Print the backed up article to console
+			// Print result
 			System.out.println("Article id: " + resultSet.getInt("id") + " backed up to: " + filePath);
 		} 
-		
 		writer.close();		// Stop writing to file
 	}
 	
@@ -372,7 +408,6 @@ public class ArticleDatabase {
 			else
 				System.err.println("Article id: " + idString + " failed to be restored from " + filePath);
 		}
-			
 		reader.close();		// Stop reading from file
 	}
 	
