@@ -43,13 +43,14 @@ public class ArticleDatabaseTesting {
 		// ***************************************************************
 		
 		// *** Test createArticles() *************************************
-		testCreateArticle("header1", "title1", "description1", "keywords1", "groups1", "body1", "references1", true);	// id = 1
+		testCreateArticle("header1", "title1", "description1", "keywords1", "group1&group4", 
+				"body1", "references1", true);	// id = 1
 		testCreateArticle("header1", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);				// Duplicate header
-		testCreateArticle("header2", "title2", "description2", "keywords2", "groups2", "body2", "references2", true);	// id = 2
-		testCreateArticle("header3", "title3", "description3", "keywords3", "groups3", "body3", "references3", true);	// id = 3
+		testCreateArticle("header2", "title2", "description2", "keywords2", "group2", "body2", "references2", true);	// id = 2
+		testCreateArticle("header3", "title3", "description3", "keywords3", "group3", "body3", "references3", true);	// id = 3
 		testCreateArticle("111111111122222222223333333333444444444455555555556666666666", "Ignore", "Ignore", "Ignore", 
 				"Ignore", "Ignore", "Ignore", false);	// header over 50 characters
-		testCreateArticle("header4", "title4", "description4", "keywords4", "groups4", "body4", "references4", true);	// id = 4
+		testCreateArticle("header4", "title4", "description4", "keywords4", "group4", "body4", "references4", true);	// id = 4
 		// ***************************************************************
 		
 		// *** Test getAllArticles() *************************************
@@ -85,11 +86,28 @@ public class ArticleDatabaseTesting {
 		testGetAllArticles("1,header1,title1|4,header4,title4|");
 		// ***************************************************************
 		
-		// *** Test getArticle() *************************************
-		testGetArticle(1, "1,header1,title1,description1,keywords1,groups1,body1,references1");
-		testGetArticle(2, "");	// id doesn't exist since deleted
-		testGetArticle(3, "");	// id doesn't exist since deleted
-		testGetArticle(4, "4,header4,title4,description4,keywords4,groups4,body4,references4");
+		// *** Test getArticleByID() *************************************
+		testGetArticleByID(1, "1,header1,title1,description1,keywords1,group1&group4,body1,references1");
+		testGetArticleByID(2, "");	// id doesn't exist since deleted
+		testGetArticleByID(3, "");	// id doesn't exist since deleted
+		testGetArticleByID(4, "4,header4,title4,description4,keywords4,group4,body4,references4");
+		// ***************************************************************
+		
+		// *** Test getArticlesByGroups***********************************
+		testGetArticlesByGroups("group1", "1,header1,title1|");
+		testGetArticlesByGroups("group4", "1,header1,title1|4,header4,title4|");
+		testGetArticlesByGroups("group1,group4", "1,header1,title1|4,header4,title4|");	// group1 or group4
+		testGetArticlesByGroups("group1&group4", "1,header1,title1|");					// group1 and group 4
+		testGetArticlesByGroups("", "1,header1,title1|4,header4,title4|");				// Empty groups means get all articles
+		testGetArticlesByGroups("group2", "");											// group doesn't exist since deleted
+		// ***************************************************************
+		
+		// *** Test editArticle() ****************************************
+		testEditArticle(1, "new header1", "new title1", "new description1", "new keywords1", 
+				"new group1 & new group4", "new body1", "new references1", true);
+		testEditArticle(2, "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);	// id doesn't exist since deleted
+		testEditArticle(3, "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);	// id doesn't exist since deleted
+		testEditArticle(4, "new header1", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);	// duplicate header
 		// ***************************************************************
 		
 		
@@ -152,6 +170,27 @@ public class ArticleDatabaseTesting {
 		else {
 			numFailed++;
 			System.out.println("deleteArticle() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the editArticle() method in ArticleDatabase class.
+	 */
+	private static void testEditArticle(int id, String header, String title, String description, String keywords, 
+			String groups, String body, String references, boolean expectedResult) throws SQLException{
+		
+		// Edit article and return result
+		actualResult = ArticleDatabase.editArticle(id, header, title, description, keywords, groups, body, references);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("editArticle() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("editArticle() failed!");
 		}
 	}
 	
@@ -244,21 +283,41 @@ public class ArticleDatabaseTesting {
 	
 	
 	/**********
-	 * Tests the functionality of the getArticle() method in ArticleDatabase class.
+	 * Tests the functionality of the getArticleByID() method in ArticleDatabase class.
 	 */
-	private static void testGetArticle(int id, String expectedString) throws SQLException {
+	private static void testGetArticleByID(int id, String expectedString) throws SQLException {
 		
-		// Get article info with matching id
-		actualResultString = ArticleDatabase.getArticle(id);
+		// Get id, header, and title of article with matching id
+		actualResultString = ArticleDatabase.getArticleByID(id);
 		
 		// Return if test passed or failed and track
 		if(actualResultString.equals(expectedString)) {
 			numPassed++;
-			System.out.println("getArticle() passed!");
+			System.out.println("getArticleByID() passed!");
 		}
 		else {
 			numFailed++;
-			System.out.println("getArticle() failed!");
+			System.out.println("getArticleByID() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the getArticlesByGroups() method in ArticleDatabase class.
+	 */
+	private static void testGetArticlesByGroups(String groups, String expectedString) throws SQLException {
+		
+		// Get id, header, and title of all articles with matching groups
+		actualResultString = ArticleDatabase.getArticlesByGroups(groups);
+		
+		// Return if test passed or failed and track
+		if(actualResultString.equals(expectedString)) {
+			numPassed++;
+			System.out.println("getArticlesByGroups() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("getArticlesByGroups() failed!");
 		}
 	}
 }

@@ -15,13 +15,16 @@ import java.sql.*; // For SQL related objects
  * 
  * @version 1.00		10/09/2024 Phase 1 implementation and documentation
  * @version 1.10		10/15/2024 Updated to test additional methods in AccountDatabase version 1.10
+ * @version 1.20		10/24/2024 Updated to test additional methods in AccountDatabase version 1.20
  *  
  */
 
 public class AccountDatabaseTesting {
 	
-	// Temporary variable to store return value
+	// Temporary variables to store return value
 	private static boolean actualResult;
+	private static String actualResultString;
+	
 	// Total number of test cases that had matching expectations and results
 	private static int numPassed = 0;
 	// Total number of test cases that had different expectations and results
@@ -30,11 +33,10 @@ public class AccountDatabaseTesting {
 	// To store one-time keys in order to create accounts with them
 	private static String[] keyArr = new String[5];
 	private static int i = 0;
-	private static String returnString = "";
 	
 	
 	/**********
-	 * Starts the testing automation that test 59 test cases
+	 * Starts the testing automation that test 64 test cases
 	 */
 	public static void performTestEvaluations() throws SQLException {
 		
@@ -47,8 +49,8 @@ public class AccountDatabaseTesting {
 		testIsTableEmpty(true);
 		// *****************************************************************
 		
-		// *** Test getAllAccountNames() **********************************
-		testGetAllAccountNames(false);	// No accounts exist
+		// *** Test getAllAccounts() **************************************
+		testGetAllAccounts("");	// No accounts exist
 		// *****************************************************************
 		
 		// *** Test createFirstAccount() ***********************************
@@ -132,8 +134,15 @@ public class AccountDatabaseTesting {
 		testIsAccountUpdated("Ignore", false); // Wrong username
 		// *****************************************************************
 		
+		// *** Test updateUserRoles() **************************************
+		testUpdateUserRoles("Name1", true, true, true, false);		// can't have both student and instructor roles
+		testUpdateUserRoles("Name1", false, false, false, false);	// can't have no roles
+		testUpdateUserRoles("Name1", false, false, true, true);
+		testUpdateUserRoles("Name2", true, false, true, true);
+		testUpdateUserRoles("Ignore", false, false, true, false);	// Wrong username
+		// *****************************************************************
+		
 		// *** Test resetUser() ********************************************
-		//AccountDatabase.printAccountsToConsole();
 		testResetUser("Name1", true);	// keyArr[2]
 		testResetUser("Ignore", false);	// Username doesn't exist
 		testResetUser("Name1", true);	// Allowed to reset user again (keyArr[3])
@@ -162,8 +171,8 @@ public class AccountDatabaseTesting {
 		testResetPassword("Ignore", "Ignore", false); // Key doesn't exist
 		// *****************************************************************
 		
-		// *** Test getAllAccountNames() **********************************
-		testGetAllAccountNames(true);
+		// *** Test getAllAccounts() ***************************************
+		testGetAllAccounts("Name1,pname,0,0,1|Name3,,0,1,1|");
 		// *****************************************************************
 		
 		
@@ -249,6 +258,27 @@ public class AccountDatabaseTesting {
 		}
 	}
 	
+	
+	/**********
+	 * Tests the functionality of the updateAccountInformation() method in AccountDatabase class.
+	 */
+	private static void testUpdateUserRoles(String user, boolean isStudent, boolean isInstructor, 
+			boolean isAdmin, boolean expectedResult) throws SQLException{
+		
+		// Attempt to update account information
+		actualResult = AccountDatabase.updateUserRoles(user, isStudent, isInstructor, isAdmin);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("testUpdateAccountInformation() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("testUpdateAccountInformation() failed!");
+		}
+	}
+	
 
 	/**********
 	 * Tests the functionality of the inviteUser() method in AccountDatabase class.
@@ -256,16 +286,16 @@ public class AccountDatabaseTesting {
 	private static void testInviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin, boolean expectedResult) throws SQLException{
 		
 		// Attempt to invite user and use return key
-		returnString = AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
+		actualResultString = AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
 		
 		// If no key then invite failed
-		if(returnString == "")
+		if(actualResultString == "")
 			actualResult = false;
 		// If key then invite succeeded
 		else {
 			actualResult = true;
 			// Store key for future test cases
-			keyArr[i] = returnString;
+			keyArr[i] = actualResultString;
 			i++;
 		}
 		
@@ -287,16 +317,16 @@ public class AccountDatabaseTesting {
 	private static void testResetUser(String user, boolean expectedResult) throws SQLException{
 		
 		// Attempt to reset user and use return key
-		returnString = AccountDatabase.resetUser(user);
+		actualResultString = AccountDatabase.resetUser(user);
 		
 		// If no key then reset failed
-		if(returnString == "")
+		if(actualResultString == "")
 			actualResult = false;
 		// If key then reset succeeded
 		else {
 			actualResult = true;
 			// Store key for future test cases
-			keyArr[i] = returnString;
+			keyArr[i] = actualResultString;
 			i++;
 		}
 		
@@ -564,10 +594,10 @@ public class AccountDatabaseTesting {
 	private static void testGetKeyExpiration(String key, boolean expectedResult) throws SQLException{
 		
 		// Return key expiration time stamp
-		returnString = AccountDatabase.getKeyExpiration(key);
+		actualResultString = AccountDatabase.getKeyExpiration(key);
 		
 		// If no expiration time stamp
-		if(returnString == "" || returnString == null)
+		if(actualResultString == "" || actualResultString == null)
 			actualResult = false;
 		// If method returned an expiration time stamp
 		else
@@ -586,28 +616,21 @@ public class AccountDatabaseTesting {
 	
 	
 	/**********
-	 * Tests the functionality of the getAllAccountNames() method in AccountDatabase class.
+	 * Tests the functionality of the getAllAccounts() method in AccountDatabase class.
 	 */
-	private static void testGetAllAccountNames(boolean expectedResult) throws SQLException{
+	private static void testGetAllAccounts(String expectedResult) throws SQLException{
 		
-		// Return usernames and display names of all accounts
-		returnString = AccountDatabase.getAllAccountNames();
-		
-		// If empty string then no accounts or test failed
-		if(returnString == "" || returnString == null)
-			actualResult = false;
-		// If string is NOT empty
-		else
-			actualResult = true;
+		// Return the username, display name, and roles of all accounts
+		actualResultString = AccountDatabase.getAllAccounts();
 		
 		// Return if test passed or failed and track
-		if(actualResult == expectedResult) {
+		if(actualResultString.equals(expectedResult)) {
 			numPassed++;
-			System.out.println("getAllAccountNames() passed!");
+			System.out.println("getAllAccounts() passed!");
 		}
 		else {
 			numFailed++;
-			System.out.println("getAllAccountNames() failed!");
+			System.out.println("getAllAccounts() failed!");
 		}
 	}
 }

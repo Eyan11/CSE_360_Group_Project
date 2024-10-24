@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit; // For time used in expiration column
  * 
  * @version 1.00		10/09/2024 Phase 1 implementation and documentation
  * @version 1.10		10/15/2024 Updated to include all functionality of phase 1
+ * @version 1.20		10/24/2024 Updated for use with ManageAccountsGUI
  *  
  */
 
@@ -341,12 +342,13 @@ public class AccountDatabase {
 	
 	/**********
 	 * Returns the username and display name of every account
-	 * in format of "username1,display_name1|username2,display_name2|..."
+	 * in format of "username1,display_name1,is_student,is_instructor,is_admin|username2,display_name2,is_student,is_instructor,is_admin|..."
+	 * Notes: A username can be a one-time key, a display_name can be empty, and all accounts are separated by "|" (including the last one)
 	 */
-	public static String getAllAccountNames() throws SQLException {
+	public static String getAllAccounts() throws SQLException {
 		
 		// Counts total number of rows in accounts database
-		query = "SELECT username, display_name FROM accounts";
+		query = "SELECT username, display_name, is_student, is_instructor, is_admin FROM accounts";
 		resultSet = statement.executeQuery(query);
 		
 		// To build a string containing all accounts username and display name
@@ -354,20 +356,26 @@ public class AccountDatabase {
 		
 		// Loop through every row
 		while (resultSet.next()) {
-			// Get username and separate with |
+			// Get username and separate with , (Note: one-time key is stored in both username and password)
 			returnString += resultSet.getString("username") + ",";
 			
 			// Get display name if NOT null
 			if(resultSet.getString("display_name") != null)
-				returnString += resultSet.getString("display_name");
+				returnString += resultSet.getString("display_name") + ",";
+			// Return empty string in place of display name if null
+			else
+				returnString += ",";
 			
-			// Separate each account with ,
-			returnString += "|";
+			// Return account roles seperated by "," and seperate each account with "|"
+			returnString += resultSet.getInt("is_student") + ",";
+			returnString += resultSet.getInt("is_instructor") + ",";
+			returnString += resultSet.getInt("is_admin") + "|";
 		}
 		
 		// Return in the format of "username1|display_name1,username2|display_name2,..."
 		return returnString;
 	}
+	
 	
 	/**********************************************************************************************
 
@@ -522,7 +530,7 @@ public class AccountDatabase {
 			return false;
 		}
 		
-		String query;
+		
 		// Set query WITHOUT preferred name
 		if(prefName == null || prefName == "") {
 			query = "UPDATE accounts "			// update accounts database
@@ -562,6 +570,55 @@ public class AccountDatabase {
 			System.out.println("Successfully updated " + user + "'s account");
 			return true;
 		}
+	}
+	
+	
+	/**********
+	 * Updates additional account information to the account corresponding to the given username in database.
+	 * If username doesn't exist, or email already exists, it will exit and print an error message.
+	 */
+	public static boolean updateUserRoles(String user, boolean isStudent, 
+			boolean isInstructor, boolean isAdmin) throws SQLException{
+		
+		// Checks if username doesn't exist
+		if(!doesUsernameExist(user)) {
+			System.err.println("Cannot update roles, username does not exist in accounts database");
+			return false;
+		}
+		// Prevents account from having no roles
+		if(!isStudent && !isInstructor && !isAdmin) {
+			System.err.println("Cannot update roles, at least one role must be selected");
+			return false;
+		}
+		// Prevents account from both student and instructor roles
+		if(isStudent && isInstructor) {
+			System.err.println("Cannot update roles, cannot have both student and instructor role");
+			return false;
+		}
+		
+		// Update account to given roles where username matches given user
+		query = "UPDATE accounts SET is_student = ?, is_instructor = ?, is_admin = ? WHERE username = ?";
+		
+		// Prepare the previous query to be executed
+		PreparedStatement pstmt = connection.prepareStatement(query);
+			
+		// Set the placeholder ? variables
+		pstmt.setInt(1, isStudent ? 1 : 0);			// is_student = isStudent
+		pstmt.setInt(2, isInstructor ? 1 : 0);		// is_instructor = isInstructor
+		pstmt.setInt(3, isAdmin ? 1 : 0);			// is_admin = isAdmin
+		pstmt.setString(4, user);
+		pstmt.executeUpdate();			// execute query
+		
+		if(isStudentRole(user) == isStudent && isInstructorRole(user) == isInstructor && 
+				isAdminRole(user) == isAdmin) {
+			System.out.println("Successfully updated " + user + "'s roles");
+			return true;
+		}
+		else {
+			System.out.println("Failed to updated " + user + "'s roles");
+			return false;
+		}
+		
 	}
 	
 	
