@@ -163,7 +163,8 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(newRoot, userInput);
+						//FIX CONSTRUCTOR
+						//UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(newRoot, userInput);
 						
 						//
 					    Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //

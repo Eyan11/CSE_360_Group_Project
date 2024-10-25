@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.application.Application;
 //import javafx.scene.text.FontPosture;
 //import javafx.scene.text.TextFlow;
 import javafx.event.ActionEvent;
@@ -36,8 +37,8 @@ import database.AccountDatabase;	// To use account database in different package
 // However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 // (especially before changing anything!)
 // DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
-//public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
-public class UpdateAccountInformationGUI {
+public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
+//public class UpdateAccountInformationGUI {
 	
 	
 	/**
@@ -81,6 +82,8 @@ public class UpdateAccountInformationGUI {
 	
 	/** Constructor for setting up the user's GUI for the update account info page
 	 */
+	
+	
 	UpdateAccountInformationGUI(Pane userPane, String user) { // user passed in from previous step
 		Stage updateStage = new Stage();
 		updateStage.setTitle("User Info Update");
@@ -239,15 +242,15 @@ public class UpdateAccountInformationGUI {
 	            		//DEVELOPER NOTE: Critical step v2 (Experimental implementation idea, keeping for future reference in the coming phases)
 	            		//                (maybe not needed?)
 	            		// If preferred name box is filled in (i.e. not empty)
-	            		/*if(preferredString != "") {
+	            		//if(preferredString != "") {
 	            			// Replace first name in user display menu with preferred name
 	            			// someName.somePlace() == preferredString; // Something like this (I think)
-	            		}*/
+	            		//}
 	            	}
             }
         });
 	}
-	
+
 	
 	/**
 	 * Methods
@@ -292,9 +295,9 @@ public class UpdateAccountInformationGUI {
 	
 	
 	// DEVELOPER NOTE: main left for any future interest in testing UpdateAccountInfoGUI using the start() method (see below ErrorMessage)
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		launch(args);
-	}*/
+	}
 	
 	/**********
 	 * Private local method to check for valid text field input for all text fields (returns F if all necessary fields are NOT filled, T otherwise)
@@ -342,7 +345,7 @@ public class UpdateAccountInformationGUI {
 	// DEVELOPER NOTE: start method left here in case future changes want to be made, they can easily be tested here and through
 	// defining the function of main simply as "launch(args)". NOTE: You might have to comment out UpdateAccountInfoGUI in order to test using this.
 	
-	/*@Override
+	@Override
 	public void start(Stage updateStage) throws Exception {
     	
         updateStage.setTitle("User Info Update");
@@ -484,7 +487,7 @@ public class UpdateAccountInformationGUI {
             }
         });
         
-    }*/
+    }
 	
 	/** Method used for testing early implementations of UpdateAccountInformationGUI (kept for future testing purposes)
 	 */
