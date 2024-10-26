@@ -12,13 +12,15 @@ import java.sql.*; // For SQL related objects
  * 
  * <p> Description: Manages the Articles Table in the H2 database.</p>
  * 
- * <p> Source: Lynn Robert Carter from PasswordEvaluatorTestbedWithGUI project, 
- * 				PasswordEvaluationTestingAutomation class, 
- * 				available at: https://canvas.asu.edu/courses/193728/assignments/5505672?module_item_id=14493167
+ * <p> Source: Lynn Robert Carter from FirstDatabase project, DatabaseHelper class, 
+ * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007 
+ * 
+ *     Source: Lynn Robert Carter from FirstDatabaseWithEncryption project, DatabaseHelper class, 
+ * 				available at: https://canvas.asu.edu/courses/193728/assignments/5505684
  * 
  * @author Eyan Martucci
  * 
- * @version TODO
+ * @version 1.00		10/26/2024 Phase 2 implementation and documentation
  *  
  */
 
@@ -352,7 +354,7 @@ public class ArticleDatabase {
 
 	/**********
 	 * Returns the id, header, and title for every article in table as a String
-	 * in format of "id1,header1,title1|id2,header2,title2|..."
+	 * in format of "id1,header1,title1,group1|id2,header2,title2,group2|..."
 	 */
 	public static String getAllArticles() throws SQLException {
 		
@@ -373,8 +375,9 @@ public class ArticleDatabase {
 		while(resultSet.next()) { 
 			// Get current article info
 			returnString += resultSet.getInt("id") + ","; 
-			returnString += resultSet.getString("header") + ","; // TODO: update depending on what we want to display
-			returnString += resultSet.getString("title") + "|";  // TODO: update depending on what we want to display
+			returnString += resultSet.getString("header") + ",";
+			returnString += resultSet.getString("title") + ",";
+			returnString += resultSet.getString("groups") + "|";
 		}
 		return returnString;
 	}
@@ -419,8 +422,8 @@ public class ArticleDatabase {
 	
 	
 	/**********
-	 * Returns the id, title, and authors as String for every all articles with matching groups column
-	 * in format of "id1,header1,title1|id2,header2,title2|...".
+	 * Returns the id, header, title, and groups as String for every all articles with matching groups column
+	 * in format of "id1,header1,title1,group1|id2,header2,title2,group2|...".
 	 * To get articles in group1 or group2, groups should equal "group1,group2".
 	 * To get articles in group1 and group2, groups should equal "group1&group2".
 	 */
@@ -435,8 +438,9 @@ public class ArticleDatabase {
 		while(resultSet.next()) { 
 			// Get current article info
 			returnString += resultSet.getInt("id") + ","; 
-			returnString += resultSet.getString("header") + ","; // TODO: update depending on what we want to display
-			returnString += resultSet.getString("title") + "|";  // TODO: update depending on what we want to display
+			returnString += resultSet.getString("header") + ",";
+			returnString += resultSet.getString("title") + ",";
+			returnString += resultSet.getString("groups") + "|";
 		}
 		return returnString;
 	}
@@ -450,9 +454,9 @@ public class ArticleDatabase {
 	
 	
 	/**********
-	 * Prints all database contents to a user specified file
+	 * Prints all article table contents to a user specified file
 	 */
-	public static void backupDatabase(String filePath) throws IOException, SQLException, Exception {
+	public static boolean backupArticles(String filePath, String groups) throws IOException, SQLException {
 		
 		BufferedWriter writer = null;
 		try {
@@ -460,15 +464,13 @@ public class ArticleDatabase {
 			writer = new BufferedWriter(new FileWriter(filePath));
 		}
 		catch(IOException e) {
-			// File not found, print error message
+			// File not found
 			System.err.println("File path: " + filePath + " is not found!");
-			return;
+			return false;
 		}
 		
-		// Select all rows from database
-		query = "SELECT * FROM articles"; 
-		statement = connection.createStatement();
-		resultSet = statement.executeQuery(query); 	// Execute query
+		// Returns result set of all articles with matching groups
+		resultSet = craftQueryToGetArticlesByGroups(groups);
 
 		// While the next row exists, check next row
 		while(resultSet.next()) { 
@@ -486,13 +488,14 @@ public class ArticleDatabase {
 			System.out.println("Article id: " + resultSet.getInt("id") + " backed up to: " + filePath);
 		} 
 		writer.close();		// Stop writing to file
+		return true;
 	}
 	
 	
 	/**********
-	 * Gathers backup database info from file and replaces the current table with restored table
+	 * Gathers backup articles info from file and replaces the current table with restored table
 	 */
-	public static void replaceDatabaseWithBackup(String filePath) throws IOException, SQLException {
+	public static boolean restoreByOverriding(String filePath) throws IOException, SQLException {
 		
 		BufferedReader reader = null;
 		try {
@@ -502,19 +505,22 @@ public class ArticleDatabase {
 		catch(IOException e) {
 			// File not found, print error message
 			System.err.println("File path: " + filePath + " is not found!");
-			return;
+			return false;
 		}
 		
 		// Temporary strings to collect file contents
 		String idString, header, title, description, keywords, groups, body, references = null;
+		boolean returnValue = true;
 		
-		deleteTable();		// Delete current database
-		createTable();		// Start a new empty database
+		// Wipe the articles table and start a new one
+		deleteTable();
+		createTable();
 		
 		// While the next line isn't empty
 		while((reader.readLine()) != null) {
 			// Get article info from file
 			idString = reader.readLine();
+			int id = Integer.parseInt(idString);
 			header = reader.readLine();
 			title = reader.readLine();
 			description = reader.readLine();
@@ -529,7 +535,6 @@ public class ArticleDatabase {
 			PreparedStatement pstmt = connection.prepareStatement(query);
 				
 			// Set the placeholder ? variables
-			int id = Integer.parseInt(idString);
 			pstmt.setInt(1, id);
 			pstmt.setString(2, header);
 			pstmt.setString(3, title);
@@ -543,10 +548,87 @@ public class ArticleDatabase {
 			// Print result to console
 			if(doesArticleIDExist(id))
 				System.out.println("Article id: " + idString + " successfully restored from " + filePath);
-			else
+			else {
 				System.err.println("Article id: " + idString + " failed to be restored from " + filePath);
+				returnValue = false;
+			}
 		}
 		reader.close();		// Stop reading from file
+		return returnValue;
+	}
+	
+	
+	/**********
+	 * Gathers backup articles info from file and replaces the current table with restored table
+	 */
+	public static boolean restoreByMerging(String filePath) throws IOException, SQLException {
+		
+		BufferedReader reader = null;
+		try {
+			// Read from file
+			reader = new BufferedReader(new FileReader(filePath));
+		}
+		catch(IOException e) {
+			// File not found, print error message
+			System.err.println("File path: " + filePath + " is not found!");
+			return false;
+		}
+		
+		// Temporary strings to collect file contents
+		String idString, header, title, description, keywords, groups, body, references = null;
+		int id = 0;
+		boolean returnValue = true;
+		
+		// While the next line isn't empty
+		while((reader.readLine()) != null) {
+			// Get article info from file
+			idString = reader.readLine();
+			id = Integer.parseInt(idString);	// change id from string to int
+			header = reader.readLine();
+			title = reader.readLine();
+			description = reader.readLine();
+			keywords = reader.readLine();
+			groups = reader.readLine();
+			body = reader.readLine();
+			references = reader.readLine();
+			
+			// Skip adding article if it already exists
+			if(doesArticleIDExist(id)) {
+				System.out.println("Article id: " + idString + " not added to article table because id already exists");
+				continue;
+			}
+			// Prevent adding duplicate header
+			else if(doesArticleHeaderExist(header)) {
+				System.out.println("Article id: " + idString + "not added to article table because header: " + header + "already exists");
+				continue;
+			}
+			
+			// Insert a new row into database and fill in the following column values
+			query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
+			// Set the placeholder ? variables
+			pstmt.setInt(1, id);
+			pstmt.setString(2, header);
+			pstmt.setString(3, title);
+			pstmt.setString(4, description);
+			pstmt.setString(5, keywords);
+			pstmt.setString(6, groups);
+			pstmt.setString(7, body);
+			pstmt.setString(8, references);
+			pstmt.executeUpdate();		// Execute query
+			
+			// Print result to console
+			if(doesArticleIDExist(id))
+				System.out.println("Article id: " + idString + " successfully restored from " + filePath);
+			else {
+				System.err.println("Article id: " + idString + " failed to be restored from " + filePath);
+				returnValue = false;
+			}
+		}
+		reader.close();		// Stop reading from file
+		return returnValue;
 	}
 	
 	

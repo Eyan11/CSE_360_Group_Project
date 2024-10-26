@@ -9,11 +9,11 @@ import java.sql.*; // For SQL related objects
  * 
  * <p> Source: Lynn Robert Carter from PasswordEvaluatorTestbedWithGUI project, 
  * 				PasswordEvaluationTestingAutomation class, 
- * 				available at: https://canvas.asu.edu/courses/193728/assignments/5505672?module_item_id=14493167
+ * 				available at: https://canvas.asu.edu/courses/193728/assignments/5505672?module_item_id=14493167 </p>
  * 
  * @author Eyan Martucci
  * 
- * @version TODO
+ * @version 1.00		10/26/2024 Phase 2 implementation and documentation
  *  
  */
 
@@ -29,11 +29,11 @@ public class ArticleDatabaseTesting {
 	
 	
 	/**********
-	 * Starts the testing automation for ArticleDatabase methods
+	 * Starts the testing automation for ArticleDatabase that performs 47 test cases
 	 */
-	public static void performTestEvaluations() throws SQLException {
+	public static void performTestEvaluations() throws Exception {
 		
-		// Wipe all stored database rows on local machine and create a new accounts table
+		// Wipe all stored database rows on local machine and create a new articles table
 		//ArticleDatabase.createTable();
 		//ArticleDatabase.deleteTable();
 		//ArticleDatabase.createTable();
@@ -54,7 +54,7 @@ public class ArticleDatabaseTesting {
 		// ***************************************************************
 		
 		// *** Test getAllArticles() *************************************
-		testGetAllArticles("1,header1,title1|2,header2,title2|3,header3,title3|4,header4,title4|");
+		testGetAllArticles("1,header1,title1,group1&group4|2,header2,title2,group2|3,header3,title3,group3|4,header4,title4,group4|");
 		// ***************************************************************
 	
 		// *** Test deleteArticle() **************************************
@@ -83,7 +83,7 @@ public class ArticleDatabaseTesting {
 		// ***************************************************************
 		
 		// *** Test getAllArticles() *************************************
-		testGetAllArticles("1,header1,title1|4,header4,title4|");
+		testGetAllArticles("1,header1,title1,group1&group4|4,header4,title4,group4|");
 		// ***************************************************************
 		
 		// *** Test getArticleByID() *************************************
@@ -94,12 +94,12 @@ public class ArticleDatabaseTesting {
 		// ***************************************************************
 		
 		// *** Test getArticlesByGroups***********************************
-		testGetArticlesByGroups("group1", "1,header1,title1|");
-		testGetArticlesByGroups("group4", "1,header1,title1|4,header4,title4|");
-		testGetArticlesByGroups("group1,group4", "1,header1,title1|4,header4,title4|");	// group1 or group4
-		testGetArticlesByGroups("group1&group4", "1,header1,title1|");					// group1 and group 4
-		testGetArticlesByGroups("", "1,header1,title1|4,header4,title4|");				// Empty groups means get all articles
-		testGetArticlesByGroups("group2", "");											// group doesn't exist since deleted
+		testGetArticlesByGroups("group1", "1,header1,title1,group1&group4|");
+		testGetArticlesByGroups("group4", "1,header1,title1,group1&group4|4,header4,title4,group4|");
+		testGetArticlesByGroups("group1,group4", "1,header1,title1,group1&group4|4,header4,title4,group4|"); // group1 or group4
+		testGetArticlesByGroups("group1&group4", "1,header1,title1,group1&group4|");			// group1 and group 4
+		testGetArticlesByGroups("", "1,header1,title1,group1&group4|4,header4,title4,group4|");	// Empty groups means get all articles
+		testGetArticlesByGroups("group2", "");													// group doesn't exist since deleted
 		// ***************************************************************
 		
 		// *** Test editArticle() ****************************************
@@ -108,6 +108,26 @@ public class ArticleDatabaseTesting {
 		testEditArticle(2, "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);	// id doesn't exist since deleted
 		testEditArticle(3, "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);	// id doesn't exist since deleted
 		testEditArticle(4, "new header1", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", "Ignore", false);	// duplicate header
+		// ***************************************************************
+		
+		// *** Test backupArticles() *************************************
+		testBackupArticles("CSE_360_Group_Project_Backup_All.txt", "", true);				// Backup all articles
+		testBackupArticles("CSE_360_Group_Project_Backup_Group4.txt", "group4", true);		// Only backup group4
+		testBackupArticles("CSE_360_Group_Project_Backup_Blank.txt", "Not a group", true);	// Blank backup file
+		// ***************************************************************
+		
+		// *** Test restoreByMerging() ***********************************
+		testRestoreByMerging("Ignore.txt", false);	// File doesn't exist
+		testRestoreByMerging("CSE_360_Group_Project_Backup_Blank.txt", true);	// Adds no articles
+		testRestoreByMerging("CSE_360_Group_Project_Backup_Group4.txt", true);	// Adds article id 4
+		testRestoreByMerging("CSE_360_Group_Project_Backup_All.txt", true);		// Adds article id 1
+		// ***************************************************************
+		
+		// *** Test restoreByOverriding() ********************************
+		testRestoreByOverriding("Ignore.txt", false);	// File doesn't exist
+		testRestoreByOverriding("CSE_360_Group_Project_Backup_Blank.txt", true);	// No articles
+		testRestoreByOverriding("CSE_360_Group_Project_Backup_Group4.txt", true);	// Article id 4
+		testRestoreByOverriding("CSE_360_Group_Project_Backup_All.txt", true);		// Article id 1 and 4
 		// ***************************************************************
 		
 		
@@ -120,15 +140,15 @@ public class ArticleDatabaseTesting {
 		System.out.println("Number of tests that passed: " + numPassed);
 		System.out.println("Number of tests that failed: " + numFailed);
 		
-		// Reset accounts table for GUI usage
-		//ArticleDatabase.deleteTable();
-		//ArticleDatabase.createTable();
+		// Reset articles table for GUI usage
+		ArticleDatabase.deleteTable();
+		ArticleDatabase.createTable();
 	}
 	
 	
 	/**********************************************************************************************
 
-	Private Helper Methods To Test Setter Methods in ArticleDatabase class.
+	Private Methods To Test Setter Methods in ArticleDatabase class.
 	
 	**********************************************************************************************/
 	
@@ -197,7 +217,7 @@ public class ArticleDatabaseTesting {
 	
 	/**********************************************************************************************
 
-	Private Helper Methods To Test Getter Methods in ArticleDatabase class.
+	Private Methods To Test Getter Methods in ArticleDatabase class.
 	
 	**********************************************************************************************/
 	
@@ -318,6 +338,73 @@ public class ArticleDatabaseTesting {
 		else {
 			numFailed++;
 			System.out.println("getArticlesByGroups() failed!");
+		}
+	}
+	
+	
+	/**********************************************************************************************
+
+	Private Methods To Test Backup/Restore Methods in ArticleDatabase.
+	
+	**********************************************************************************************/
+	
+	
+	/**********
+	 * Tests the functionality of the backupArticles() method in ArticleDatabase class.
+	 */
+	private static void testBackupArticles(String filePath, String groups, boolean expectedResult) throws SQLException, Exception {
+		
+		// backup articles with matching groups to specified file path
+		actualResult = ArticleDatabase.backupArticles(filePath, groups);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("backupArticles() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("backupArticles() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the restoreByOverriding() method in ArticleDatabase class.
+	 */
+	private static void testRestoreByOverriding(String filePath, boolean expectedResult) throws SQLException, Exception {
+		
+		// Replace current articles table with the one in backup file path
+		actualResult = ArticleDatabase.restoreByOverriding(filePath);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("restoreByOverriding() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("restoreByOverriding() failed!");
+		}
+	}
+	
+	
+	/**********
+	 * Tests the functionality of the restoreByMerging() method in ArticleDatabase class.
+	 */
+	private static void testRestoreByMerging(String filePath, boolean expectedResult) throws SQLException, Exception {
+		
+		// Restore article tables by adding the articles with different id's and header's in backup file path to current table
+		actualResult = ArticleDatabase.restoreByMerging(filePath);
+		
+		// Return if test passed or failed and track
+		if(actualResult == expectedResult) {
+			numPassed++;
+			System.out.println("restoreByMerging() passed!");
+		}
+		else {
+			numFailed++;
+			System.out.println("restoreByMerging() failed!");
 		}
 	}
 }
