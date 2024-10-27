@@ -3,6 +3,7 @@ package application;
 import javafx.scene.control.Label; // For Label object
 import javafx.scene.control.TextField; // For TextField object
 import javafx.scene.control.Button; // For Button object
+import javafx.scene.control.CheckBox; // For CheckBox object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
 import javafx.scene.paint.Color; // To set color of UI elements
 
@@ -25,6 +26,7 @@ import java.sql.*;
  * @author Julio Salazar
  * 
  * @version 1.00 10/24/2024 Phase 1 Implementation and Documentation
+ * 			1.50 10/25/2024 Finalized GUI Display
  * 
  */
 
@@ -48,7 +50,7 @@ public class ModifyAccountsGUI
 	
 	//
 	private Label allAccountsLabel = new Label("All Accounts");
-	private Label usernameLabel = new Label("Enter Username You Would Like to Modify: ");
+	private Label usernameLabel = new Label("Enter Username: ");
 	
 	//text field for user input
 	private TextField userText = new TextField();
@@ -57,9 +59,9 @@ public class ModifyAccountsGUI
 	private Button homeButton = new Button("Home");
 	private Button resetButton = new Button("Reset");
 	private Button deleteButton = new Button("Delete");
-	private Button studentButton = new Button("Student");
-	private Button instructorButton = new Button("Instructor");
-	private Button adminButton = new Button("Admin");
+	private CheckBox studentButton = new CheckBox("Student");
+	private CheckBox instructorButton = new CheckBox("Instructor");
+	private CheckBox adminButton = new CheckBox("Admin");
 	
 	private Button applyRoleButton = new Button("Apply Role Changes?");
 	
@@ -84,23 +86,23 @@ public class ModifyAccountsGUI
 		 */
 		
 		//
-		setupUI.SetupLabelUI(allAccountsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		setupUI.SetupLabelUI(allAccountsLabel, "Arial", 28, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 40, Color.BLACK);
 		
-		setupUI.SetupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 230, Color.BLACK);
+		setupUI.SetupLabelUI(usernameLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 310, Color.BLACK);
 		
 		//
 		setupUI.SetupLabelUI(accounInfoLabel, "Arial", 11, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 60, Color.BLACK);
 		
 		/*
 		 * TextField Creations 
 		 */
 		
 		//
-		setupUI.SetupTextFieldUI(userText, "Arial", 14, WINDOW_WIDTH-10,
-				Pos.BASELINE_LEFT, 10, 250, true);
+		setupUI.SetupTextFieldUI(userText, "Arial", 14, 125, 20,
+				Pos.BASELINE_LEFT, 10, 325, true);
 		
 		/*
 		 * Button Creations
@@ -108,30 +110,30 @@ public class ModifyAccountsGUI
 		 */
 		
 		//Button that ...
-		setupUI.SetupButtonUI(homeButton, "Arial", 14, WINDOW_WIDTH-20, 
+		setupUI.SetupButtonUI(homeButton, "Arial", 11, 100, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
 		
 		//Button that ...
-		setupUI.SetupButtonUI(resetButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 275, false, Color.BLACK);
+		setupUI.SetupButtonUI(resetButton, "Arial", 11, 100, 20, 
+        		Pos.CENTER, 150, 325, false, Color.BLACK);
 		//Button that ...
-		setupUI.SetupButtonUI(deleteButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 300, false, Color.BLACK);
+		setupUI.SetupButtonUI(deleteButton, "Arial", 11, 100, 20,
+        		Pos.CENTER, 260, 325, false, Color.BLACK);
 		
 		//Button that ...
-		setupUI.SetupButtonUI(studentButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 325, false, Color.BLACK);
+		setupUI.SetupCheckBoxUI(studentButton, "Arial", 11, 100, 20,
+        		Pos.CENTER, 375, 350, false, Color.BLACK);
 		//Button that ...
-		setupUI.SetupButtonUI(instructorButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 350, false, Color.BLACK);
+		setupUI.SetupCheckBoxUI(instructorButton, "Arial", 11, 100, 20,
+        		Pos.CENTER, 375, 375, false, Color.BLACK);
 		
 		//Button that ...
-		setupUI.SetupButtonUI(adminButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 375, false, Color.BLACK);
+		setupUI.SetupCheckBoxUI(adminButton, "Arial", 11, 100, 20,
+        		Pos.CENTER, 375, 400, false, Color.BLACK);
 		
 		//Button that ...
-		setupUI.SetupButtonUI(applyRoleButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 400, false, Color.BLACK);
+		setupUI.SetupButtonUI(applyRoleButton, "Arial", 11, 130, 20,
+        		Pos.CENTER, 365, 325, false, Color.BLACK);
 		
 		
 		//Sends all previously established settings for the pane to the scene for setup
@@ -214,13 +216,15 @@ public class ModifyAccountsGUI
 		});
 		
 		/*****
-		 * Student Button
+		 * Student CheckBox
 		 */
 		
 		studentButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{
+				System.out.println("Student Checked!"); //
+				
 				//
 				userInput = userText.getText();
 				
@@ -232,20 +236,29 @@ public class ModifyAccountsGUI
 					//
 					else
 					{
-						changeStudentRole = true;
+						if(!changeInstructorRole)
+						{
+							changeStudentRole = true;
+						}
+						else
+						{
+							changeStudentRole = false;
+						}
 					}
 				}
 			}
 		});
 		
 		/*****
-		 * Instructor Button
+		 * Instructor CheckBox
 		 */
 		
 		instructorButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{
+				System.out.println("Instructor Checked!"); //
+				
 				//
 				userInput = userText.getText();
 				
@@ -257,20 +270,29 @@ public class ModifyAccountsGUI
 					//
 					else
 					{
-						changeInstructorRole = true;
+						if(!changeInstructorRole)
+						{
+							changeInstructorRole = true;
+						}
+						else
+						{
+							changeInstructorRole = false;
+						}
 					}
 				}
 			}
 		});
 		
 		/*****
-		 * Admin Button
+		 * Admin CheckBox
 		 */
 		
 		adminButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{
+				System.out.println("Admin Checked!"); //
+				
 				//
 				userInput = userText.getText();
 				
@@ -282,7 +304,14 @@ public class ModifyAccountsGUI
 					//
 					else
 					{
-						changeAdminRole = true;
+						if(!changeInstructorRole)
+						{
+							changeAdminRole = true;
+						}
+						else
+						{
+							changeAdminRole = false;
+						}
 					}
 				}
 			}
