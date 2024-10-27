@@ -1,4 +1,5 @@
 package application;
+import database.AccountDatabase;
 
 import java.sql.SQLException;
 
@@ -17,8 +18,8 @@ import javafx.stage.Stage;
 import java.sql.SQLException;	// To catch errors for database
 
 
-
-public class DeleteConfirmationGUI extends Application {
+// public class DeleteConfirmationGUI extends Application {
+public class DeleteConfirmationGUI {
 	
 	
 	/**
@@ -30,26 +31,31 @@ public class DeleteConfirmationGUI extends Application {
 	/** The height of the pop-up window for the user interface */
 	public final static double WINDOW_HEIGHT = 430;
 
+	
 	/** Text to appear as a part of the window (text field indicators, etc. */
 	private Label sceneLabel = new Label("Delete Confirmation");
+	
 	
 	/** Constructors
 	 */
 	
 	/** Constructor for setting up the user's GUI for the update account info page
 	 */
-	/*DeleteConfirmationGUI(Pane userPane, String user) { // user passed in from previous step
+	DeleteConfirmationGUI(Pane userPane, String user) { // user passed in from previous step
 		Stage updateStage = new Stage();
 		updateStage.setTitle("Delete Confirmation");
         
         
 		
 		
+		// Label the email input field with a title just above it, left aligned
+				setupLabelUI(sceneLabel, "Arial", 14, WINDOW_WIDTH-10, 
+						Pos.CENTER, 10, 200, Color.GREEN);
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
         Button buttonYes = new Button("Yes");
         setupButtonUI(buttonYes, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 400, Color.GREEN);
+        		Pos.CENTER, 10, 300, Color.GREEN);
 
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
@@ -58,42 +64,101 @@ public class DeleteConfirmationGUI extends Application {
         		Pos.CENTER, 10, 400, Color.GREEN);
         
         // Sends all previously established settings for the pane to the scene for setup
-        userPane.getChildren().addAll(buttonYes, buttonNo); 
+        userPane.getChildren().addAll(buttonYes, buttonNo, sceneLabel); 
         
-        Scene userScene = new Scene(userPane, 800, 500);
+        /*Scene userScene = new Scene(userPane, 800, 500);
         userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
         updateStage.setScene(userScene);
-        updateStage.show();
+        updateStage.show();*/
         
         // Establishes the button logic for each press
         // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
         //                 he will add functionality for repeated valid input.
+        
+        // Used for testing
+        /*try {
+        	String thisUser = "user";
+        	String thisPass = "pass";
+        	AccountDatabase.createFirstAccount(thisUser, thisPass);
+        }catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+
+		}*/
+        
+        // Both yes and no go back to ModifyAccountsGUI
         buttonYes.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
             	
             	// Send yes confirmation to database 
             	try {
+            		
+
+            		//Clear stuff
+					userPane.getChildren().clear();
+					
+					// Delete user information after yes confirmation
 					AccountDatabase.deleteUser(user);
 					
-					// Only explicit error in the entire class; Tried everythign I could think of and still an error so I will
+					Pane newRoot = new Pane();
+					
+					// Load new window
+					new ModifyAccountsGUI(newRoot);
+					
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	                updateStage.setScene(newScene);
+	                updateStage.show();
+	                
+	                // Not sure if this is needed
+					Stage currentStage = (Stage) newRoot.getScene().getWindow(); //
+	                currentStage.setScene(newScene);
+					
+					// Only explicit error in the entire class; Tried everything I could think of and still an error so I will
 					// address this when I finish I=my other class -Evan
 					//UpdateAccountInformationGUI update = new UpdateAccountInformationGUI(userPane, user);
 					//update.UpdateAccountInformationGUI(userPane, user);
-					new UpdateAccountInformationGUI(userPane, user);
+					//new UpdateAccountInformationGUI(userPane, user);
 				} catch (SQLException e) {
         			System.err.println("Error: " + e.getMessage());
 
 				}
+            	
+            	
             		            	}
         });
         
         buttonNo.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
             	
-				UpdateAccountInformationGUI update = new UpdateAccountInformationGUI(userPane, user);
+            	
+            	//Clear stuff
+				userPane.getChildren().clear();
+				
+				// No user deletion after no confirmation
+				
+				// Setup for loading new page
+				Pane newRoot = new Pane();
+					
+				try {
+	            	new ModifyAccountsGUI(newRoot);
+	            	
+	            	 Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	            	 updateStage.setScene(newScene);
+		             updateStage.show();
+		             
+		             // Not sure if this is needed
+	                 Stage currentStage = (Stage) newRoot.getScene().getWindow(); //
+	                 currentStage.setScene(newScene);
+
+				}
+				catch(SQLException e){
+        			System.err.println("Error: " + e.getMessage());
+				}
+				
+               
+            	//UpdateAccountInformationGUI update = new UpdateAccountInformationGUI(userPane, user);
             		            	}
         });
-	}*/
+	}
 
 
 
@@ -138,12 +203,12 @@ private void setupButtonUI(Button b, String ff, double f, double w, Pos p, doubl
 	b.setTextFill(color);
 }	
 
-public static void main(String[] args) {
+/*public static void main(String[] args) {
 	launch(args);
-}
+}*/
 
-
-
+/*
+@Override
 public void start(Stage updateStage) throws Exception {
 	
 	Pane userPane = new Pane();
@@ -188,14 +253,12 @@ public void start(Stage updateStage) throws Exception {
 				// address this when I finish I=my other class -Evan
 				//UpdateAccountInformationGUI update = new UpdateAccountInformationGUI(userPane, user);
 				//update.UpdateAccountInformationGUI(userPane, user);
-				/**FIX CONSTRUCTOR
-				 * 
-				 */
-				//new UpdateAccountInformationGUI(userPane, user);
+				
+				new UpdateAccountInformationGUI(userPane, user);
 			} catch (SQLException e) {
     			System.err.println("Error: " + e.getMessage());
 
-			}
+			} 
         		            	}
     });
     
@@ -203,13 +266,14 @@ public void start(Stage updateStage) throws Exception {
         public void handle(ActionEvent event) {
         	
 			//UpdateAccountInformationGUI update = new UpdateAccountInformationGUI(userPane, user);
-        	/**FIX CONSTRUCTOR
-			 * 
-			 */
-        	//new UpdateAccountInformationGUI(userPane, user);
+        	
+        	new UpdateAccountInformationGUI(userPane, user);
         		            	}
     });
     
-}
+}*/
+
+
+
 
 }
