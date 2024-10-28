@@ -34,6 +34,7 @@ public class Main extends Application {
         } else {
         	LoginGUI loginGUI = new LoginGUI(theRoot); 
         }
+        //InviteUserGUI inviteUserGUI = new InviteUserGUI(theRoot);
 			Scene mainScene = new Scene(theRoot, WINDOW_WIDTH, WINDOW_HEIGHT);	// Create the scene	
 			
 			theStage.setScene(mainScene);	// Set the scene on the stage
