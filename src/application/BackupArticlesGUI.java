@@ -15,9 +15,11 @@ import javafx.scene.Scene;
 
 import java.io.IOException;
 
-import database.ArticleDatabase;
+//import database.AccountDatabase;
 
 import java.sql.*;
+
+import database.ArticleDatabase;
 
 /*******
  * <p> BackupArticlesGUI Class </p>
