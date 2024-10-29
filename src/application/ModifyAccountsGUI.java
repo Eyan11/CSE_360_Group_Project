@@ -21,13 +21,14 @@ import java.sql.*;
 /*******
  * <p> ModifyAccountGUI Class </p>
  * 
- * <p> Description:  </p>
+ * <p> Description: Interface that allows reset, delete, and role changes </p>
  * 
  * @author Julio Salazar
  * 
  * @version 1.00 10/24/2024 Phase 1 Implementation and Documentation
  * 			1.50 10/25/2024 Finalized GUI Display
- * 
+ * 			1.75 10/28/2024 Documentation
+ * 			2.00 TBD (waiting  on ResetAccountGUI + DeleteConfirmationGUI)
  */
 
 public class ModifyAccountsGUI
@@ -40,37 +41,38 @@ public class ModifyAccountsGUI
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	//
+	//stores user name inputed by user
 	private String userInput = "";
 	
-	//
-	private boolean changeStudentRole = false;
-	private boolean changeInstructorRole = false;
-	private boolean changeAdminRole = false;
+	//default roles assigned to each user name prior to changes
+	private boolean addStudentRole = false;
+	private boolean addInstructorRole = false;
+	private boolean addAdminRole = false;
 	
-	//
+	//displays interface information
 	private Label allAccountsLabel = new Label("All Accounts");
 	private Label usernameLabel = new Label("Enter Username: ");
 	
 	//text field for user input
 	private TextField userText = new TextField();
 	
-	//
+	//buttons used for navigating interface and user modifications
 	private Button homeButton = new Button("Home");
 	private Button resetButton = new Button("Reset");
 	private Button deleteButton = new Button("Delete");
+	private Button applyRoleButton = new Button("Apply Role Changes?");
+	
+	//check boxes used specifically for role changes
 	private CheckBox studentButton = new CheckBox("Student");
 	private CheckBox instructorButton = new CheckBox("Instructor");
 	private CheckBox adminButton = new CheckBox("Admin");
-	
-	private Button applyRoleButton = new Button("Apply Role Changes?");
 	
 	//declaration of SetupUIElements Object
 	public SetupUIElements setupUI;
 	
 	/**
 	 * Constructor w/ Parameter for GUI
-	 * @param userPane
+	 * @param theRoot
 	 */
 	
 	public ModifyAccountsGUI(Pane theRoot) throws SQLException
@@ -85,55 +87,56 @@ public class ModifyAccountsGUI
 		 * Label Creations
 		 */
 		
-		//
+		//Label that displays "All Accounts"
 		setupUI.SetupLabelUI(allAccountsLabel, "Arial", 28, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 40, Color.BLACK);
 		
+		//Label that asks user for a user name
 		setupUI.SetupLabelUI(usernameLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 310, Color.BLACK);
 		
-		//
+		//Label that displays all account information from database
 		setupUI.SetupLabelUI(accounInfoLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 60, Color.BLACK);
 		
 		/*
-		 * TextField Creations 
+		 * TextField Creation
 		 */
 		
-		//
+		//Text Field that takes user name input from user
 		setupUI.SetupTextFieldUI(userText, "Arial", 14, 125, 20,
 				Pos.BASELINE_LEFT, 10, 325, true);
 		
 		/*
 		 * Button Creations
-		 * FOR JULIO: Figure Out Button Dimensions
 		 */
 		
-		//Button that ...
+		//Button that returns user to previous interface
 		setupUI.SetupButtonUI(homeButton, "Arial", 11, 100, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
-		
-		//Button that ...
+		//Button that rests inputed username's password
 		setupUI.SetupButtonUI(resetButton, "Arial", 11, 100, 20, 
         		Pos.CENTER, 150, 325, false, Color.BLACK);
-		//Button that ...
+		//Button that deletes inputed username's account
 		setupUI.SetupButtonUI(deleteButton, "Arial", 11, 100, 20,
         		Pos.CENTER, 260, 325, false, Color.BLACK);
-		
-		//Button that ...
-		setupUI.SetupCheckBoxUI(studentButton, "Arial", 11, 100, 20,
-        		Pos.CENTER, 375, 350, false, Color.BLACK);
-		//Button that ...
-		setupUI.SetupCheckBoxUI(instructorButton, "Arial", 11, 100, 20,
-        		Pos.CENTER, 375, 375, false, Color.BLACK);
-		
-		//Button that ...
-		setupUI.SetupCheckBoxUI(adminButton, "Arial", 11, 100, 20,
-        		Pos.CENTER, 375, 400, false, Color.BLACK);
-		
-		//Button that ...
+		//Button that saves role changes from check boxes
 		setupUI.SetupButtonUI(applyRoleButton, "Arial", 11, 130, 20,
         		Pos.CENTER, 365, 325, false, Color.BLACK);
+		
+		/*
+		 * CheckBox Creations
+		 */
+		
+		//Check Box that manages student role for user name inputed by user
+		setupUI.SetupCheckBoxUI(studentButton, "Arial", 11, 100, 20,
+        		Pos.CENTER, 375, 350, false, Color.BLACK);
+		//Check Box that manages instructor role for user name inputed by user
+		setupUI.SetupCheckBoxUI(instructorButton, "Arial", 11, 100, 20,
+        		Pos.CENTER, 375, 375, false, Color.BLACK);
+		//Check Box that manages administrator role for user name inputed by user
+		setupUI.SetupCheckBoxUI(adminButton, "Arial", 11, 100, 20,
+        		Pos.CENTER, 375, 400, false, Color.BLACK);
 		
 		
 		//Sends all previously established settings for the pane to the scene for setup
@@ -141,7 +144,7 @@ public class ModifyAccountsGUI
 				resetButton, deleteButton, studentButton, instructorButton, adminButton, applyRoleButton);
 		
 		/*
-		 * Button Functionality
+		 * Button + CheckBox Functionality
 		 */
 		
 		/*****
@@ -153,13 +156,12 @@ public class ModifyAccountsGUI
 			public void handle(ActionEvent event) 
 			{						
 				theRoot.getChildren().clear();  // Clear the current root
-				
-				Pane newRoot = new Pane(); // 
-				AdminHome adminHome = new AdminHome(theRoot); //
-				
-				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-			    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-			    currentStage.setScene(newScene); // 
+				//send user to previous interface
+				Pane newRoot = new Pane(); // create new root
+				AdminHome adminHome = new AdminHome(theRoot); // call previous interface
+				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+			    currentStage.setScene(newScene); // sets scene
 			}
 		});
 		
@@ -171,20 +173,18 @@ public class ModifyAccountsGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				//
+				//collect user name input from user for modification
 				userInput = userText.getText();
-				
-				//
-				if(AccountDatabase.doesUsernameExist(userInput)) // 
+				//make sure inputed user name from user exists in database
+				if(AccountDatabase.doesUsernameExist(userInput))
 				{
 					theRoot.getChildren().clear();  // Clear the current root
-					
+					//send user to reset password interface
 					Pane newRoot = new Pane();
 					//ResetAccountGUI resetAccount = new ResetAccountGUI(theRoot, userInput);
-					
-					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-				    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-				    currentStage.setScene(newScene); // 
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // create new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // set scene
 				}
 			}
 		});
@@ -197,20 +197,18 @@ public class ModifyAccountsGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				//
+				//collect user name from user for input
 				userInput = userText.getText();
-				
-				//
-				if(AccountDatabase.doesUsernameExist(userInput)) // 
+				//make sure inputed user name from user exists in database
+				if(AccountDatabase.doesUsernameExist(userInput)) 
 				{
 					theRoot.getChildren().clear();  // Clear the current root
-					
+					//send user to delete account interface
 					Pane newRoot = new Pane();
 					//DeleteConfirmationGUI resetAccount = new DeleteConfirmationGUI(theRoot, userInput);
-					
-					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-				    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-				    currentStage.setScene(newScene); // 
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // set scene
 				}
 			}
 		});
@@ -222,28 +220,21 @@ public class ModifyAccountsGUI
 		studentButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
-			{
-				System.out.println("Student Checked!"); //
-				
-				//
+			{	
+				//collect user name from user for input
 				userInput = userText.getText();
-				
-				//
-				if(AccountDatabase.doesUsernameExist(userInput)) // 
+				//make sure inputed user name from user exists in database
+				if(AccountDatabase.doesUsernameExist(userInput))
 				{
-					
-					if(AccountDatabase.isStudentRole(userInput)) {}
-					//
+					//if user is not a student, student role will be added
+					if(!addStudentRole)
+					{
+						addStudentRole = true;
+					}
+					//if user is a student, student role will be removed
 					else
 					{
-						if(!changeInstructorRole)
-						{
-							changeStudentRole = true;
-						}
-						else
-						{
-							changeStudentRole = false;
-						}
+						addStudentRole = false;
 					}
 				}
 			}
@@ -256,62 +247,48 @@ public class ModifyAccountsGUI
 		instructorButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
-			{
-				System.out.println("Instructor Checked!"); //
-				
-				//
+			{				
+				//collect user name from user for input
 				userInput = userText.getText();
-				
-				//
-				if(AccountDatabase.doesUsernameExist(userInput)) // 
+				//make sure inputed user name from user exists in database
+				if(AccountDatabase.doesUsernameExist(userInput))
 				{
-					
-					if(AccountDatabase.isInstructorRole(userInput)) {}
-					//
+					//if user is not a instructor, instructor role will be added
+					if(!addInstructorRole)
+					{
+						addInstructorRole = true;
+					}
+					//if user is a instructor, instructor role will be removed
 					else
 					{
-						if(!changeInstructorRole)
-						{
-							changeInstructorRole = true;
-						}
-						else
-						{
-							changeInstructorRole = false;
-						}
+						addInstructorRole = false;
 					}
 				}
 			}
 		});
 		
 		/*****
-		 * Admin CheckBox
+		 * Administrator CheckBox
 		 */
 		
 		adminButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{
-				System.out.println("Admin Checked!"); //
-				
-				//
+				//collect user name from user for input
 				userInput = userText.getText();
-				
-				//
-				if(AccountDatabase.doesUsernameExist(userInput)) // 
+				//make sure inputed user name from user exists in database
+				if(AccountDatabase.doesUsernameExist(userInput))
 				{
-					
-					if(AccountDatabase.isAdminRole(userInput)) {}
-					//
+					//if user is not a administrator, administrator role will be added
+					if(!addAdminRole)
+					{
+						addAdminRole = true;
+					}
+					//if user is a administrator, administrator role will be removed
 					else
 					{
-						if(!changeInstructorRole)
-						{
-							changeAdminRole = true;
-						}
-						else
-						{
-							changeAdminRole = false;
-						}
+						addAdminRole = false;
 					}
 				}
 			}
@@ -326,11 +303,16 @@ public class ModifyAccountsGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				//
+				////collect user name from user for input
 				userInput = userText.getText();
 				
 				try {
-					AccountDatabase.updateUserRoles(userInput, changeStudentRole, changeInstructorRole, changeAdminRole);
+					//make sure inputed user name from user exists in database
+					if(AccountDatabase.doesUsernameExist(userInput))
+					{
+						//updates role changes for user name inputed from user
+						AccountDatabase.updateUserRoles(userInput, addStudentRole, addInstructorRole, addAdminRole);
+					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
