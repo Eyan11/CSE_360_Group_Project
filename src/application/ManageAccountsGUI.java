@@ -39,13 +39,14 @@ public class ManageAccountsGUI {
 
         root.getChildren().addAll(title, backButton, modifyAccountsButton, inviteUserButton);
 
- //       handleBack(backButton, root);
+        handleBack(backButton, root);
     }
-/*
+
     private void handleBack(Button backButton, Pane root) {
         backButton.setOnAction(event -> {
             root.getChildren().clear();
-            AdminHome adminHome = new AdminHome(root); */
-     //   });
+            AdminHome adminHome = new AdminHome(root); 
+       });
     }
+}
 
