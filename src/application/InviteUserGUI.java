@@ -11,9 +11,7 @@ import javafx.scene.text.Font;
 //However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 //(especially before changing anything!)
 
-//DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
-
-//public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
+//DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1.
 /**
 * <p> SetUpUIElements. </p>
 * 

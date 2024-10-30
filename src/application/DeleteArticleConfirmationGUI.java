@@ -10,7 +10,7 @@ import javafx.scene.text.Font;
 //However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 //(especially before changing anything!)
 
-//DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
+//DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 2.
 
 /**
 * <p> SetUpUIElements. </p>
