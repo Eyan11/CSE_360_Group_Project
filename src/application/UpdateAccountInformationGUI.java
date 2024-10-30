@@ -19,7 +19,7 @@ import database.AccountDatabase;	// To use account database in different package
  * <p> UpdateAccountInformationGUI Class </p>
  * 
  * <p> Description: The Java/FX-based user interface for updating user account information 
- * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 1).</p>
+ * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
  * 
  * <p> Copyright: Evan Espinosa © 2024 </p>
  * 
@@ -34,8 +34,8 @@ import database.AccountDatabase;	// To use account database in different package
 // However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 // (especially before changing anything!)
 // DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
-public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
-//public class UpdateAccountInformationGUI {
+//public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
+public class UpdateAccountInformationGUI {
 	
 	
 	/**
@@ -85,10 +85,7 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 		Stage updateStage = new Stage();
 		updateStage.setTitle("User Info Update");
         
-        
-        //setupUI = new SetupUIElements();
-        
-        // NOTE: Not needed, see updateStage.setTitle() ^
+       
         // Label the Scene with the name of the testbed, centered at the top of the pane
 		//setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
 				//Pos.CENTER, 0, 10, Color.GREEN);
@@ -184,7 +181,7 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
 	            	// 				   onto then next part. Thank you.
 	            	else {
-	            		//Eliminate error indicator
+	            		// Reset color values to green
 	            		setupButtonUI(updateButton, "Arial", 14, WINDOW_WIDTH-20, 
 	            				Pos.CENTER, 10, 400, Color.GREEN);
 	            		// Reset color values to green
@@ -199,11 +196,11 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            		
 	            		setupLabelUI(lastName, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 250, Color.GREEN);
+	            		//Eliminate error indicator
 	            		theRoot.getChildren().remove(errorLabel);
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
-	            		//AccountDatabase userAccount = new AccountDatabase(); // Object made from AccountDatabase.java (the next part)
 	            		try {
 	            			AccountDatabase.updateAccountInformation(user, emailString, firstString, middleString, lastString, preferredString);
 	            			
@@ -227,8 +224,10 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            				theRoot.getChildren().clear();  // Clear the current root
 	            				Pane newRoot = new Pane();
 	            				
+	            				//Method used for setting up for next part
 	    						SelectRole selectRole = new SelectRole(newRoot, user);
 	    						
+	    						// Load next part
 	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 	    					    currentStage.setScene(newScene); // 
@@ -238,8 +237,9 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            				theRoot.getChildren().clear();  // Clear the current root
 	            				Pane newRoot = new Pane();
 	            				
+	            				//Method used for setting up next part
 	    						StudentHomeGUI sHome = new StudentHomeGUI(newRoot);
-	    						
+	    						// Load next part
 	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 	    					    currentStage.setScene(newScene); // 
@@ -249,8 +249,10 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            				theRoot.getChildren().clear();  // Clear the current root
 	            				Pane newRoot = new Pane();
 	            				
+	            				//Method used for setting up for next part
 	    						InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot);
 	    						
+	    						// Load next part
 	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 	    					    currentStage.setScene(newScene); // 
@@ -316,9 +318,9 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	
 	
 	// DEVELOPER NOTE: main left for any future interest in testing UpdateAccountInfoGUI using the start() method (see below ErrorMessage)
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		launch(args);
-	}
+	}*/
 	
 	/**********
 	 * Private local method to check for valid text field input for all text fields (returns F if all necessary fields are NOT filled, T otherwise)
@@ -366,7 +368,7 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	// DEVELOPER NOTE: start method left here in case future changes want to be made, they can easily be tested here and through
 	// defining the function of main simply as "launch(args)". NOTE: You might have to comment out UpdateAccountInfoGUI in order to test using this.
 	
-	@Override
+	/*@Override
 	public void start(Stage updateStage) throws Exception {
     	
         updateStage.setTitle("User Info Update");
@@ -508,7 +510,7 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
             }
         });
         
-    }
+    }*/
 	
 	/** Method used for testing early implementations of UpdateAccountInformationGUI (kept for future testing purposes)
 	 */

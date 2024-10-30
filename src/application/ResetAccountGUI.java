@@ -18,6 +18,21 @@ import javafx.stage.Stage;
 import java.sql.SQLException;	// To catch errors for database
 
 
+/**
+ * <p> ResetAccountGUI Class </p>
+ * 
+ * <p> Description: The Java/FX-based user interface for updating user account information 
+ * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
+ * 
+ * <p> Copyright: Evan Espinosa © 2024 </p>
+ * 
+ * @author Evan Espinosa
+ * 
+ * @version 1.00		2024-10-30 The JavaFX-based GUI for the implementation of the user's reset account page
+ *  
+ */
+
+
 //public class ResetAccountGUI extends Application {
 
 public class ResetAccountGUI {
@@ -73,20 +88,19 @@ public class ResetAccountGUI {
 
 		Label tenMinsLabel = new Label("Expires in 10 minutes");
 
-		// Label the middle name input field with a title just above it, left aligned
+		// Key label of format "One time key: (key)"
 				setupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 						Pos.CENTER, 10, 175, Color.GREEN);
-				// Label the middle name input field with a title just above it, left aligned
+				// Label that says the key will expire in 10 minutes
 				setupLabelUI(tenMinsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 						Pos.CENTER, 10, 215, Color.GREEN);
-		// Establish the button which will be used to check and send new user info
-		// to the respective methods required to update the user info currently in the database
+		// Establish the button which will be used to exit the reset account menu and return the user to the relavant page
         Button back = new Button("Back");
         setupButtonUI(back, "Arial", 14, WINDOW_WIDTH-20, 
         		Pos.CENTER, 10, 400, Color.GREEN);
         
 
-        // Sends all previously established settings for the pane to the scene for setup (to the new Pane to avoid Pane conflict)
+        // Sends all previously established parameters for the pane to the scene for setup (to the new Pane to avoid Pane conflict)
         resetPane.getChildren().addAll(keyLabel, tenMinsLabel, back); 
         
         // Creates new scene using resetPane so as to avoid Pane conflict with userPane
@@ -96,14 +110,15 @@ public class ResetAccountGUI {
         updateStage.show();
         
         // Establishes the button logic for each press
-        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
-        //                 he will add functionality for repeated valid input.
         back.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
             	
             	resetPane.getChildren().clear();
             	updateStage.close();
             	new AdminHome(userPane);
+            	
+            	// Not needed here, but kept for reference on previous incorrect implementation methods 
+            	//to prevent future errors of the same type
             	/*try {
 					new AdminHome(userPane);
 				} catch (SQLException e) {
@@ -123,8 +138,8 @@ public class ResetAccountGUI {
 /**
  * Methods
  */
-	
-	
+
+	// Main and override kept for possible future use
 	/*public static void main(String[] args) {
 		launch(args);
 	}*/
