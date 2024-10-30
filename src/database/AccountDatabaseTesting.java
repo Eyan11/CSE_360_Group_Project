@@ -9,7 +9,7 @@ import java.sql.*; // For SQL related objects
  * 
  * <p> Source: Lynn Robert Carter from PasswordEvaluatorTestbedWithGUI project, 
  * 				PasswordEvaluationTestingAutomation class, 
- * 				available at: https://canvas.asu.edu/courses/193728/assignments/5505672?module_item_id=14493167
+ * 				available at: https://canvas.asu.edu/courses/193728/assignments/5505672?module_item_id=14493167 </p>
  * 
  * @author Eyan Martucci
  * 
@@ -36,14 +36,9 @@ public class AccountDatabaseTesting {
 	
 	
 	/**********
-	 * Starts the testing automation that test 64 test cases
+	 * Starts the testing automation for AccountDatabase that performs 64 test cases
 	 */
 	public static void performTestEvaluations() throws SQLException {
-		
-		// Wipe all stored database rows on local machine and create a new accounts table
-		//AccountDatabase.createTable();
-		//AccountDatabase.deleteTable();
-		//AccountDatabase.createTable();
 		
 		// *** Test isDatabaseEmpty() **************************************
 		testIsTableEmpty(true);

@@ -2,7 +2,6 @@ package database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -12,10 +11,11 @@ import java.sql.Statement;
  * <p> Description: Starts and closes connection to database.</p>
  * 
  * <p> Source: Lynn Robert Carter from FirstDatabase project, DatabaseHelper class, 
- * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007
+ * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007 </p>
  * 
  * @author Eyan Martucci
  * 
+ * @version 1.00		10/26/2024 Phase 2 implementation and documentation
  *  
  */
 
@@ -30,15 +30,13 @@ public class DatabaseManager {
 	private static final String PASS = ""; 
 	
 	// Reusable variables to communicate with database
-	private static String query = "";
 	private static Connection connection = null;
 	private static Statement statement = null; 
-	private static ResultSet resultSet = null;
 	
 	/**********
 	 * Starts the connection to the H2 database.
 	 */
-	public static void connectToDatabase() throws SQLException {
+	public static void connectToDatabase() throws SQLException, Exception {
 		try {
 			Class.forName(JDBC_DRIVER); // Load the JDBC driver
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -79,6 +77,8 @@ public class DatabaseManager {
 				statement.close(); 
 		} 
 		catch(SQLException se2) { 
+			System.err.println("\nStatement not closed, error occured, "
+					+ "you may need to delete the 'GroupProjectDatabase.mv and .trace file\n");
 			se2.printStackTrace();
 		} 
 		
@@ -89,6 +89,8 @@ public class DatabaseManager {
 			System.out.println("CLOSING CONNECTION TO DATABASE");
 		} 
 		catch(SQLException se){ 
+			System.err.println("\nConnection to database not closed, error occured, "
+					+ "you may need to delete the 'GroupProjectDatabase.mv and .trace file\n");
 			se.printStackTrace(); 
 		} 
 	}

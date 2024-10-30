@@ -195,13 +195,25 @@ public class LoginGUI
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 					    currentStage.setScene(newScene); // 
 					}
-					//IF user is Student/Instructor with updated account info, send user to StudentInstructorHomeGUI
-					else if(LoginEvaluator.studentInstructorRole(userInput))
+					//IF user is Student with updated account info, send user to StudentInstructorHomeGUI
+					else if(LoginEvaluator.studentRole(userInput))
 					{
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						StudentInstructorHomePage shHome = new StudentInstructorHomePage(theRoot);
+						StudentHomeGUI sHome = new StudentHomeGUI(theRoot);
+						
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
+					}
+					//IF user is Instructor with updated account info, send user to StudentInstructorHomeGUI
+					else if(LoginEvaluator.instructorRole(userInput))
+					{
+						theRoot.getChildren().clear();  // Clear the current root
+						
+						Pane newRoot = new Pane();
+						InstructorHomeGUI iHome = new InstructorHomeGUI(theRoot);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 

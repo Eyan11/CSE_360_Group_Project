@@ -19,6 +19,7 @@ import javafx.scene.paint.Color; // To set color of UI elements
  * @author Eyan Martucci
  * 
  * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ * 			2.00		10/26/2024 Added New Parameter for label, text, and button
  *  
  */
 
@@ -30,6 +31,19 @@ public class SetupUIElements {
 	public void SetupLabelUI(Label l, String font, double fontSize, double minWidth, Pos pos, double x, double y, Color color) {
 		l.setFont(Font.font(font, fontSize));	// Font style and size
 		l.setMinWidth(minWidth);	// Minimum width if you want Label to be larger than text inside of it
+		// Pos.CENTER is recommended
+		l.setAlignment(pos);		// How text within the Label is aligned
+		l.setLayoutX(x);			// X coordinate of Label center in window
+		l.setLayoutY(y);			// Y coordinate of Label center in window
+		l.setTextFill(color);		// Color of label text
+	}
+	
+	/**********
+	 * Public method to initialize the standard fields for a Label w/ width + height
+	 */
+	public void SetupLabelUI(Label l, String font, double fontSize, double width, double height, Pos pos, double x, double y, Color color) {
+		l.setFont(Font.font(font, fontSize));	// Font style and size
+		l.setPrefSize(width, height); // Set width and height
 		// Pos.CENTER is recommended
 		l.setAlignment(pos);		// How text within the Label is aligned
 		l.setLayoutX(x);			// X coordinate of Label center in window
@@ -54,6 +68,22 @@ public class SetupUIElements {
 	}
 	
 	/**********
+	 * Public method to initialize the standard fields for a TextField w/ width + height
+	 */
+	public void SetupTextFieldUI(TextField t, String font, double fontSize, double width, double height,
+		Pos pos, double x, double y, boolean isEditable) {
+		
+		t.setFont(Font.font(font, fontSize));	// Font style and size
+		t.setPrefSize(width, height); // Set width and height of TextField
+		// Pos.BASELINE_LEFT is recommended
+		t.setAlignment(pos);		// How text within the TextField is aligned 
+		t.setLayoutX(x);			// X coordinate of TextField center in window
+		t.setLayoutY(y);			// Y coordinate of TextField center in window
+		// if not editable, then TextField and TextField is NOT grayed out and appears as normal
+		t.setEditable(isEditable);	// Allows text box to be typed in or not
+	}
+	
+	/**********
 	 * Public method to initialize the standard fields for a Button
 	 */
 	public void SetupButtonUI(Button b, String font, double fontSize, double minWidth, 
@@ -61,6 +91,23 @@ public class SetupUIElements {
 		
 		b.setFont(Font.font(font, fontSize));	// Font style and size
 		b.setMinWidth(minWidth);	// Minimum width of Button
+		// Pos.CENTER is recommended
+		b.setAlignment(pos);		// How text within the Button should is aligned
+		b.setLayoutX(x);			// X coordinate of Button center in window
+		b.setLayoutY(y);			// Y coordinate of Button center in window
+		// if disabled, then Button and Button text is automatically grayed out
+		b.setDisable(isDisabled);	// Disabled or enabled the button from being clicked
+		b.setTextFill(color);		// Color of Button text
+	}
+	
+	/**********
+	 * Public method to initialize the standard fields for a Button
+	 */
+	public void SetupButtonUI(Button b, String font, double fontSize, double width, double height,
+		Pos pos, double x, double y, boolean isDisabled, Color color) {
+		
+		b.setFont(Font.font(font, fontSize));	// Font style and size
+		b.setPrefSize(width, height); // Set both width and height
 		// Pos.CENTER is recommended
 		b.setAlignment(pos);		// How text within the Button should is aligned
 		b.setLayoutX(x);			// X coordinate of Button center in window

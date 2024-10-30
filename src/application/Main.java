@@ -3,9 +3,9 @@ package application;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+//import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+//import javafx.scene.layout.StackPane;
 import database.DatabaseManager;	// To start database connection in different package
 import database.AccountDatabase;	// To use the account table in database in different package
 
@@ -30,14 +30,13 @@ public class Main extends Application {
 		theStage.show();		// Show the stage to the user
         if (AccountDatabase.isTableEmpty()) {
            //theRoot = switchToCreateAccountInformationGUI(); 
-        	CreateAccountInformationGUI createAccountGUI = new CreateAccountInformationGUI(theRoot);
+        	CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
         } else {
-        	LoginGUI loginGUI = new LoginGUI(theRoot); 
+        	LoginGUI login = new LoginGUI(theRoot); 
         }
-			Scene mainScene = new Scene(theRoot, WINDOW_WIDTH, WINDOW_HEIGHT);	// Create the scene	
-			
-			theStage.setScene(mainScene);	// Set the scene on the stage
-			theStage.show(); //showing current screen (login or register)
+		Scene mainScene = new Scene(theRoot, WINDOW_WIDTH, WINDOW_HEIGHT);	// Create the scene	
+		theStage.setScene(mainScene);	// Set the scene on the stage
+		theStage.show(); //showing current screen (login or register)
 		
 		
 		// When the stage is shown to the user, the pane within the window is visible.  This means

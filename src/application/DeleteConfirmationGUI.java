@@ -108,9 +108,14 @@ public class DeleteConfirmationGUI {
 	                updateStage.setScene(newScene);
 	                updateStage.show();
 	                
+	                // Close delete confirmation window
+	                updateStage.close();
+	                
 	                // Not sure if this is needed
 					Stage currentStage = (Stage) newRoot.getScene().getWindow(); //
 	                currentStage.setScene(newScene);
+	                
+	              
 					
 					// Only explicit error in the entire class; Tried everything I could think of and still an error so I will
 					// address this when I finish I=my other class -Evan
@@ -145,6 +150,9 @@ public class DeleteConfirmationGUI {
 	            	 updateStage.setScene(newScene);
 		             updateStage.show();
 		             
+		             // Close delete confirmation window
+		             updateStage.close();
+		                
 		             // Not sure if this is needed
 	                 Stage currentStage = (Stage) newRoot.getScene().getWindow(); //
 	                 currentStage.setScene(newScene);

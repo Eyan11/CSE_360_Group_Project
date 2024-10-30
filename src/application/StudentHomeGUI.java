@@ -19,7 +19,7 @@ import javafx.scene.text.Text; // For displaying text in the UI
  *  
  */
 
-public class StudentInstructorHomePage {
+public class StudentHomeGUI {
 
     /*
      * Variable Declarations
@@ -33,7 +33,7 @@ public class StudentInstructorHomePage {
     public SetupUIElements setupUI;
 
     // Constructor for setting up the Student/Instructor Home GUI
-    public StudentInstructorHomePage(Pane root) {  // Changed StackPane to Pane
+    public StudentHomeGUI(Pane root) {  // Changed StackPane to Pane
         
         // Instantiate SetupUIElements
         setupUI = new SetupUIElements();

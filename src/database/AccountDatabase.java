@@ -10,12 +10,12 @@ import java.util.concurrent.TimeUnit; // For time used in expiration column
  * <p> Description: Manages the Account Table in the H2 database.</p>
  * 
  * <p> Source: Lynn Robert Carter from FirstDatabase project, DatabaseHelper class, 
- * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007
+ * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007 </p>
  * 
  * @author Eyan Martucci
  * 
  * @version 1.00		10/09/2024 Phase 1 implementation and documentation
- * @version 1.10		10/15/2024 Updated to include all functionality of phase 1
+ * @version 1.10		10/15/2024 Updated to include further functionality from phase 1
  * @version 1.20		10/24/2024 Updated for use with ManageAccountsGUI
  *  
  */
