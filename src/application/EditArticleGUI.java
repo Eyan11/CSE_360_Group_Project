@@ -1,5 +1,6 @@
 package application;
 
+import database.*;
 import java.sql.SQLException;
 
 import database.AccountDatabase;
@@ -75,9 +76,9 @@ public class EditArticleGUI {
 		 */
 		
 		
-		EditArticleGUI(Pane userPane, String user, String articleID) { // user passed in from previous step
-			Stage updateStage = new Stage();
-			updateStage.setTitle("Create Articles");
+		EditArticleGUI(Pane userPane, String user, int articleID) { // user passed in from previous step
+			//Stage updateStage = new Stage();
+			//updateStage.setTitle("Create Articles");
 			
 	        
 	        
@@ -157,10 +158,10 @@ public class EditArticleGUI {
 	        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
 	        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, referencesText, createButton); 
 	        
-	        Scene userScene = new Scene(userPane, 800, 500);
+	        /*Scene userScene = new Scene(userPane, 800, 500);
 	        userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	        updateStage.setScene(userScene);
-	        updateStage.show();
+	        updateStage.show();*/
 	        
 	        // Establishes the button logic for each press
 	        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
@@ -174,8 +175,8 @@ public class EditArticleGUI {
 		            	String descriptionString = descriptionText.getText();
 		            	String keywordsString = keywordsText.getText();
 		            	String groupsString = groupsText.getText();
-		            	String bodyString = groupsText.getText();
-		            	String referencesString = groupsText.getText();
+		            	String bodyString = bodyText.getText();
+		            	String referencesString = referencesText.getText();
 
 		
 		                // Do error check, if no errors, update info. If errors, output error message above update button and below info input.
@@ -192,6 +193,9 @@ public class EditArticleGUI {
 		            		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 400, Color.RED);
 		            		
+		            		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            				Pos.BASELINE_LEFT, 10, 10, Color.RED);
+
 		            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 25, Color.RED);
 		            		
@@ -222,6 +226,10 @@ public class EditArticleGUI {
 		            		
 		            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 25, Color.GREEN);
+
+		            		
+		            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            				Pos.BASELINE_LEFT, 10, 25, Color.GREEN);
 		            		
 		            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 100, Color.GREEN);
@@ -242,16 +250,22 @@ public class EditArticleGUI {
 		            		//AccountDatabase userAccount = new AccountDatabase(); // Object made from AccountDatabase.java (the next part)
 		            		try {
 		            			
-		            			//REPLACE WITH CREATE ARTICLE CONSTRUCTOR
-		            			AccountDatabase.updateAccountInformation(user, titleString, descriptionString, keywordsString, 
-		            					groupsString, bodyString);
+		            			ArticleDatabase.editArticle(articleID, headerString, titleString, descriptionString, keywordsString, 
+		            					groupsString, bodyString, referencesString);
 		            			
 		            			/**
 		            			 * Transitions to different home pages
 		            			 */
 		            			Pane newRoot = new Pane();
 		            			
-		            			if(LoginEvaluator.adminLogin(user)) // check if user is an admin
+		            			userPane.getChildren().clear();  // Clear the current root
+		            			ManageArticlesGUI manageArticlesGUI = new ManageArticlesGUI(newRoot); 
+	    						
+	    						/*Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    		                updateStage.setScene(newScene);
+	    		                updateStage.show();*/
+		            			
+		            			/*if(LoginEvaluator.adminLogin(user)) // check if user is an admin
 		            			{
 		            				userPane.getChildren().clear();  // Clear the current root
 		    						AdminHome adminHome = new AdminHome(newRoot);
@@ -277,7 +291,7 @@ public class EditArticleGUI {
 		    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 		    		                updateStage.setScene(newScene);
 		    		                updateStage.show();
-		            			}
+		            			}*/
 		            		}
 		            		catch(SQLException e) {
 		            			System.err.println("Error: " + e.getMessage());

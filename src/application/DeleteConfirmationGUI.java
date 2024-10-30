@@ -102,26 +102,14 @@ public class DeleteConfirmationGUI {
 					Pane newRoot = new Pane();
 					
 					// Load new window
-					new ModifyAccountsGUI(newRoot);
+					ModifyAccountsGUI modify = new ModifyAccountsGUI(newRoot);
 					
 					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	                updateStage.setScene(newScene);
-	                updateStage.show();
+
 	                
-	                // Close delete confirmation window
-	                updateStage.close();
-	                
-	                // Not sure if this is needed
-					Stage currentStage = (Stage) newRoot.getScene().getWindow(); //
+					Stage currentStage = (Stage) userPane.getScene().getWindow(); //
 	                currentStage.setScene(newScene);
-	                
-	              
 					
-					// Only explicit error in the entire class; Tried everything I could think of and still an error so I will
-					// address this when I finish I=my other class -Evan
-					//UpdateAccountInformationGUI update = new UpdateAccountInformationGUI(userPane, user);
-					//update.UpdateAccountInformationGUI(userPane, user);
-					//new UpdateAccountInformationGUI(userPane, user);
 				} catch (SQLException e) {
         			System.err.println("Error: " + e.getMessage());
 
@@ -144,17 +132,12 @@ public class DeleteConfirmationGUI {
 				Pane newRoot = new Pane();
 					
 				try {
-	            	new ModifyAccountsGUI(newRoot);
+					ModifyAccountsGUI modify = new ModifyAccountsGUI(newRoot);
+					
 	            	
 	            	 Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	            	 updateStage.setScene(newScene);
-		             updateStage.show();
-		             
-		             // Close delete confirmation window
-		             updateStage.close();
 		                
-		             // Not sure if this is needed
-	                 Stage currentStage = (Stage) newRoot.getScene().getWindow(); //
+	                 Stage currentStage = (Stage) userPane.getScene().getWindow(); //
 	                 currentStage.setScene(newScene);
 
 				}
@@ -162,8 +145,6 @@ public class DeleteConfirmationGUI {
         			System.err.println("Error: " + e.getMessage());
 				}
 				
-               
-            	//UpdateAccountInformationGUI update = new UpdateAccountInformationGUI(userPane, user);
             		            	}
         });
 	}

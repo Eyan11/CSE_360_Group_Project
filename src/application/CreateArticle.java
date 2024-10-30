@@ -32,7 +32,7 @@ public class CreateArticle {
 	/** The width of the pop-up window for the user interface */
 	public final static double WINDOW_WIDTH = 500;
 	/** The height of the pop-up window for the user interface */
-	public final static double WINDOW_HEIGHT = 430;
+	public final static double WINDOW_HEIGHT = 600;
 	
 	/** String inputs */
 	private String user; // Passed in from previous step
@@ -92,7 +92,7 @@ public class CreateArticle {
 		
 		// Label the email input field with a title just above it, left aligned
 		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 545, Color.RED);
+				Pos.BASELINE_LEFT, 10, 505, Color.RED);
 		
 		// Label the first name input field with a title just above it, left aligned
 		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -143,13 +143,13 @@ public class CreateArticle {
 				Pos.BASELINE_LEFT, 10, 465, true);
 		
 		setupTextUI(errorText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 535, true);
+				Pos.BASELINE_LEFT, 10, 475, true);
 		
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
         Button createButton = new Button("Create");
         setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 540, Color.GREEN);
+        		Pos.CENTER, 10, 530, Color.GREEN);
         
         // Sends all previously established settings for the pane to the scene for setup
         userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
@@ -210,7 +210,7 @@ public class CreateArticle {
 	            				Pos.BASELINE_LEFT, 10, 440, Color.RED);
 	            		
 	            		setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 540, Color.RED);
+	                    		Pos.CENTER, 10, 530, Color.RED);
 	
 	            	}
 	            	
@@ -244,7 +244,7 @@ public class CreateArticle {
 	            				Pos.BASELINE_LEFT, 10, 440, Color.GREEN);
 	            		
 	            		setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 540, Color.GREEN);
+	                    		Pos.CENTER, 10, 530, Color.GREEN);
 	            		
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
