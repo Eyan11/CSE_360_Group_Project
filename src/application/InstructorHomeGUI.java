@@ -18,7 +18,7 @@ import javafx.scene.text.Text; // For displaying text in the UI
  *  
  */
 
-public class AdminHome {
+public class InstructorHomeGUI {
 
     /*
      * Variable Declarations
@@ -29,30 +29,27 @@ public class AdminHome {
     // Declaration of SetupUIElements Object
     public SetupUIElements setupUI;
 
-    // Constructor for setting up the AdminHome GUI
-    public AdminHome(Pane root) {
+    // Constructor for setting up the InstructorHome GUI
+    public InstructorHomeGUI(Pane root) {
         // Instantiate
         setupUI = new SetupUIElements();
 
-        // Create "Admin Home" title
-        Text title = new Text("Admin Home");
+        // Create "Instructor Home" title
+        Text title = new Text("Instructor Home");
         title.setFont(new Font("Arial", 32));  // Set font
         title.setFill(Color.BLACK);  // Set the text color
         title.setLayoutX((WINDOW_WIDTH - title.getLayoutBounds().getWidth()) / 2);
         title.setLayoutY(30);  // Set vertical position for title
 
-        // Buttons for Admin actions
-        Button manageAccountsButton = new Button("Manage Accounts");
         Button manageArticlesButton = new Button("Manage Articles");
         Button logoutButton = new Button("Logout");
 
         // Set up the buttons using SetupUIElements
-        setupUI.SetupButtonUI(manageAccountsButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(manageArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(logoutButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
 
         // Position the buttons in a vertical layout
-        VBox vbox = new VBox(20, manageAccountsButton, manageArticlesButton, logoutButton);
+        VBox vbox = new VBox(20, manageArticlesButton, logoutButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setLayoutX((WINDOW_WIDTH - 200) / 2); // Center align based on button width
         vbox.setLayoutY(100);
