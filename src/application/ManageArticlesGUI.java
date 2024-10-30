@@ -33,15 +33,18 @@ public class ManageArticlesGUI {
         Button restoreArticlesButton = new Button("Restore Articles");
         Button listArticlesButton = new Button("List Articles");
 
-        setupUI.SetupButtonUI(backButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
+        setupUI.SetupButtonUI(backButton, "Arial", 12, 80, Pos.TOP_LEFT, 10, 10, false, Color.BLACK);
         setupUI.SetupButtonUI(modifyArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(createArticleButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(backupArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(restoreArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(listArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
 
-        backButton.setLayoutX(20);
-        backButton.setLayoutY(20);
+        
+        backButton.setPrefWidth(80);  // Set smaller width
+        backButton.setPrefHeight(30); // Set smaller height
+        backButton.setLayoutX(10);    // Set x position close to the left edge
+        backButton.setLayoutY(10);
         modifyArticlesButton.setLayoutX(150);
         modifyArticlesButton.setLayoutY(100);
         createArticleButton.setLayoutX(150);
