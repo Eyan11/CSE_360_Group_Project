@@ -160,12 +160,12 @@ public class LoginGUI
 					//IF first time login, send user to UpdateAccountInformationGUI
 					if(LoginEvaluator.firstTimeLogin(userInput))
 					{
+						System.out.println("New Account");
+						
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						//FIX CONSTRUCTOR
-						//UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(newRoot, userInput);
-						
+						UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(newRoot, userInput);
 						//
 					    Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
@@ -177,7 +177,7 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						AdminHome adminHome = new AdminHome(theRoot);
+						AdminHome adminHome = new AdminHome(newRoot);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
@@ -189,7 +189,7 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						SelectRole selectRole = new SelectRole(theRoot, userInput);
+						SelectRole selectRole = new SelectRole(newRoot, userInput);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
@@ -201,7 +201,7 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						StudentHomeGUI sHome = new StudentHomeGUI(theRoot);
+						StudentHomeGUI sHome = new StudentHomeGUI(newRoot);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
@@ -213,7 +213,7 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						InstructorHomeGUI iHome = new InstructorHomeGUI(theRoot);
+						InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
@@ -256,7 +256,7 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
+						CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(newRoot);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 

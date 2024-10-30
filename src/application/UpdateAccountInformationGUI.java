@@ -6,8 +6,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.application.Application;
-//import javafx.scene.text.FontPosture;
-//import javafx.scene.text.TextFlow;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -83,7 +81,7 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	 */
 	
 	
-	UpdateAccountInformationGUI(Pane userPane, String user) { // user passed in from previous step
+	UpdateAccountInformationGUI(Pane theRoot, String user) { // user passed in from previous step
 		Stage updateStage = new Stage();
 		updateStage.setTitle("User Info Update");
         
@@ -139,13 +137,8 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
         		Pos.CENTER, 10, 400, Color.GREEN);
         
         // Sends all previously established settings for the pane to the scene for setup
-        userPane.getChildren().addAll(emailLabel, emailText, firstName, firstNameText, middleName, middleNameText, lastName, lastNameText,
-        							  prefName, prefNameText, updateButton); 
-        
-        Scene userScene = new Scene(userPane, 800, 500);
-        userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-        updateStage.setScene(userScene);
-        updateStage.show();
+        theRoot.getChildren().addAll(emailLabel, emailText, firstName, firstNameText, middleName, middleNameText, lastName, lastNameText,
+        							  prefName, prefNameText, updateButton);
         
         // Establishes the button logic for each press
         // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
@@ -167,7 +160,7 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            	// If there are any unfilled entries, alter text box and output message indicating that entries are incomplete
 	            	// and highlight all necessary entry boxes
 	            	if(pass == false) {
-	            		userPane.getChildren().add(errorLabel);
+	            		theRoot.getChildren().add(errorLabel);
 	            		setupButtonUI(updateButton, "Arial", 14, WINDOW_WIDTH-20, 
 	                    		Pos.CENTER, 10, 430, Color.RED);
 	            		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -206,7 +199,7 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            		
 	            		setupLabelUI(lastName, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 250, Color.GREEN);
-	            		userPane.getChildren().remove(errorLabel);
+	            		theRoot.getChildren().remove(errorLabel);
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
@@ -220,23 +213,47 @@ public class UpdateAccountInformationGUI extends Application { // Use this class
 	            			
 	            			if(LoginEvaluator.adminLogin(user)) // check if user is an admin
 	            			{
-	            				userPane.getChildren().clear();  // Clear the current root
-	    						AdminHome adminHome = new AdminHome(userPane);
+	            				theRoot.getChildren().clear();  // Clear the current root
+	            				Pane newRoot = new Pane();
+	            				
+	    						AdminHome adminHome = new AdminHome(newRoot);
+	    						
+	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    					    currentStage.setScene(newScene); // 
 	            			}
 	            			else if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
 	            			{
-	            				userPane.getChildren().clear();  // Clear the current root
-	    						SelectRole selectRole = new SelectRole(userPane, user);
+	            				theRoot.getChildren().clear();  // Clear the current root
+	            				Pane newRoot = new Pane();
+	            				
+	    						SelectRole selectRole = new SelectRole(newRoot, user);
+	    						
+	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    					    currentStage.setScene(newScene); // 
 	            			}
 	            			else if(LoginEvaluator.studentRole(user)) // user is student or instructor
 	            			{
-	            				userPane.getChildren().clear();  // Clear the current root
-	    						StudentHomeGUI sHome = new StudentHomeGUI(userPane);
+	            				theRoot.getChildren().clear();  // Clear the current root
+	            				Pane newRoot = new Pane();
+	            				
+	    						StudentHomeGUI sHome = new StudentHomeGUI(newRoot);
+	    						
+	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    					    currentStage.setScene(newScene); // 
 	            			}
 	            			else if(LoginEvaluator.instructorRole(user)) // user is student or instructor
 	            			{
-	            				userPane.getChildren().clear();  // Clear the current root
-	    						InstructorHomeGUI iHome = new InstructorHomeGUI(userPane);
+	            				theRoot.getChildren().clear();  // Clear the current root
+	            				Pane newRoot = new Pane();
+	            				
+	    						InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot);
+	    						
+	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    					    currentStage.setScene(newScene); // 
 	            			}
 	            		}
 	            		catch(SQLException e) {

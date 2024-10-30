@@ -3,12 +3,14 @@ package application;
 //import java.lang.*;
 import java.sql.SQLException;
 import database.AccountDatabase;	// To use account database in different package
+import javafx.scene.Scene;
 //import javafx.application.Application;
 //import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 //import javafx.scene.text.FontPosture;
 //import javafx.scene.text.TextFlow;
 import javafx.event.ActionEvent;
@@ -70,7 +72,7 @@ public class CreateAccountInformationGUI {
 	/** Constructors
 	 */
 	
-	CreateAccountInformationGUI(Pane userPane) {
+	CreateAccountInformationGUI(Pane theRoot) {
 		                
        // NOTE: Not needed, see updateStage.setTitle() ^
         // Label the Scene with the name of the testbed, centered at the top of the pane
@@ -102,7 +104,7 @@ public class CreateAccountInformationGUI {
         		Pos.CENTER, 10, 400, Color.GREEN);
         
         // Sends all previously established settings for the pane to the scene for setup
-        userPane.getChildren().addAll(usernameLabel, usernameText, passwordLabel, passwordText, confirmLabel, confirmText, sceneLabel, createButton);
+        theRoot.getChildren().addAll(usernameLabel, usernameText, passwordLabel, passwordText, confirmLabel, confirmText, sceneLabel, createButton);
         
         // Establishes the button logic for each press
         // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
@@ -123,7 +125,7 @@ public class CreateAccountInformationGUI {
 	            	// If there are any unfilled entries, alter text box and output message indicating that entries are incomplete
 	            	// and highlight all necessary entry boxes
 	            	if(pass == false) {
-	            		userPane.getChildren().add(errorLabel);
+	            		theRoot.getChildren().add(errorLabel);
 
 	            		setupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-20, 
                 		Pos.CENTER, 10, 430, Color.RED);
@@ -153,7 +155,7 @@ public class CreateAccountInformationGUI {
 	    	                    Pos.CENTER, 10, 430, Color.RED);
 	    	            setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
 	    	                    Pos.CENTER, 10, 430, Color.RED);
-	            		userPane.getChildren().remove(errorLabel);
+	    	            theRoot.getChildren().remove(errorLabel);
 	            		
 	            		// DEVELOPER NOTE: Critical step
 	            		// Pass info onto the next part!
@@ -172,12 +174,19 @@ public class CreateAccountInformationGUI {
 	            				System.err.println("JDBC Driver not found: " + e.getMessage());
 	            			}
 	            			
-	            			userPane.getChildren().clear();  // Clear the current root
-	            			LoginGUI login = new LoginGUI(userPane);
+	            			theRoot.getChildren().clear();  // Clear the current root
+	            			
+	            			//
+	            			Pane newRoot = new Pane();
+	            			LoginGUI login = new LoginGUI(newRoot);
+	            			Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+	            			Stage currentStage = (Stage) theRoot.getScene().getWindow(); 
+	            			currentStage.setScene(newScene);
+	            			
 	            		} else {
 	            			errorLabel.setText("passwords dont match");
 	            			setupLabelUI(errorLabel, "Arial", 14,WINDOW_WIDTH - 10, Pos.BASELINE_LEFT, 10, 300, Color.RED);
-	            			userPane.getChildren().add(errorLabel);
+	            			theRoot.getChildren().add(errorLabel);
 	            			// Replace first name in user display menu with preferred name
 	            			// someName.somePlace() == preferredString; // Something like this (I think)
 	            		}
@@ -186,8 +195,10 @@ public class CreateAccountInformationGUI {
         });
 	}
 	
-	
 
+	/**********
+	 * Private local method to initialize the standard fields for a label
+	 */
 	private void setupLabelUI(Label l, String font, double fontSize, double minWidth, Pos pos, double x, double y, Color color){
 		l.setFont(Font.font(font, fontSize));
 		l.setMinWidth(minWidth);
