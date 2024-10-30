@@ -95,7 +95,6 @@ public class LoginEvaluator
 	 * LOGIN BUTTON Methods
 	 */
 	
-	
 	/**
 	 * IF first time login, send user to UpdateAccountInformationGUI
 	 * @param user name
@@ -157,18 +156,38 @@ public class LoginEvaluator
 	}
 	
 	/**
-	 * IF user is Student/Instructor with updated account info, send user to StudentInstructorHomeGUI
+	 * IF user is Student with updated account info, send user to StudentHomeGUI
 	 * @param user name
 	 * @return
 	 */
 	
-	public static boolean studentInstructorRole(String username)
+	public static boolean studentRole(String username)
 	{
 		//stores inputed parameter
 		userInput = username;
 		
 		//check database to see if user is either a student or instructor
-		if(AccountDatabase.isAccountUpdated(userInput) && (AccountDatabase.isStudentRole(userInput) || AccountDatabase.isInstructorRole(userInput)))
+		if(AccountDatabase.isAccountUpdated(userInput) && (AccountDatabase.isStudentRole(userInput)))
+		{	
+			return true; // user is a student or instructor
+		}
+		//user is neither a student or instructor
+		return false;
+	}
+	
+	/**
+	 * IF user is Instructor with updated account info, send user to InstructorHomeGUI
+	 * @param user name
+	 * @return
+	 */
+	
+	public static boolean instructorRole(String username)
+	{
+		//stores inputed parameter
+		userInput = username;
+		
+		//check database to see if user is either a student or instructor
+		if(AccountDatabase.isAccountUpdated(userInput) && (AccountDatabase.isInstructorRole(userInput)))
 		{	
 			return true; // user is a student or instructor
 		}

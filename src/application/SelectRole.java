@@ -70,13 +70,13 @@ public class SelectRole {
         // Event handler for the student button
         studentButton.setOnAction(event -> {
             // Simulate navigating to the Student/Instructor HomePage
-            StudentInstructorHomePage studentPage = new StudentInstructorHomePage(root);
+            StudentHomeGUI studentPage = new StudentHomeGUI(root);
         });
 
         // Event handler for the instructor button
         instructorButton.setOnAction(event -> {
             // Student/Instructor HomePage
-            StudentInstructorHomePage instructorPage = new StudentInstructorHomePage(root);
+            InstructorHomeGUI instructorPage = new InstructorHomeGUI(root);
         });
 
         // Event handler for the admin button

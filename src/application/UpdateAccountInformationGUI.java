@@ -1,19 +1,17 @@
 package application;
-//import java.lang.*;
-//import javafx.application.Application;
+
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-//import javafx.scene.text.FontPosture;
-//import javafx.scene.text.TextFlow;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import java.sql.SQLException;	// To catch errors for database
-//import passwordEvaluationTestbed.PasswordEvaluationGUITestbed;
+
 import database.AccountDatabase;	// To use account database in different package
 
 
@@ -226,10 +224,15 @@ public class UpdateAccountInformationGUI {
 	            				userPane.getChildren().clear();  // Clear the current root
 	    						SelectRole selectRole = new SelectRole(userPane, user);
 	            			}
-	            			else if(LoginEvaluator.studentInstructorRole(user)) // user is student or instructor
+	            			else if(LoginEvaluator.studentRole(user)) // user is student or instructor
 	            			{
 	            				userPane.getChildren().clear();  // Clear the current root
-	    						SelectRole selectRole = new SelectRole(userPane, user);
+	    						StudentHomeGUI sHome = new StudentHomeGUI(userPane);
+	            			}
+	            			else if(LoginEvaluator.instructorRole(user)) // user is student or instructor
+	            			{
+	            				userPane.getChildren().clear();  // Clear the current root
+	    						InstructorHomeGUI iHome = new InstructorHomeGUI(userPane);
 	            			}
 	            		}
 	            		catch(SQLException e) {
