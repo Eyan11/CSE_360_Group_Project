@@ -441,7 +441,16 @@ public class ArticleDatabase {
 			returnString += resultSet.getString("header") + ",";
 			returnString += resultSet.getString("title") + ",";
 			returnString += resultSet.getString("groups") + "|";
+			returnString += "\n"; // adds new line for each article
 		}
+		
+		//check if there is anything in the string
+		if (returnString.length() > 0)
+		{
+			//removes the last "|"
+			returnString = returnString.substring(0, returnString.length() - 1);
+		}
+		
 		return returnString;
 	}
 	

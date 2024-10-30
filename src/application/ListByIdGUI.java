@@ -1,9 +1,7 @@
 package application;
 
 import javafx.scene.control.Label; // For Label object
-import javafx.scene.control.TextField; // For TextField object
 import javafx.scene.control.Button; // For Button object
-import javafx.scene.control.CheckBox; // For CheckBox object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
 import javafx.scene.paint.Color; // To set color of UI elements
 
@@ -16,7 +14,6 @@ import javafx.scene.Scene;
 
 import database.ArticleDatabase;
 
-import java.io.IOException;
 import java.sql.*;
 
 /*******
@@ -27,6 +24,7 @@ import java.sql.*;
  * @author Julio Salazar
  * 
  * @version 1.00 10/28/2024 Phase 2 Implementation and Documentation
+ * 			1.50 10/29/2024 Added Interface Dimensions
  */
 
 public class ListByIdGUI
@@ -35,74 +33,108 @@ public class ListByIdGUI
 	 * Variable Declarations
 	 */
 
-	//The width/height of the pop-up window for the user interface
+	// The width/height of the pop-up window for the user interface
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	//stores Group or Id
-	private String userInput = "";
+	// Stores user ID as an integer
+	private int userID;
 	
-	//displays interface information
-	private Label userLabel = new Label("Enter Id or Group(s): ");
+	// Stores Article Information
+	private String id = "";
+	private String header = "";
+	private String title = "";
+	private String description = "";
+	private String keywords = "";
+	private String groups = "";
+    private String body = "";
+    private String references = "";
 	
-	//text field for user input (II or Group(s)
-	private TextField userText = new TextField();
+	// Displays interface information
+	private Label articleLabel = new Label("Article Information: ");
 	
-	//buttons used for navigating interface and listing articles
+	// Buttons used for navigating interface and listing articles
 	private Button backButton = new Button("<-");
-	private Button listIdButton = new Button("List by ID");
-	private Button listGroupButton = new Button("List by Group(s)");
 	
-	//declaration of SetupUIElements Object
+	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI;
 	
 	/**
-	 * Constructor w/ Parameter for GUI
+	 * Constructor w/ Parameter for GUI + User ID
 	 * @param theRoot
 	 */
 	
-	public ListByIdGUI(Pane theRoot, String id) throws SQLException
+	public ListByIdGUI(Pane theRoot, int userID) throws SQLException
 	{	
-		this.userInput = id;
-		Label groupLabel = new Label(ArticleDatabase.getArticlesByGroups(userInput));
+		// Initialize user ID with inputed parameter
+		this.userID = userID;
+		// Grab article with the specified ID
+		String unformattedInput = ArticleDatabase.getArticleByID(this.userID);
+	    // Split the input by commas
+	    String[] formattedInput = unformattedInput.split(",");
+
+        // Parse and store each piece of data
+        id = formattedInput[0];
+        header = formattedInput[1];
+        title = formattedInput[2];
+        description = formattedInput[3];
+        keywords = formattedInput[4];
+        groups = formattedInput[5];
+        body = formattedInput[6];
+        references = formattedInput[7];
+	    
+	    /*****
+	     * Label Declaration with Article Data
+	     */
 		
-		//utilizes the SetUpElements class for Labels, TextFields, and Buttons
+		Label idLabel = new Label("ID: " + id);
+		Label headerLabel = new Label("Header: " + header);
+		Label titleLabel = new Label("Title: " + title);
+		Label descriptionLabel = new Label("Description: " + description);
+		Label keywordsLabel = new Label("Keywords: " + keywords);
+		Label groupsLabel = new Label("Group(s): " + groups);
+		Label bodyLabel = new Label("Body: " + body);
+		Label referencesLabel = new Label("References: " + references);
+		
+		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
 		setupUI = new SetupUIElements();
 		
 		/*
 		 * Label Creations
 		 */
 		
-		//Label that...
-		setupUI.SetupLabelUI(userLabel, "Arial", 36, WINDOW_WIDTH-10, 
+		// Label that displays interface information
+		setupUI.SetupLabelUI(articleLabel, "Arial", 36, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+		// Labels that display Article ID
+		setupUI.SetupLabelUI(idLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
+		setupUI.SetupLabelUI(headerLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 125, Color.BLACK);
+		setupUI.SetupLabelUI(titleLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 150, Color.BLACK);
+		setupUI.SetupLabelUI(descriptionLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 175, Color.BLACK);
+		setupUI.SetupLabelUI(keywordsLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 200, Color.BLACK);
+		setupUI.SetupLabelUI(groupsLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 225, Color.BLACK);
+		setupUI.SetupLabelUI(bodyLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 250, Color.BLACK);
+		setupUI.SetupLabelUI(referencesLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 300, Color.BLACK);
 		
 		/*
-		 * TextField Creations 
+		 * Button Creation
 		 */
 		
-		//Text field that..
-		setupUI.SetupTextFieldUI(userText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 10, 110, true);
-		
-		/*
-		 * Button Creations
-		 */
-		
-		//Button that returns user to previous interface
+		// Button that returns user to previous interface
 		setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
-		//...
-		setupUI.SetupButtonUI(listIdButton, "Arial", 18, 150, 50,
-        		Pos.CENTER, 50, 325, false, Color.BLACK);
-		//...
-		setupUI.SetupButtonUI(listGroupButton, "Arial", 18, 150, 50,
-        		Pos.CENTER, 200, 325, false, Color.BLACK);
 		
-		
-		//Sends all previously established settings for the pane to the scene for setup
-		theRoot.getChildren().addAll(userLabel, userText, backButton, 
-				listIdButton, listGroupButton);
+		// Sends all previously established settings for the pane to the scene for setup
+		theRoot.getChildren().addAll(articleLabel, idLabel, headerLabel, titleLabel, descriptionLabel, keywordsLabel, 
+				groupsLabel, bodyLabel, referencesLabel, backButton);
 		
 		/*
 		 * Button Functionality
@@ -116,11 +148,16 @@ public class ListByIdGUI
 		{
 			public void handle(ActionEvent event) 
 			{						
-				//returns user back to previous page
+				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
-				//create new pane for next interface
+				// Create new pane for next interface
 				Pane newRoot = new Pane();
-				//ManageArticlesGUI manageArticles = new ManageArticlesGUI(theRoot); // Returns user to previous interface
+				try {
+					ListArticlesGUI listArticle = new ListArticlesGUI(newRoot); // ListArticlesGUI class
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // Returns user to previous interface
 				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 			    currentStage.setScene(newScene); // sets new scene

@@ -1,9 +1,7 @@
 package application;
 
 import javafx.scene.control.Label; // For Label object
-import javafx.scene.control.TextField; // For TextField object
 import javafx.scene.control.Button; // For Button object
-import javafx.scene.control.CheckBox; // For CheckBox object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
 import javafx.scene.paint.Color; // To set color of UI elements
 
@@ -16,7 +14,6 @@ import javafx.scene.Scene;
 
 import database.ArticleDatabase;
 
-import java.io.IOException;
 import java.sql.*;
 
 /*******
@@ -27,6 +24,7 @@ import java.sql.*;
  * @author Julio Salazar
  * 
  * @version 1.00 10/28/2024 Phase 2 Implementation and Documentation
+ * 			1.50 10/29/2024 Added Interface Dimensions
  */
 
 public class ListByGroupGUI
@@ -35,74 +33,59 @@ public class ListByGroupGUI
 	 * Variable Declarations
 	 */
 
-	//The width/height of the pop-up window for the user interface
+	// The width/height of the pop-up window for the user interface
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	//stores Group or Id
-	private String userInput = "";
+	// Stores Group(s)
+	private String group = "";
 	
-	//displays interface information
-	private Label userLabel = new Label("Enter Id or Group(s): ");
+	// Displays interface information
+	private Label groupLabel = new Label("ID, Header, Title, Group(s)");
 	
-	//text field for user input (II or Group(s)
-	private TextField userText = new TextField();
-	
-	//buttons used for navigating interface and listing articles
+	// Button to return to previous interface
 	private Button backButton = new Button("<-");
-	private Button listIdButton = new Button("List by ID");
-	private Button listGroupButton = new Button("List by Group(s)");
 	
-	//declaration of SetupUIElements Object
+	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI;
 	
 	/**
-	 * Constructor w/ Parameter for GUI
+	 * Constructor w/ Parameter for GUI + User String
 	 * @param theRoot
 	 */
 	
 	public ListByGroupGUI(Pane theRoot, String group) throws SQLException
 	{	
-		this.userInput = group;
-		Label groupLabel = new Label(ArticleDatabase.getArticlesByGroups(userInput));
-		
-		//utilizes the SetUpElements class for Labels, TextFields, and Buttons
+		// Initialize group with inputed parameter
+		this.group = group;
+		// Grab all articles with shared group
+		String formattedInput = ArticleDatabase.getArticlesByGroups(this.group);
+		// Create a label with group information to display
+		Label displayArticles = new Label(formattedInput);
+		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
 		setupUI = new SetupUIElements();
 		
 		/*
 		 * Label Creations
 		 */
 		
-		//Label that...
-		setupUI.SetupLabelUI(userLabel, "Arial", 36, WINDOW_WIDTH-10, 
+		// Label that displays what is being shown
+		setupUI.SetupLabelUI(groupLabel, "Arial", 36, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+		// Label that shows all articles with the shared group
+		setupUI.SetupLabelUI(displayArticles, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
 		
 		/*
-		 * TextField Creations 
+		 * Button Creation
 		 */
 		
-		//Text field that..
-		setupUI.SetupTextFieldUI(userText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 10, 110, true);
-		
-		/*
-		 * Button Creations
-		 */
-		
-		//Button that returns user to previous interface
+		// Button that returns user to previous interface
 		setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
-		//...
-		setupUI.SetupButtonUI(listIdButton, "Arial", 18, 150, 50,
-        		Pos.CENTER, 50, 325, false, Color.BLACK);
-		//...
-		setupUI.SetupButtonUI(listGroupButton, "Arial", 18, 150, 50,
-        		Pos.CENTER, 200, 325, false, Color.BLACK);
 		
-		
-		//Sends all previously established settings for the pane to the scene for setup
-		theRoot.getChildren().addAll(userLabel, userText, backButton, 
-				listIdButton, listGroupButton);
+		// Sends all previously established settings for the pane to the scene for setup
+		theRoot.getChildren().addAll(groupLabel, displayArticles, backButton);
 		
 		/*
 		 * Button Functionality
@@ -116,11 +99,17 @@ public class ListByGroupGUI
 		{
 			public void handle(ActionEvent event) 
 			{						
-				//returns user back to previous page
+				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
-				//create new pane for next interface
+				// Create new pane for next interface
 				Pane newRoot = new Pane();
-				//ManageArticlesGUI manageArticles = new ManageArticlesGUI(theRoot); // Returns user to previous interface
+				// Try and Catch Block for exception handling
+				try {
+					ListArticlesGUI listArticle = new ListArticlesGUI(newRoot); // ListArticlesGUI class
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // Returns user to previous interface
 				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 			    currentStage.setScene(newScene); // sets new scene
