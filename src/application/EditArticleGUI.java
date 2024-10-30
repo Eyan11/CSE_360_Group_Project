@@ -75,7 +75,7 @@ public class EditArticleGUI {
 		/** Constructor for setting up the user's GUI for the update account info page
 		 */
 		
-		
+		// TODO: fix constructor, doesn’t need user
 		EditArticleGUI(Pane userPane, String user, int articleID) { // user passed in from previous step
 			//Stage updateStage = new Stage();
 			//updateStage.setTitle("Create Articles");
