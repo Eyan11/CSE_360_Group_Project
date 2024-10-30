@@ -1,5 +1,7 @@
 package application;
 
+import java.sql.SQLException;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -51,13 +53,53 @@ public class ManageArticlesGUI {
 
         root.getChildren().addAll(title, backButton, modifyArticlesButton, createArticleButton, backupArticlesButton, restoreArticlesButton, listArticlesButton);
 
-   //     handleBack(backButton, root);
+        handleBack(backButton, root);
     }
 
- /*   private void handleBack(Button backButton, Pane root) {
+    private void handleBack(Button backButton, Pane root) {
         backButton.setOnAction(event -> {
             root.getChildren().clear();
-            AdminHome adminHome = new AdminHome(root); */
-     //   });
+            AdminHome adminHome = new AdminHome(root); 
+        });
     }
+    
+//    private void modifyArticle(Button modifyArticlesButton, Pane root) {
+//    modifyArticlesButton.setOnAction(event -> {
+//        root.getChildren().clear();
+//        new ModifyArticlesGUI(root); // Navigates to ModifyArticlesGUI
+//    });
+    
+//    private void createArticle(Button createArticleButton, Pane root) {
+//    createArticleButton.setOnAction(event -> {
+//        System.out.println("Create Article functionality is currently a work in progress.");
+//        // Add when ready
+//    });
+    
+    private void backupArticles(Button backupArticlesButton, Pane root) {
+    backupArticlesButton.setOnAction(event -> {
+        root.getChildren().clear();
+            try {
+				new BackupArticlesGUI(root);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // Navigates to BackupArticlesGUI
+        
+ 
+    });
+    }
+    
+    private void listArticles(Button listArticlesButton, Pane root) {
+    listArticlesButton.setOnAction(event -> {
+        root.getChildren().clear();
+            try {
+				new ListArticlesGUI(root);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // Navigates to ListArticlesGUI
+    });
+
+    }
+}
 

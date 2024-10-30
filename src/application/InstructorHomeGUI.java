@@ -58,15 +58,24 @@ public class InstructorHomeGUI {
         root.getChildren().addAll(title, vbox);
 
         // Handle logout functionality
-        handleLogout(logoutButton, root);
+        ManageArticles(manageArticlesButton, root);
+        Logout(logoutButton, root);
     }
 
-    private void handleLogout(Button logoutButton, Pane root) {
+    private void Logout(Button logoutButton, Pane root) {
         // Event handler for the logout button
         logoutButton.setOnAction(event -> {
             // LoginGUI
             root.getChildren().clear();  // Clear the current root
             LoginGUI loginPage = new LoginGUI(root);  // Create a new instance of LoginGUI
+        });
+        
+
+    }
+    private void ManageArticles(Button manageArticlesButton, Pane root) {
+        manageArticlesButton.setOnAction(event -> {
+            root.getChildren().clear();
+            new ManageArticlesGUI(root);
         });
     }
 }

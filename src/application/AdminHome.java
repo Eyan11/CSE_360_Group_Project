@@ -61,6 +61,8 @@ public class AdminHome {
         root.getChildren().addAll(title, vbox);
 
         // Handle logout functionality
+        ManageAccounts(manageAccountsButton, root);
+        ManageArticles(manageArticlesButton, root);
         handleLogout(logoutButton, root);
     }
 
@@ -71,5 +73,17 @@ public class AdminHome {
             root.getChildren().clear();  // Clear the current root
             LoginGUI loginPage = new LoginGUI(root);  // Create a new instance of LoginGUI
         });
+    }
+    private void ManageArticles(Button manageArticlesButton, Pane root) {
+        manageArticlesButton.setOnAction(event -> {
+            root.getChildren().clear();
+            new ManageArticlesGUI(root);
+        });
+    }
+    private void ManageAccounts(Button manageAccountsButton, Pane root) {
+    		manageAccountsButton.setOnAction(event -> {
+    			root.getChildren().clear();
+    			new ManageAccountsGUI(root);
+    		});
     }
 }
