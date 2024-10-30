@@ -1,18 +1,17 @@
 package application;
 
+import database.ArticleDatabase;
+
 import javafx.scene.control.Label; // For Label object
 import javafx.scene.control.Button; // For Button object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
 import javafx.scene.paint.Color; // To set color of UI elements
-
 import javafx.scene.layout.Pane; // For Pane object
+
 import javafx.event.ActionEvent; // For ActionEvent object
 import javafx.event.EventHandler; // For EventHandler object
-
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-
-import database.ArticleDatabase;
 
 import java.sql.*;
 
@@ -70,6 +69,7 @@ public class ListByIdGUI
 		this.userID = userID;
 		// Grab article with the specified ID
 		String unformattedInput = ArticleDatabase.getArticleByID(this.userID);
+		
 	    // Split the input by commas
 	    String[] formattedInput = unformattedInput.split(",");
 
@@ -106,6 +106,7 @@ public class ListByIdGUI
 		// Label that displays interface information
 		setupUI.SetupLabelUI(articleLabel, "Arial", 36, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+		
 		// Labels that display Article ID
 		setupUI.SetupLabelUI(idLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
@@ -165,3 +166,4 @@ public class ListByIdGUI
 		});
 	}
 }
+

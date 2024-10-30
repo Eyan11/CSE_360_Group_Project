@@ -1,19 +1,18 @@
 package application;
 
+import database.ArticleDatabase;
+
 import javafx.scene.control.Label; // For Label object
 import javafx.scene.control.TextField; // For TextField object
 import javafx.scene.control.Button; // For Button object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
 import javafx.scene.paint.Color; // To set color of UI elements
-
 import javafx.scene.layout.Pane; // For Pane object
+
 import javafx.event.ActionEvent; // For ActionEvent object
 import javafx.event.EventHandler; // For EventHandler object
-
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-
-import database.ArticleDatabase;
 
 import java.sql.*;
 

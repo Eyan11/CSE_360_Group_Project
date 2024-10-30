@@ -370,6 +370,15 @@ public class AccountDatabase {
 			returnString += resultSet.getInt("is_student") + ",";
 			returnString += resultSet.getInt("is_instructor") + ",";
 			returnString += resultSet.getInt("is_admin") + "|";
+			
+			returnString += "\n"; // adds new line for each article
+		}
+		
+		// Check if there is anything in the string
+		if (returnString.length() > 0)
+		{
+			// Removes the last "|"
+			returnString = returnString.substring(0, returnString.length() - 2);
 		}
 		
 		// Return in the format of "username1|display_name1,username2|display_name2,..."

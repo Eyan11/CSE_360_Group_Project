@@ -444,11 +444,11 @@ public class ArticleDatabase {
 			returnString += "\n"; // adds new line for each article
 		}
 		
-		//check if there is anything in the string
+		// Check if there is anything in the string
 		if (returnString.length() > 0)
 		{
-			//removes the last "|"
-			returnString = returnString.substring(0, returnString.length() - 1);
+			// Removes the last "|"
+			returnString = returnString.substring(0, returnString.length() - 2);
 		}
 		
 		return returnString;
