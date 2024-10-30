@@ -131,7 +131,7 @@ public class BackupArticlesGUI
 				theRoot.getChildren().clear();  // Clear the current root
 				//create new pane for next interface
 				Pane newRoot = new Pane();
-				//ManageArticlesGUI manageArticles = new ManageArticlesGUI(theRoot); // Returns user to previous interface
+				//ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
 				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 			    currentStage.setScene(newScene); // sets new scene
@@ -160,7 +160,7 @@ public class BackupArticlesGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						//create new pane for next interface
 						Pane newRoot = new Pane();
-						//ManageArticlesGUI manageArticles = new ManageArticlesGUI(theRoot); // Returns user to previous interface
+						ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 					    currentStage.setScene(newScene); // sets new scene

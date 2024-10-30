@@ -1,23 +1,17 @@
 package application;
 
-//import java.lang.*;
 import java.sql.SQLException;
 import database.AccountDatabase;	// To use account database in different package
 import javafx.scene.Scene;
-//import javafx.application.Application;
-//import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-//import javafx.scene.text.FontPosture;
-//import javafx.scene.text.TextFlow;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-//import javafx.stage.Stage;
-//import passwordEvaluationTestbed.PasswordEvaluationGUITestbed;
 
 // ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
 // However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
@@ -54,7 +48,7 @@ public class CreateAccountInformationGUI {
 	/** String inputs */
 	private String usernameInput;
 	private String passwordInput;
-	private String confirmInput;
+	//private String confirmInput;
 	
 	
 	/** Text to appear as a part of the window (text field indicators, etc. */
@@ -175,7 +169,6 @@ public class CreateAccountInformationGUI {
 	            			}
 	            			
 	            			theRoot.getChildren().clear();  // Clear the current root
-	            			
 	            			//
 	            			Pane newRoot = new Pane();
 	            			LoginGUI login = new LoginGUI(newRoot);
@@ -194,7 +187,6 @@ public class CreateAccountInformationGUI {
             }
         });
 	}
-	
 
 	/**********
 	 * Private local method to initialize the standard fields for a label

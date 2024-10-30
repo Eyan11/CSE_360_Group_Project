@@ -1,11 +1,13 @@
 package application;
 
 import javafx.geometry.Pos; // For positioning UI elements
+import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
 import javafx.scene.layout.Pane; // Changed from StackPane to Pane
 import javafx.scene.paint.Color; // For setting color of UI elements
 import javafx.scene.text.Font; // For setting font of text elements
 import javafx.scene.text.Text; // For displaying text in the UI
+import javafx.stage.Stage;
 
 /**
  * <p> StudentInstructorHomePage. </p>
@@ -33,7 +35,7 @@ public class StudentHomeGUI {
     public SetupUIElements setupUI;
 
     // Constructor for setting up the Student/Instructor Home GUI
-    public StudentHomeGUI(Pane root) {  // Changed StackPane to Pane
+    public StudentHomeGUI(Pane theRoot) {  // Changed StackPane to Pane
         
         // Instantiate SetupUIElements
         setupUI = new SetupUIElements();
@@ -54,17 +56,22 @@ public class StudentHomeGUI {
         logoutButton.setLayoutY(100);  // Position below the title
 
         // Add elements
-        root.getChildren().addAll(homeText, logoutButton);
+        theRoot.getChildren().addAll(homeText, logoutButton);
 
-        handleLogout(logoutButton, root);  // Handle logout
+        handleLogout(logoutButton, theRoot);  // Handle logout
     }
 
-    private void handleLogout(Button logoutButton, Pane root) {
+    private void handleLogout(Button logoutButton, Pane theRoot) {
         // Event handler for the logout button
         logoutButton.setOnAction(event -> {
             // LoginGUI
-            root.getChildren().clear();  // Clear
-            LoginGUI loginPage = new LoginGUI(root);  // Create a new instance of LoginGUI
+        	theRoot.getChildren().clear();  // Clear
+        	
+        	Pane newRoot = new Pane();
+        	LoginGUI loginPage = new LoginGUI(theRoot);  // Create a new instance of LoginGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
         });
     }
 }

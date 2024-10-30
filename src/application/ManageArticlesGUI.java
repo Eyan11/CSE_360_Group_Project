@@ -3,11 +3,13 @@ package application;
 import java.sql.SQLException;
 
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class ManageArticlesGUI {
 
@@ -15,7 +17,7 @@ public class ManageArticlesGUI {
     public final static double WINDOW_HEIGHT = 430;
     public SetupUIElements setupUI;
 
-    public ManageArticlesGUI(Pane root) {
+    public ManageArticlesGUI(Pane theRoot) {
         setupUI = new SetupUIElements();
 
         Text title = new Text("Manage Articles");
@@ -51,15 +53,20 @@ public class ManageArticlesGUI {
         listArticlesButton.setLayoutX(150);
         listArticlesButton.setLayoutY(300);
 
-        root.getChildren().addAll(title, backButton, modifyArticlesButton, createArticleButton, backupArticlesButton, restoreArticlesButton, listArticlesButton);
+        theRoot.getChildren().addAll(title, backButton, modifyArticlesButton, createArticleButton, backupArticlesButton, restoreArticlesButton, listArticlesButton);
 
-        handleBack(backButton, root);
+        handleBack(backButton, theRoot);
     }
 
-    private void handleBack(Button backButton, Pane root) {
+    private void handleBack(Button backButton, Pane theRoot) {
         backButton.setOnAction(event -> {
-            root.getChildren().clear();
-            AdminHome adminHome = new AdminHome(root); 
+        	theRoot.getChildren().clear();
+            
+            Pane newRoot = new Pane();
+            AdminHome adminHome = new AdminHome(newRoot); 
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
         });
     }
     
@@ -75,11 +82,15 @@ public class ManageArticlesGUI {
 //        // Add when ready
 //    });
     
-    private void backupArticles(Button backupArticlesButton, Pane root) {
+    private void backupArticles(Button backupArticlesButton, Pane theRoot) {
     backupArticlesButton.setOnAction(event -> {
-        root.getChildren().clear();
+    	theRoot.getChildren().clear();
             try {
-				new BackupArticlesGUI(root);
+            	Pane newRoot = new Pane();
+            	BackupArticlesGUI backupArticles = new BackupArticlesGUI(newRoot); 
+                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+    		    currentStage.setScene(newScene); //
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -89,11 +100,15 @@ public class ManageArticlesGUI {
     });
     }
     
-    private void listArticles(Button listArticlesButton, Pane root) {
+    private void listArticles(Button listArticlesButton, Pane theRoot) {
     listArticlesButton.setOnAction(event -> {
-        root.getChildren().clear();
+    	theRoot.getChildren().clear();
             try {
-				new ListArticlesGUI(root);
+            	Pane newRoot = new Pane();
+            	ListArticlesGUI listArticles = new ListArticlesGUI(newRoot); 
+                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+    		    currentStage.setScene(newScene); //
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -102,4 +117,3 @@ public class ManageArticlesGUI {
 
     }
 }
-

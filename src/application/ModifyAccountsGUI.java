@@ -158,7 +158,7 @@ public class ModifyAccountsGUI
 				theRoot.getChildren().clear();  // Clear the current root
 				//send user to previous interface
 				Pane newRoot = new Pane(); // create new root
-				AdminHome adminHome = new AdminHome(theRoot); // call previous interface
+				AdminHome adminHome = new AdminHome(newRoot); // call previous interface
 				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 			    currentStage.setScene(newScene); // sets scene
@@ -181,7 +181,7 @@ public class ModifyAccountsGUI
 					theRoot.getChildren().clear();  // Clear the current root
 					//send user to reset password interface
 					Pane newRoot = new Pane();
-					//ResetAccountGUI resetAccount = new ResetAccountGUI(theRoot, userInput);
+					ResetAccountGUI resetAccount = new ResetAccountGUI(newRoot, userInput);
 					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // create new scene
 				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 				    currentStage.setScene(newScene); // set scene
@@ -205,7 +205,7 @@ public class ModifyAccountsGUI
 					theRoot.getChildren().clear();  // Clear the current root
 					//send user to delete account interface
 					Pane newRoot = new Pane();
-					//DeleteConfirmationGUI resetAccount = new DeleteConfirmationGUI(theRoot, userInput);
+					DeleteConfirmationGUI resetAccount = new DeleteConfirmationGUI(newRoot, userInput);
 					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 				    currentStage.setScene(newScene); // set scene
@@ -321,3 +321,4 @@ public class ModifyAccountsGUI
 		});
 	}
 }
+

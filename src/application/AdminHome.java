@@ -1,12 +1,14 @@
 package application;
 
 import javafx.geometry.Pos; // For positioning UI elements
+import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
 import javafx.scene.layout.Pane; // Change from StackPane to Pane
 import javafx.scene.layout.VBox; // For layout that arranges UI elements vertically
 import javafx.scene.paint.Color; // For setting color of UI elements
 import javafx.scene.text.Font; // For setting font of text elements
 import javafx.scene.text.Text; // For displaying text in the UI
+import javafx.stage.Stage;
 
 /**
  * <p> AdminHome. </p>
@@ -30,7 +32,7 @@ public class AdminHome {
     public SetupUIElements setupUI;
 
     // Constructor for setting up the AdminHome GUI
-    public AdminHome(Pane root) {
+    public AdminHome(Pane theRoot) {
         // Instantiate
         setupUI = new SetupUIElements();
 
@@ -58,32 +60,47 @@ public class AdminHome {
         vbox.setLayoutY(100);
 
         // Add both title and VBox layout to root
-        root.getChildren().addAll(title, vbox);
+        theRoot.getChildren().addAll(title, vbox);
 
         // Handle logout functionality
-        ManageAccounts(manageAccountsButton, root);
-        ManageArticles(manageArticlesButton, root);
-        handleLogout(logoutButton, root);
+        ManageAccounts(manageAccountsButton, theRoot);
+        ManageArticles(manageArticlesButton, theRoot);
+        handleLogout(logoutButton, theRoot);
     }
 
-    private void handleLogout(Button logoutButton, Pane root) {
+    private void handleLogout(Button logoutButton, Pane theRoot) {
         // Event handler for the logout button
         logoutButton.setOnAction(event -> {
             // LoginGUI
-            root.getChildren().clear();  // Clear the current root
-            LoginGUI loginPage = new LoginGUI(root);  // Create a new instance of LoginGUI
+        	theRoot.getChildren().clear();  // Clear the current root
+            
+            Pane newRoot = new Pane();
+            LoginGUI loginPage = new LoginGUI(newRoot);  // Create a new instance of LoginGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
         });
     }
-    private void ManageArticles(Button manageArticlesButton, Pane root) {
+    private void ManageArticles(Button manageArticlesButton, Pane theRoot) {
         manageArticlesButton.setOnAction(event -> {
-            root.getChildren().clear();
-            new ManageArticlesGUI(root);
+        	theRoot.getChildren().clear();
+        	
+        	Pane newRoot = new Pane();
+        	ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot);  // Create a new instance of LoginGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
         });
     }
-    private void ManageAccounts(Button manageAccountsButton, Pane root) {
+    private void ManageAccounts(Button manageAccountsButton, Pane theRoot) {
     		manageAccountsButton.setOnAction(event -> {
-    			root.getChildren().clear();
-    			new ManageAccountsGUI(root);
+    			theRoot.getChildren().clear();
+    			
+    			Pane newRoot = new Pane();
+    			ManageAccountsGUI manageAccounts = new ManageAccountsGUI(newRoot);  // Create a new instance of LoginGUI
+                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+    		    currentStage.setScene(newScene); //
     		});
     }
 }

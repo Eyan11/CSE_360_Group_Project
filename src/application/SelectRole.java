@@ -1,12 +1,14 @@
 package application;
 
 import javafx.geometry.Pos; // For positioning UI elements
+import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
 import javafx.scene.layout.Pane; // Changed from StackPane to Pane
 import javafx.scene.layout.VBox; // For layout that arranges UI elements vertically
 import javafx.scene.paint.Color; // For setting color of UI elements
 import javafx.scene.text.Font; // For setting font of text elements
 import javafx.scene.text.Text; // For displaying text in the UI
+import javafx.stage.Stage;
 import database.AccountDatabase;	// To use account database in different package
 
 
@@ -36,7 +38,7 @@ public class SelectRole {
     private SetupUIElements setupUI = new SetupUIElements();
 
     // Constructor that takes in the username to determine user roles
-    public SelectRole(Pane root, String username) {  // Changed StackPane to Pane
+    public SelectRole(Pane theRoot, String username) {  // Changed StackPane to Pane
         // Create "Select Role" text
         Text title = new Text("Select Role");
         title.setFont(new Font("Arial", 32));  // Set font
@@ -61,28 +63,46 @@ public class SelectRole {
         vbox.getChildren().addAll(title, studentButton, instructorButton, adminButton);
 
         // Add all elements to the root Pane
-        root.getChildren().add(vbox);  // Pane now instead of StackPane
+        theRoot.getChildren().add(vbox);  // Pane now instead of StackPane
         
-        handleRoleSelection(studentButton, instructorButton, adminButton, username, root);  // Update method call
+        handleRoleSelection(studentButton, instructorButton, adminButton, username, theRoot);  // Update method call
     }
 
-    private void handleRoleSelection(Button studentButton, Button instructorButton, Button adminButton, String username, Pane root) {  // Changed StackPane to Pane
+    private void handleRoleSelection(Button studentButton, Button instructorButton, Button adminButton, String username, Pane theRoot) {  // Changed StackPane to Pane
         // Event handler for the student button
         studentButton.setOnAction(event -> {
             // Simulate navigating to the Student/Instructor HomePage
-            StudentHomeGUI studentPage = new StudentHomeGUI(root);
+        	theRoot.getChildren().clear();
+        	
+        	Pane newRoot = new Pane();
+            StudentHomeGUI studentPage = new StudentHomeGUI(newRoot);
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
         });
 
         // Event handler for the instructor button
         instructorButton.setOnAction(event -> {
             // Student/Instructor HomePage
-            InstructorHomeGUI instructorPage = new InstructorHomeGUI(root);
+        	theRoot.getChildren().clear();
+        	
+        	Pane newRoot = new Pane();
+            InstructorHomeGUI instructorPage = new InstructorHomeGUI(newRoot);
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
         });
 
         // Event handler for the admin button
         adminButton.setOnAction(event -> {
             // Simulate navigating to the AdminHome page
-            AdminHome adminPage = new AdminHome(root);
+        	theRoot.getChildren().clear();
+        	
+        	Pane newRoot = new Pane();
+            AdminHome adminPage = new AdminHome(newRoot);
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
         });
     }
 
