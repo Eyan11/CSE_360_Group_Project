@@ -1,5 +1,8 @@
 package application;
 
+import java.sql.SQLException;
+
+import database.AccountDatabase;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,7 +15,7 @@ import javafx.scene.text.Text;
 public class ResetPassword {
 
     // Constructor 
-    public ResetPassword(Pane root) {
+    public ResetPassword(Pane root, String key) {
         // Create the title "Reset Password"
         Text title = new Text("Reset Password");
         title.setFont(new Font("Arial", 32));
@@ -61,6 +64,13 @@ public class ResetPassword {
                 newPasswordField.clear();
                 confirmPasswordField.clear();
                 errorMessage.setVisible(false);
+                
+                // Send verification key and password to AccountDatabase
+                try {
+					AccountDatabase.resetPassword(newPassword, confirmPassword);
+				} catch (SQLException e) {
+					System.err.println("Error: " + e.getMessage());
+				}
             } else {
                 // Show error message if passwords don't match
                 errorMessage.setText("Passwords do not match!");
