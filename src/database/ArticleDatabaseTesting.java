@@ -33,11 +33,6 @@ public class ArticleDatabaseTesting {
 	 */
 	public static void performTestEvaluations() throws Exception {
 		
-		// Wipe all stored database rows on local machine and create a new articles table
-		//ArticleDatabase.createTable();
-		//ArticleDatabase.deleteTable();
-		//ArticleDatabase.createTable();
-		
 		// *** Test isTableEmpty() ***************************************
 		testIsTableEmpty(true);
 		// ***************************************************************
@@ -94,11 +89,11 @@ public class ArticleDatabaseTesting {
 		// ***************************************************************
 		
 		// *** Test getArticlesByGroups***********************************
-		testGetArticlesByGroups("group1", "1,header1,title1,group1&group4|");
-		testGetArticlesByGroups("group4", "1,header1,title1,group1&group4|4,header4,title4,group4|");
-		testGetArticlesByGroups("group1,group4", "1,header1,title1,group1&group4|4,header4,title4,group4|"); // group1 or group4
-		testGetArticlesByGroups("group1&group4", "1,header1,title1,group1&group4|");			// group1 and group 4
-		testGetArticlesByGroups("", "1,header1,title1,group1&group4|4,header4,title4,group4|");	// Empty groups means get all articles
+		testGetArticlesByGroups("group1", "1,header1,title1,group1&group4");
+		testGetArticlesByGroups("group4", "1,header1,title1,group1&group4|\n4,header4,title4,group4");
+		testGetArticlesByGroups("group1,group4", "1,header1,title1,group1&group4|\n4,header4,title4,group4"); // group1 or group4
+		testGetArticlesByGroups("group1&group4", "1,header1,title1,group1&group4");			// group1 and group 4
+		testGetArticlesByGroups("", "1,header1,title1,group1&group4|\n4,header4,title4,group4");	// Empty groups means get all articles
 		testGetArticlesByGroups("group2", "");													// group doesn't exist since deleted
 		// ***************************************************************
 		

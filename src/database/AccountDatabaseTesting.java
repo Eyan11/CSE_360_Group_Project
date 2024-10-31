@@ -167,7 +167,7 @@ public class AccountDatabaseTesting {
 		// *****************************************************************
 		
 		// *** Test getAllAccounts() ***************************************
-		testGetAllAccounts("Name1,pname,0,0,1|Name3,,0,1,1|");
+		testGetAllAccounts("Name1,pname,0,0,1|\nName3,,0,1,1");
 		// *****************************************************************
 		
 		

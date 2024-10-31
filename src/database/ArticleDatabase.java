@@ -423,7 +423,7 @@ public class ArticleDatabase {
 	
 	/**********
 	 * Returns the id, header, title, and groups as String for every all articles with matching groups column
-	 * in format of "id1,header1,title1,group1|id2,header2,title2,group2|...".
+	 * in format of "id1,header1,title1,group1|\nid2,header2,title2,group2|\n...".
 	 * To get articles in group1 or group2, groups should equal "group1,group2".
 	 * To get articles in group1 and group2, groups should equal "group1&group2".
 	 */
@@ -447,7 +447,7 @@ public class ArticleDatabase {
 		// Check if there is anything in the string
 		if (returnString.length() > 0)
 		{
-			// Removes the last "|"
+			// Removes the last "|\n"
 			returnString = returnString.substring(0, returnString.length() - 2);
 		}
 		

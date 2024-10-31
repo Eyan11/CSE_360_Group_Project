@@ -342,8 +342,8 @@ public class AccountDatabase {
 	
 	/**********
 	 * Returns the username and display name of every account
-	 * in format of "username1,display_name1,is_student,is_instructor,is_admin|username2,display_name2,is_student,is_instructor,is_admin|..."
-	 * Notes: A username can be a one-time key, a display_name can be empty, and all accounts are separated by "|" (including the last one)
+	 * in format of "username1,display_name1,is_student,is_instructor,is_admin|\nusername2,display_name2,is_student,is_instructor,is_admin|\n..."
+	 * Notes: A username can be a one-time key, a display_name can be empty, and all accounts are separated by "|\n"
 	 */
 	public static String getAllAccounts() throws SQLException {
 		
@@ -366,7 +366,7 @@ public class AccountDatabase {
 			else
 				returnString += ",";
 			
-			// Return account roles seperated by "," and seperate each account with "|"
+			// Return account roles seperated by "," and seperate each account with "|\n"
 			returnString += resultSet.getInt("is_student") + ",";
 			returnString += resultSet.getInt("is_instructor") + ",";
 			returnString += resultSet.getInt("is_admin") + "|";
@@ -377,11 +377,11 @@ public class AccountDatabase {
 		// Check if there is anything in the string
 		if (returnString.length() > 0)
 		{
-			// Removes the last "|"
+			// Removes the last "|\n"
 			returnString = returnString.substring(0, returnString.length() - 2);
 		}
-		
-		// Return in the format of "username1|display_name1,username2|display_name2,..."
+		System.out.println("RETURN STRING OF GET ALL ACCOUNTS: " + returnString);
+		// Return in the format of "username1|display_name1,username2|\ndisplay_name2,..."
 		return returnString;
 	}
 	

@@ -57,8 +57,8 @@ public class DatabaseManager {
 			ArticleDatabase.createTable();
 			
 			// Perform tests on both accounts and articles tables
-			//AccountDatabaseTesting.performTestEvaluations();
-			//ArticleDatabaseTesting.performTestEvaluations();
+			AccountDatabaseTesting.performTestEvaluations();
+			ArticleDatabaseTesting.performTestEvaluations();
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
