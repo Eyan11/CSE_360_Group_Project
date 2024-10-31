@@ -3,7 +3,6 @@ package application;
 import database.*;
 import java.sql.SQLException;
 
-import database.AccountDatabase;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -15,7 +14,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
 
 /**
  * <p> EditArticleGUI Class </p>
@@ -31,11 +29,7 @@ import javafx.stage.Stage;
  *  
  */
 
-
 public class EditArticleGUI {
-
-		
-		
 		/**
 		 * Variable declaration
 		 */
@@ -79,11 +73,9 @@ public class EditArticleGUI {
 		private TextField bodyText = new TextField();
 		private TextField referencesText = new TextField();
 		private TextField errorText = new TextField();
-
-
 		
-		/** Constructors
-		 */
+		//
+		public SetupUIElements setupUI = new SetupUIElements();
 		
 		/** Constructor for setting up the user's GUI for the update account info page
 		 */
@@ -98,71 +90,71 @@ public class EditArticleGUI {
 			// Label the email input field with a title just above it, left aligned
 			setupLabelUI(sceneLabel, "Arial", 14, WINDOW_WIDTH-10, 
 					Pos.BASELINE_LEFT, 10, 25, Color.GREEN);
-			
-			// Label the email input field with a title just above it, left aligned
-						setupLabelUI(sceneLabel, "Arial", 14, WINDOW_WIDTH-10, 
-								Pos.BASELINE_LEFT, 10, 25, Color.GREEN);
 						
 			// Label the first name input field with a title just above it, left aligned
 			setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 100, Color.GREEN);
+					Pos.BASELINE_LEFT, 10, 35, Color.GREEN);
 			
 			// Label the middle name input field with a title just above it, left aligned
 			setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 175, Color.GREEN);
+					Pos.BASELINE_LEFT, 10, 105, Color.GREEN);
 			
 			// Label the last name input field with a title just above it, left aligned
 			setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 250, Color.GREEN);
+					Pos.BASELINE_LEFT, 10, 175, Color.GREEN);
 			
 			// Label the preferred name input field with a title just above it, left aligned
 			setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 325, Color.GREEN);
+					Pos.BASELINE_LEFT, 10, 245, Color.GREEN);
 			
 			setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 400, Color.GREEN);
+					Pos.BASELINE_LEFT, 10, 315, Color.GREEN);
 			
 			setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 475, Color.GREEN);
+					Pos.BASELINE_LEFT, 10, 385, Color.GREEN);
 			
 			setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 550, Color.GREEN);
+					Pos.BASELINE_LEFT, 10, 455, Color.GREEN);
 			
 			// Establish the text input operand field and when anything changes in the user inputs,
 			// the code will process the entire input to ensure that it is valid or an error.
 			setupTextUI(headerText, "Arial", 18, WINDOW_WIDTH-20,
-					Pos.BASELINE_LEFT, 10, 50, true);
+					Pos.BASELINE_LEFT, 10, 60, true);
 			
 			setupTextUI(titleText, "Arial", 18, WINDOW_WIDTH-20,
-					Pos.BASELINE_LEFT, 10, 125, true);
+					Pos.BASELINE_LEFT, 10, 130, true);
 			
 			setupTextUI(descriptionText, "Arial", 18, WINDOW_WIDTH-20,
 					Pos.BASELINE_LEFT, 10, 200, true);
 			
 			setupTextUI(keywordsText, "Arial", 18, WINDOW_WIDTH-20,
-					Pos.BASELINE_LEFT, 10, 275, true);
+					Pos.BASELINE_LEFT, 10, 270, true);
 			
 			setupTextUI(groupsText, "Arial", 18, WINDOW_WIDTH-20,
-					Pos.BASELINE_LEFT, 10, 350, true);
+					Pos.BASELINE_LEFT, 10, 340, true);
 			
 			setupTextUI(bodyText, "Arial", 18, WINDOW_WIDTH-20,
-					Pos.BASELINE_LEFT, 10, 425, true);
+					Pos.BASELINE_LEFT, 10, 410, true);
 			
 			setupTextUI(referencesText, "Arial", 18, WINDOW_WIDTH-20,
-					Pos.BASELINE_LEFT, 10, 500, true);
+					Pos.BASELINE_LEFT, 10, 480, true);
 			
 			setupTextUI(errorText, "Arial", 18, WINDOW_WIDTH-20,
-					Pos.BASELINE_LEFT, 10, 575, true);
+					Pos.BASELINE_LEFT, 10, 505, true);
 			
 			// Establish the button which will be used to check and send new user info
 			// to the respective methods required to update the article info currently in the database
-	        Button createButton = new Button("Create");
-	        setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	        		Pos.CENTER, 10, 400, Color.GREEN);
+			Button editButton = new Button("Edit");
+	        setupButtonUI(editButton, "Arial", 14, WINDOW_WIDTH-20, 
+	        		Pos.CENTER, 10, 545, Color.GREEN);
+	        
+	        Button backButton = new Button("<-");
+	        setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
+	        		Pos.CENTER, 10, 10, false, Color.BLACK);
 	        
 	        // Sends all previously established settings for the pane to the scene for setup
 	        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
-	        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, referencesText, createButton); 
+	        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, referencesText, editButton, backButton); 
 	        
 	        /*Scene userScene = new Scene(userPane, 800, 500);
 	        userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -172,7 +164,7 @@ public class EditArticleGUI {
 	        // Establishes the button logic for each press
 	        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
 	        //                 he will add functionality for repeated valid input.
-	        createButton.setOnAction(new EventHandler<>() {
+	        editButton.setOnAction(new EventHandler<>() {
 	            public void handle(ActionEvent event) {
 	            	
 		            	// Retrieve TextField input
@@ -194,7 +186,8 @@ public class EditArticleGUI {
 		            	// and highlight all necessary entry boxes
 		            	if(pass == false) {
 		            		userPane.getChildren().add(errorLabel);
-		            		setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
+		
+		            		setupButtonUI(editButton, "Arial", 14, WINDOW_WIDTH-20, 
 		                    		Pos.CENTER, 10, 430, Color.RED);
 		            		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 400, Color.RED);
@@ -225,7 +218,7 @@ public class EditArticleGUI {
 		            	// 				   onto then next part. Thank you.
 		            	else {
 		            		//Eliminate error indicator
-		            		setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
+		            		setupButtonUI(editButton, "Arial", 14, WINDOW_WIDTH-20, 
 		                    		Pos.CENTER, 10, 430, Color.GREEN);
 		            		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 400, Color.GREEN);
@@ -261,10 +254,16 @@ public class EditArticleGUI {
 		            			/**
 		            			 * Transitions to different home pages
 		            			 */
-		            			Pane newRoot = new Pane();
 		            			
 		            			userPane.getChildren().clear();  // Clear the current root
+		            			
+		            			Pane newRoot = new Pane();
 		            			ManageArticlesGUI manageArticlesGUI = new ManageArticlesGUI(newRoot); 
+		            			
+		            			Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+							    Stage currentStage = (Stage) userPane.getScene().getWindow();
+							    currentStage.setScene(newScene); // sets new scene
+		            			
 	    						
 	    						/*Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 	    		                updateStage.setScene(newScene);
@@ -313,8 +312,6 @@ public class EditArticleGUI {
 	            }
 	        });
 		}
-		
-		
 		
 		/**
 		 * Methods
@@ -397,10 +394,6 @@ public class EditArticleGUI {
 			}
 			// Else, filled = true
 			return filled = true;
-			
-			
-		
-	}
-		
-	}
 
+		}
+	}

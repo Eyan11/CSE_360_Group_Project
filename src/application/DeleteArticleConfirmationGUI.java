@@ -37,8 +37,15 @@ public class DeleteArticleConfirmationGUI {
     private Label messageLabel;// implementing logic for id later 
     private Button yesButton = new Button("Yes"); // will add logic to remove article from database
     private Button noButton = new Button("No"); // return back to previous modifyarticle page 
-    private Label errorLabel;
+    private Label errorLabel = new Label("Error");
+    
+    /*
+     * Constructor
+     */
+    
     public DeleteArticleConfirmationGUI(Pane pane, int id ) {
+    	System.out.println("Delete 3");
+    	
     	messageLabel = new Label("Are you sure you want to delete the article? ID: " + id +"?"); 
         // sets up the label for the title 
         setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, Pos.CENTER, 0, 10, Color.BLACK);
@@ -56,6 +63,11 @@ public class DeleteArticleConfirmationGUI {
         yesButton.setOnAction(event -> yesButtonFunction(pane, id));
         noButton.setOnAction(event -> noButtonFunction(pane));
     }
+    
+    /*
+     * yesButtonFunction
+     */
+    
     private void yesButtonFunction(Pane pane, int id) {
     	boolean isdeleted = true; //new
 		try {
@@ -77,6 +89,8 @@ public class DeleteArticleConfirmationGUI {
     	}
     	
     }
+    
+    
     private void noButtonFunction(Pane pane) {
         // Clear the current pane and navigate back to ModifyArticlesGUI without deleting anything
         pane.getChildren().clear();
@@ -89,6 +103,8 @@ public class DeleteArticleConfirmationGUI {
         currentStage.setScene(newScene);
     }
 //label ui
+    
+    
     private void setupLabelUI(Label label, String font, double fontSize, double minWidth, Pos pos, double x, double y, Color color) {
         label.setFont(Font.font(font, fontSize));
         label.setMinWidth(minWidth);
@@ -98,6 +114,8 @@ public class DeleteArticleConfirmationGUI {
         label.setTextFill(color);
     }
 //button ui
+    
+    
     private void setupButtonUI(Button button, String font, double fontSize, double width, Pos pos, double x, double y, Color color) {
         button.setFont(Font.font(font, fontSize));
         button.setMinWidth(width);

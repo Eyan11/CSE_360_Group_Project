@@ -1,6 +1,8 @@
 package application;
 
 import database.ArticleDatabase;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.sql.SQLException;
+
 //ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
 //However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 //(especially before changing anything!)
@@ -30,6 +33,7 @@ import java.sql.SQLException;
 * @version 1.00		10/30/2024 Phase 2 implementation and documentation
 *  
 */
+
 public class ModifyArticlesGUI {
     public final static double WINDOW_WIDTH = 500;
     public final static double WINDOW_HEIGHT = 430;
@@ -76,14 +80,70 @@ public class ModifyArticlesGUI {
         setupButtonUI(deleteButton, "Arial", 14, 80, Pos.CENTER, 190, 350, Color.GREEN);
 
         // Button actions
-        editButton.setOnAction(event -> handleEdit());
-        deleteButton.setOnAction(event -> handleDelete());
+        //editButton.setOnAction(event -> handleEdit());
+        //deleteButton.setOnAction(event -> handleDelete());
 
         // Add components to the pane
         pane.getChildren().addAll(sceneLabel, backButton, articlesLabel, idHeader, headerHeader, titleHeader, groupHeader, idLabel, errorLabel, idTextField, editButton, deleteButton);
 
         // Handle the Back button
         backButton.setOnAction(event -> handleBack(pane));
+        
+        editButton.setOnAction(new EventHandler<>()
+		{
+			public void handle(ActionEvent event) 
+			{
+				String id = idTextField.getText();
+				int integerInput = Integer.parseInt(id);
+				
+				try {
+					if(ArticleDatabase.doesArticleIDExist(integerInput))
+					{
+						//
+						pane.getChildren().clear();  // Clear the current root
+						
+						// Create new pane for next interface
+						Pane newRoot = new Pane();
+						EditArticleGUI editArticle = new EditArticleGUI(newRoot, integerInput); // returns user to previous interface
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+					    Stage currentStage = (Stage) pane.getScene().getWindow();
+					    currentStage.setScene(newScene); // sets new scene
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+        
+        deleteButton.setOnAction(new EventHandler<>()
+		{
+			public void handle(ActionEvent event) 
+			{	
+				System.out.println("Delete 1");
+				String id = idTextField.getText();
+				int integerInput = Integer.parseInt(id);
+				
+				try {
+					if(ArticleDatabase.doesArticleIDExist(integerInput))
+					{
+						System.out.println("Delete 2");
+						//
+						pane.getChildren().clear();  // Clear the current root
+						
+						// Create new pane for next interface
+						Pane newRoot = new Pane();
+						DeleteArticleConfirmationGUI deleteConfirmation = new DeleteArticleConfirmationGUI(newRoot, integerInput); //
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+					    Stage currentStage = (Stage) pane.getScene().getWindow();
+					    currentStage.setScene(newScene); // sets new scene
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
     }
 
     // Method to retrieve and display articles in rows
@@ -116,6 +176,7 @@ public class ModifyArticlesGUI {
         }
     }
 
+    /*
     // Method to handle edit action
     private void handleEdit() {
         if (idTextField.getText().isEmpty()) { // if nothing is in the id text box
@@ -172,10 +233,12 @@ public class ModifyArticlesGUI {
 			}
         }
     }
+    */
 
     // Method to handle back action and navigate to ManageArticlesGUI
     private void handleBack(Pane pane) {
         pane.getChildren().clear();
+        
         Pane newRoot = new Pane();
         new ManageArticlesGUI(newRoot);
         Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);

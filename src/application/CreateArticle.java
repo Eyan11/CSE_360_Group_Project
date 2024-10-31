@@ -81,6 +81,9 @@ public class CreateArticle {
 	//private Button updateButton = new Button("Button test");	
 	//updateButton.setText("Update");
 	
+	// Declaration of SetupUIElements Object
+	public SetupUIElements setupUI = new SetupUIElements();
+	
 	
 	/** Constructors
 	 */
@@ -104,64 +107,68 @@ public class CreateArticle {
 		
 		// Label the first name input field with a title just above it, left aligned
 		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 20, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 35, Color.GREEN);
 		
 		// Label the middle name input field with a title just above it, left aligned
 		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 90, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 105, Color.GREEN);
 		
 		// Label the last name input field with a title just above it, left aligned
 		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 160, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 175, Color.GREEN);
 		
 		// Label the preferred name input field with a title just above it, left aligned
 		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 230, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 245, Color.GREEN);
 		
 		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 300, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 315, Color.GREEN);
 		
 		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 370, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 385, Color.GREEN);
 		
 		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 440, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 455, Color.GREEN);
 		
 		// Establish the text input operand field and when anything changes in the user inputs,
 		// the code will process the entire input to ensure that it is valid or an error.
 		setupTextUI(headerText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 45, true);
+				Pos.BASELINE_LEFT, 10, 60, true);
 		
 		setupTextUI(titleText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 115, true);
+				Pos.BASELINE_LEFT, 10, 130, true);
 		
 		setupTextUI(descriptionText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 185, true);
+				Pos.BASELINE_LEFT, 10, 200, true);
 		
 		setupTextUI(keywordsText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 255, true);
+				Pos.BASELINE_LEFT, 10, 270, true);
 		
 		setupTextUI(groupsText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 325, true);
+				Pos.BASELINE_LEFT, 10, 340, true);
 		
 		setupTextUI(bodyText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 395, true);
+				Pos.BASELINE_LEFT, 10, 410, true);
 		
 		setupTextUI(referencesText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 465, true);
+				Pos.BASELINE_LEFT, 10, 480, true);
 		
 		setupTextUI(errorText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 475, true);
+				Pos.BASELINE_LEFT, 10, 505, true);
 		
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
         Button createButton = new Button("Create");
         setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 530, Color.GREEN);
+        		Pos.CENTER, 10, 545, Color.GREEN);
+        
+        Button backButton = new Button("<-");
+        setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
+        		Pos.CENTER, 10, 10, false, Color.BLACK);
         
         // Sends all previously established parameters for the pane to the scene for setup
         userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
-        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, referencesText, createButton); 
+        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, referencesText, createButton, backButton); 
         
         // Don't need this -- error (Only need scene when you're going to a different page)
         //Scene userScene = new Scene(userPane, 800, 500);
@@ -181,8 +188,8 @@ public class CreateArticle {
 	            	String descriptionString = descriptionText.getText();
 	            	String keywordsString = keywordsText.getText();
 	            	String groupsString = groupsText.getText();
-	            	String bodyString = groupsText.getText();
-	            	String referencesString = groupsText.getText();
+	            	String bodyString = bodyText.getText();
+	            	String referencesString = referencesText.getText();
 
 	
 	                // Do error check, if no errors, update info. If errors, output error message above update button and below info input.
@@ -280,6 +287,21 @@ public class CreateArticle {
 	            	}
             }
         });
+        
+		backButton.setOnAction(new EventHandler<>()
+		{
+			public void handle(ActionEvent event) 
+			{						
+				// Returns user back to previous page
+				userPane.getChildren().clear();  // Clear the current root
+				// Create new pane for next interface
+				Pane newRoot = new Pane();
+				ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
+				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+			    Stage currentStage = (Stage) userPane.getScene().getWindow();
+			    currentStage.setScene(newScene); // sets new scene
+			}
+		});
 	}
 	
 	/**
