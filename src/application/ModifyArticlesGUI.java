@@ -11,7 +11,25 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.sql.SQLException;
+//ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
+//However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
+//(especially before changing anything!)
 
+//DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 2.
+
+/**
+* <p> SetUpUIElements. </p>
+* 
+* <p> Description: A JavaFX helper class to initialize the properties of UI elements.</p>
+* 
+* <p> Source: Lynn Robert Carter from InClassDocumentationProject1 project, UserInterface class, 
+* 				available at: https://canvas.asu.edu/courses/193728/files/93600828?module_item_id=14807672 
+* 
+* @author Cadon Duong 
+* 
+* @version 1.00		10/30/2024 Phase 2 implementation and documentation
+*  
+*/
 public class ModifyArticlesGUI {
     public final static double WINDOW_WIDTH = 500;
     public final static double WINDOW_HEIGHT = 430;
@@ -71,7 +89,7 @@ public class ModifyArticlesGUI {
     // Method to retrieve and display articles in rows
     private void displayArticleRows(Pane pane) {
         try {
-            String allArticles = ArticleDatabase.getAllArticles(); //allArticles acessing all the articles currently in database
+            String allArticles = ArticleDatabase.getAllArticles(); //allArticles accessing all the articles currently in database
             if (allArticles.isEmpty()) { // if there are no articles in the database then 
                 Label noDataLabel = new Label("No articles found."); // it will say none found 
                 setupLabelUI(noDataLabel, "Arial", 14, WINDOW_WIDTH, Pos.CENTER, 0, 160, Color.GRAY);
