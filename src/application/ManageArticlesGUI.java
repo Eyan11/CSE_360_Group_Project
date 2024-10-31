@@ -73,17 +73,21 @@ public class ManageArticlesGUI {
         });
     }
     
-//    private void modifyArticle(Button modifyArticlesButton, Pane root) {
-//    modifyArticlesButton.setOnAction(event -> {
-//        root.getChildren().clear();
-//        new ModifyArticlesGUI(root); // Navigates to ModifyArticlesGUI
-//    });
+    private void modifyArticle(Button modifyArticlesButton, Pane root) {
+    modifyArticlesButton.setOnAction(event -> {
+        root.getChildren().clear();
+        new ModifyArticlesGUI(root); // Navigates to ModifyArticlesGUI
     
-//    private void createArticle(Button createArticleButton, Pane root) {
-//    createArticleButton.setOnAction(event -> {
-//        System.out.println("Create Article functionality is currently a work in progress.");
-//        // Add when ready
-//    });
+    });
+    }
+    
+   
+    private void createArticle(Button createArticleButton, Pane root) {
+    createArticleButton.setOnAction(event -> {
+        System.out.println("Create Article functionality is currently a work in progress.");
+        // Add when ready
+    });
+    }
     
     private void backupArticles(Button backupArticlesButton, Pane theRoot) {
     backupArticlesButton.setOnAction(event -> {
