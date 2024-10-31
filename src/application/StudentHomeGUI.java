@@ -10,14 +10,14 @@ import javafx.scene.text.Text; // For displaying text in the UI
 import javafx.stage.Stage;
 
 /**
- * <p> StudentInstructorHomePage. </p>
+ * <p> StudentHomePage. </p>
  * 
- * <p> Description: A JavaFX class responsible for displaying the Student/Instructor home page GUI, 
+ * <p> Description: A JavaFX class responsible for displaying the Student home page GUI, 
  * and providing logout functionality for the user.</p>
  * 
  * @author Sriram Nesan
  * 
- * @version 1.00		10/9/2024 Phase 1 implementation and documentation
+ * @version 1.00		10/29/2024 Phase 2 implementation and documentation
  *  
  */
 

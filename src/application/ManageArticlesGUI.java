@@ -11,6 +11,17 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+/**
+ * <p> ManageArticlesGUI. </p>
+ * 
+ * <p> Description: A JavaFX class responsible for displaying options to manage articles.</p>
+ * 
+ * @author Sriram Nesan
+ * 
+ * @version 1.00		10/29/2024 Phase 2 implementation and documentation
+ *  
+ */
+
 public class ManageArticlesGUI {
 
     public final static double WINDOW_WIDTH = 500;

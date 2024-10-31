@@ -11,10 +11,10 @@ import javafx.scene.text.Text; // For displaying text in the UI
 import javafx.stage.Stage;
 
 /**
- * <p> AdminHome. </p>
+ * <p> InstructorHomeGUI. </p>
  * 
- * <p> Description: A JavaFX class responsible for displaying the admin home GUI and providing buttons 
- * for admin-related actions such as managing accounts and articles.</p>
+ * <p> Description: A JavaFX class responsible for displaying the Instructor home GUI and providing buttons 
+ * for managing articles and logging out.</p>
  * 
  * @version 1.01        10/29/2024 Updated layout based on design image
  *  
