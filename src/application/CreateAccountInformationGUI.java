@@ -122,15 +122,15 @@ public class CreateAccountInformationGUI {
 	            		theRoot.getChildren().add(errorLabel);
 
 	            		setupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-20, 
-                		Pos.CENTER, 10, 430, Color.RED);
+	            				Pos.BASELINE_LEFT, 10, 100, Color.RED);
 	            		
 	            		setupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 430, Color.RED);
+	                    		Pos.BASELINE_LEFT, 10, 200, Color.RED);
 	            		
 	            		setupLabelUI(confirmLabel, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 430, Color.RED);
+	                    		Pos.BASELINE_LEFT, 10, 300, Color.RED);
 	            		setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 430, Color.RED);
+	                    		Pos.CENTER, 10, 400, Color.RED);
 	            	}
 	            	
 	            	// If all necessary entries are filled, reset scene formatting and send info to next step!
@@ -140,15 +140,15 @@ public class CreateAccountInformationGUI {
 	            		
 	            		//Eliminate error indicator
 	            		setupLabelUI(usernameLabel, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 430, Color.RED);
+	                    		Pos.BASELINE_LEFT, 10, 100, Color.RED);
 	    	            		
 	    	            setupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-20, 
-	    	                    Pos.CENTER, 10, 430, Color.RED);
+	    	                    Pos.BASELINE_LEFT, 10, 200, Color.RED);
 	    	            		
 	    	            setupLabelUI(confirmLabel, "Arial", 14, WINDOW_WIDTH-20, 
-	    	                    Pos.CENTER, 10, 430, Color.RED);
+	    	                    Pos.BASELINE_LEFT, 10, 300, Color.RED);
 	    	            setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	    	                    Pos.CENTER, 10, 430, Color.RED);
+	    	                    Pos.CENTER, 10, 400, Color.RED);
 	    	            theRoot.getChildren().remove(errorLabel);
 	            		
 	            		// DEVELOPER NOTE: Critical step
@@ -177,8 +177,8 @@ public class CreateAccountInformationGUI {
 	            			currentStage.setScene(newScene);
 	            			
 	            		} else {
-	            			errorLabel.setText("passwords dont match");
-	            			setupLabelUI(errorLabel, "Arial", 14,WINDOW_WIDTH - 10, Pos.BASELINE_LEFT, 10, 300, Color.RED);
+	            			errorLabel.setText("Passwords Don't Match!");
+	            			setupLabelUI(errorLabel, "Arial", 14,WINDOW_WIDTH - 10, Pos.BASELINE_LEFT, 10, 375, Color.RED);
 	            			theRoot.getChildren().add(errorLabel);
 	            			// Replace first name in user display menu with preferred name
 	            			// someName.somePlace() == preferredString; // Something like this (I think)

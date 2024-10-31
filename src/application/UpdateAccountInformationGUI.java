@@ -129,7 +129,7 @@ public class UpdateAccountInformationGUI {
 		
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
-        Button updateButton = new Button("Button test");
+        Button updateButton = new Button("Update Account Information");
         setupButtonUI(updateButton, "Arial", 14, WINDOW_WIDTH-20, 
         		Pos.CENTER, 10, 400, Color.GREEN);
         

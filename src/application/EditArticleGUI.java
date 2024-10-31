@@ -89,7 +89,7 @@ public class EditArticleGUI {
 		 */
 		
 		// TODO: fix constructor, doesn’t need user
-		EditArticleGUI(Pane userPane, String user, int articleID) { // user passed in from previous step
+		EditArticleGUI(Pane userPane, int articleID) { // user passed in from previous step
 	        
 	        // Label the Scene with the name of the testbed, centered at the top of the pane
 			//setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 

@@ -1,12 +1,16 @@
 package application;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
@@ -62,6 +66,21 @@ public class InviteUserGUI {
 
         // Button logic
         inviteButton.setOnAction(event -> handleInvite());
+        
+		homeButton.setOnAction(new EventHandler<>()
+		{
+			public void handle(ActionEvent event) 
+			{						
+				invitePane.getChildren().clear();  // clear the current root
+				
+				// Send user to previous interface
+				Pane newRoot = new Pane(); // create new root
+				ManageAccountsGUI manageAccount = new ManageAccountsGUI(newRoot); // call previous interface
+				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+			    Stage currentStage = (Stage) invitePane.getScene().getWindow();
+			    currentStage.setScene(newScene); // sets scene
+			}
+		});
     }
 
     private void handleInvite() { //error message if no boxes are selected

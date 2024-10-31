@@ -89,7 +89,7 @@ public class CreateArticle {
 	 */
 	
 	
-	CreateArticle(Pane userPane, String user) { // user passed in from previous step
+	CreateArticle(Pane userPane) { // user passed in from previous step
 		Stage updateStage = new Stage();
 		updateStage.setTitle("Create Articles");
 		
@@ -266,20 +266,13 @@ public class CreateArticle {
 	            			 * Transitions to different home pages
 	            			 */
 	            			userPane.getChildren().clear();  // Clear the current root
-            				updateStage.close();
-            				System.out.print("Close");
-
+	            			
 	            			Pane newRoot = new Pane();
-	            			
-	            			
 	            			// Load next step
 	            			ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); 
-    						
     						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-    		                updateStage.setScene(newScene);
-    		                updateStage.show();
-    		                
-
+    						Stage currentStage = (Stage) userPane.getScene().getWindow(); // 
+    						currentStage.setScene(newScene);
 	            		}
 	            		catch(SQLException e) {
 	            			System.err.println("Error: " + e.getMessage());
@@ -288,8 +281,6 @@ public class CreateArticle {
             }
         });
 	}
-	
-	
 	
 	/**
 	 * Methods
@@ -372,9 +363,5 @@ public class CreateArticle {
 		}
 		// Else, filled = true
 		return filled;
-		
-		
-	
-}
-	
+	}
 }

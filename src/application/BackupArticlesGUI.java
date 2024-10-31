@@ -77,7 +77,7 @@ public class BackupArticlesGUI
 		
 		// Label letting user result of leaving group field left unfilled
 		setupUI.SetupLabelUI(instructionLabel, "Arial", 18, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 175, 63, Color.BLACK);
+				Pos.BASELINE_LEFT, 175, 213, Color.BLACK);
 		
 		// Label asking user for group(s) they would like to back-up
 		setupUI.SetupLabelUI(groupLabel, "Arial", 36, WINDOW_WIDTH-10, 

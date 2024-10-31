@@ -59,11 +59,16 @@ public class ManageArticlesGUI {
         theRoot.getChildren().addAll(title, backButton, modifyArticlesButton, createArticleButton, backupArticlesButton, restoreArticlesButton, listArticlesButton);
 
         handleBack(backButton, theRoot);
+        modifyArticle(modifyArticlesButton, theRoot);
+        createArticle(createArticleButton, theRoot);
+        backupArticles(backupArticlesButton, theRoot);
+        restoreArticles(restoreArticlesButton, theRoot);
+        listArticles(listArticlesButton, theRoot);
     }
 
     private void handleBack(Button backButton, Pane theRoot) {
         backButton.setOnAction(event -> {
-        	theRoot.getChildren().clear();
+        	theRoot.getChildren().clear(); // clear old root
             
             Pane newRoot = new Pane();
             AdminHome adminHome = new AdminHome(newRoot); 
@@ -73,54 +78,83 @@ public class ManageArticlesGUI {
         });
     }
     
-    private void modifyArticle(Button modifyArticlesButton, Pane root) {
+    private void modifyArticle(Button modifyArticlesButton, Pane theRoot) {
     modifyArticlesButton.setOnAction(event -> {
-        root.getChildren().clear();
-        new ModifyArticlesGUI(root); // Navigates to ModifyArticlesGUI
-    
-    });
+    	theRoot.getChildren().clear(); // clear old root
+        
+        Pane newRoot = new Pane();
+        ModifyArticlesGUI modArt = new ModifyArticlesGUI(newRoot); // Navigates to ModifyArticlesGUI
+        Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    currentStage.setScene(newScene); //
+    	});
     }
     
    
-    private void createArticle(Button createArticleButton, Pane root) {
+    private void createArticle(Button createArticleButton, Pane theRoot) {
     createArticleButton.setOnAction(event -> {
-        System.out.println("Create Article functionality is currently a work in progress.");
-        // Add when ready
-    });
+    	theRoot.getChildren().clear(); // clear old root
+        
+        Pane newRoot = new Pane();
+        CreateArticle creArt = new CreateArticle(newRoot); // Navigates to ModifyArticlesGUI
+        Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    currentStage.setScene(newScene); //
+    
+    	});
     }
     
     private void backupArticles(Button backupArticlesButton, Pane theRoot) {
     backupArticlesButton.setOnAction(event -> {
     	theRoot.getChildren().clear();
-            try {
-            	Pane newRoot = new Pane();
-            	BackupArticlesGUI backupArticles = new BackupArticlesGUI(newRoot); 
-                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-    		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-    		    currentStage.setScene(newScene); //
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} // Navigates to BackupArticlesGUI
-        
- 
-    });
+    	Pane newRoot = new Pane();
+    	
+    	try {
+			BackupArticlesGUI backArt = new BackupArticlesGUI(newRoot);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+        Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    currentStage.setScene(newScene); // 
+	    
+    	});
+    }
+    
+    private void restoreArticles(Button restoreArticlesButton, Pane theRoot) {
+    restoreArticlesButton.setOnAction(event -> {
+    	theRoot.getChildren().clear();
+    	Pane newRoot = new Pane();
+    	
+    	try {
+			RestoreArticlesGUI backArt = new RestoreArticlesGUI(newRoot);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+        Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    currentStage.setScene(newScene); // 
+	    
+    	});
     }
     
     private void listArticles(Button listArticlesButton, Pane theRoot) {
     listArticlesButton.setOnAction(event -> {
     	theRoot.getChildren().clear();
+    	Pane newRoot = new Pane();
+    	
             try {
-            	Pane newRoot = new Pane();
-            	ListArticlesGUI listArticles = new ListArticlesGUI(newRoot); 
-                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-    		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-    		    currentStage.setScene(newScene); //
+            	ListArticlesGUI listArt = new ListArticlesGUI(newRoot); 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} // Navigates to ListArticlesGUI
-    });
-
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+		    currentStage.setScene(newScene); //
+		    
+    	});
     }
 }

@@ -93,8 +93,8 @@ public class ModifyAccountsGUI
 				Pos.BASELINE_LEFT, 10, 310, Color.BLACK);
 		
 		// Label that displays all account information from database
-		setupUI.SetupLabelUI(accounInfoLabel, "Arial", 11, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 60, Color.BLACK);
+		setupUI.SetupLabelUI(accounInfoLabel, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
 		
 		/*
 		 * TextField Creation

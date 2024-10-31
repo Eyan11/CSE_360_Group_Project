@@ -69,11 +69,11 @@ public class ModifyArticlesGUI {
 
         // Set up ID label and input field
         setupLabelUI(idLabel, "Arial", 14, 50, Pos.CENTER_LEFT, 40, 300, Color.BLACK);
-        setupTextFieldUI(idTextField, "Arial", 14, 80, Pos.CENTER_LEFT, 90, 320);
+        setupTextFieldUI(idTextField, "Arial", 14, 80, Pos.CENTER_LEFT, 90, 300);
 
         // Set up edit and delete buttons
-        setupButtonUI(editButton, "Arial", 14, 80, Pos.CENTER, 150, 320, Color.GREEN);
-        setupButtonUI(deleteButton, "Arial", 14, 80, Pos.CENTER, 250, 320, Color.GREEN);
+        setupButtonUI(editButton, "Arial", 14, 80, Pos.CENTER, 90, 350, Color.GREEN);
+        setupButtonUI(deleteButton, "Arial", 14, 80, Pos.CENTER, 190, 350, Color.GREEN);
 
         // Button actions
         editButton.setOnAction(event -> handleEdit());
@@ -118,7 +118,6 @@ public class ModifyArticlesGUI {
 
     // Method to handle edit action
     private void handleEdit() {
-    	String temp = "deleteme";
         if (idTextField.getText().isEmpty()) { // if nothing is in the id text box
             errorLabel.setText("Error: Please enter an article ID.");
         } else {
@@ -126,7 +125,12 @@ public class ModifyArticlesGUI {
             try {
 				if (ArticleDatabase.doesArticleIDExist(id)) { 
 	                pane.getChildren().clear();  // Clear the current pane
-	                new EditArticleGUI(pane, temp, id);
+	                
+	                Pane newRoot = new Pane();
+	                EditArticleGUI editArticle = new EditArticleGUI(newRoot, id);
+	                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	        	    Stage currentStage = (Stage) pane.getScene().getWindow(); // 
+	        	    currentStage.setScene(newScene); //
 				} else {
 				    errorLabel.setText("Error: Article ID not found.");
 				}
@@ -148,8 +152,16 @@ public class ModifyArticlesGUI {
 				    errorLabel.setTextFill(Color.GREEN);
 				    errorLabel.setText("Article ID " + id + " deleted successfully.");
 				    idTextField.clear();
+				    
 				    pane.getChildren().clear();
-				    displayArticleRows(pane); // Refresh display after deletion
+				    
+		            Pane newRoot = new Pane();
+		            DeleteArticleConfirmationGUI deleteArt = new DeleteArticleConfirmationGUI(newRoot, id); 
+		            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+		    	    Stage currentStage = (Stage) pane.getScene().getWindow(); // 
+		    	    currentStage.setScene(newScene); //
+				    
+				    //displayArticleRows(pane); // Refresh display after deletion
 				} else {
 				    errorLabel.setTextFill(Color.RED);
 				    errorLabel.setText("Error: Failed to delete Article ID " + id + ".");
