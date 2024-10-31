@@ -57,7 +57,7 @@ public class DeleteArticleConfirmationGUI {
         noButton.setOnAction(event -> noButtonFunction(pane));
     }
     private void yesButtonFunction(Pane pane, int id) {
-    	boolean isdeleted;
+    	boolean isdeleted = true; //new
 		try {
 			isdeleted = ArticleDatabase.deleteArticle(id);
 		} catch (SQLException e) {
@@ -67,7 +67,7 @@ public class DeleteArticleConfirmationGUI {
     	if (!isdeleted) { 
     		errorLabel.setText("failed to delete article with id" + id);
     	}
-    	else {
+    	else { // if deleted switch scene back to previous
     		pane.getChildren().clear();
     		Pane newRoot = new Pane();
     		new ModifyArticlesGUI(newRoot);
