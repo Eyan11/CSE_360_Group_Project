@@ -16,6 +16,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+
+/**
+ * <p> EditArticleGUI Class </p>
+ * 
+ * <p> Description: The Java/FX-based user interface for the editing of an article 
+ * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
+ * 
+ * <p> Copyright: Evan Espinosa © 2024 </p>
+ * 
+ * @author Evan Espinosa
+ * 
+ * @version 1.00		2024-09-10 The JavaFX-based GUI for the implementation of the user's update account information page
+ *  
+ */
+
+
 public class EditArticleGUI {
 
 		
@@ -64,10 +80,7 @@ public class EditArticleGUI {
 		private TextField referencesText = new TextField();
 		private TextField errorText = new TextField();
 
-		
-		//private Button updateButton = new Button("Button test");	
-		//updateButton.setText("Update");
-		
+
 		
 		/** Constructors
 		 */
@@ -77,14 +90,7 @@ public class EditArticleGUI {
 		
 		// TODO: fix constructor, doesn’t need user
 		EditArticleGUI(Pane userPane, String user, int articleID) { // user passed in from previous step
-			//Stage updateStage = new Stage();
-			//updateStage.setTitle("Create Articles");
-			
 	        
-	        
-	        //setupUI = new SetupUIElements();
-	        
-	        // NOTE: Not needed, see updateStage.setTitle() ^
 	        // Label the Scene with the name of the testbed, centered at the top of the pane
 			//setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
 					//Pos.CENTER, 0, 10, Color.GREEN);
@@ -149,7 +155,7 @@ public class EditArticleGUI {
 					Pos.BASELINE_LEFT, 10, 575, true);
 			
 			// Establish the button which will be used to check and send new user info
-			// to the respective methods required to update the user info currently in the database
+			// to the respective methods required to update the article info currently in the database
 	        Button createButton = new Button("Create");
 	        setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
 	        		Pos.CENTER, 10, 400, Color.GREEN);
@@ -247,7 +253,6 @@ public class EditArticleGUI {
 		            		
 		            		// DEVELOPER NOTE: Critical step v1
 		            		// Pass info onto the next part!
-		            		//AccountDatabase userAccount = new AccountDatabase(); // Object made from AccountDatabase.java (the next part)
 		            		try {
 		            			
 		            			ArticleDatabase.editArticle(articleID, headerString, titleString, descriptionString, keywordsString, 

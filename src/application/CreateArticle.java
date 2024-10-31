@@ -17,7 +17,19 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 
-
+/**
+ * <p> CreateArticleGUI Class </p>
+ * 
+ * <p> Description: The Java/FX-based user interface for the creation of an article 
+ * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
+ * 
+ * <p> Copyright: Evan Espinosa © 2024 </p>
+ * 
+ * @author Evan Espinosa
+ * 
+ * @version 1.00		2024-09-10 The JavaFX-based GUI for the implementation of the user's update account information page
+ *  
+ */
 
 
 
@@ -82,10 +94,6 @@ public class CreateArticle {
 		updateStage.setTitle("Create Articles");
 		
         
-        
-        //setupUI = new SetupUIElements();
-        
-        // NOTE: Not needed, see updateStage.setTitle() ^
         // Label the Scene with the name of the testbed, centered at the top of the pane
 		//setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
 				//Pos.CENTER, 0, 10, Color.GREEN);
@@ -151,7 +159,7 @@ public class CreateArticle {
         setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
         		Pos.CENTER, 10, 530, Color.GREEN);
         
-        // Sends all previously established settings for the pane to the scene for setup
+        // Sends all previously established parameters for the pane to the scene for setup
         userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
         		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, referencesText, createButton); 
         
@@ -218,8 +226,8 @@ public class CreateArticle {
 	            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
 	            	// 				   onto then next part. Thank you.
 	            	else {
-	            		//Eliminate error indicator
 	            		
+	            		//Eliminate error indicator
 	            		userPane.getChildren().remove(errorLabel);
 	            		
 	            		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -249,12 +257,8 @@ public class CreateArticle {
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
-	            		//AccountDatabase userAccount = new AccountDatabase(); // Object made from AccountDatabase.java (the next part)
 	            		try {
 	            			
-	            			//TODO: REPLACE WITH CREATE ARTICLE CONSTRUCTOR
-	            			//AccountDatabase.updateAccountInformation(user, titleString, descriptionString, keywordsString, 
-	            			//		groupsString, bodyString);
 	            			ArticleDatabase.createArticle(headerString, titleString, descriptionString, keywordsString, 
 	            					groupsString, bodyString, referencesString);
 	            				
@@ -268,67 +272,18 @@ public class CreateArticle {
 	            			Pane newRoot = new Pane();
 	            			
 	            			
-	            			//userPane.getChildren().clear();  // Clear the current root
-            				//updateStage.close();
-    						AdminHome adminHome = new AdminHome(newRoot); // TODO: CHANGE TO MANAGEARTICLES (FETCH FROM GITHUB)
-    						
-    						
+	            			// Load next step
+	            			ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); 
     						
     						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
     		                updateStage.setScene(newScene);
     		                updateStage.show();
     		                
-    		                
-    		                
-    		                
-	            			/*if(AccountDatabase.isAdminRole(user)) // check if user is an admin
-	            			{
-	            				userPane.getChildren().clear();  // Clear the current root
-	            				updateStage.close();
-	    						AdminHome adminHome = new AdminHome(newRoot); // TODO: SOURCE OF ERROR (?)
-	    						
-	    						
-	    						
-	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	    		                updateStage.setScene(newScene);
-	    		                updateStage.show();
-	            			}
-	            			else if(AccountDatabase.isStudentRole(user) && AccountDatabase.isInstructorRole(user)) // check is user is admin + (Student or Instructor)
-	            			{
-	            				userPane.getChildren().clear();  // Clear the current root
-	            				//updateStage.close();
-	    						SelectRole selectRole = new SelectRole(newRoot, user);
-	    						
-	    						
-	    						
-	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	    		                //updateStage.setScene(newScene);
-	    		                updateStage.show();
-	            			}
-	            			else if(AccountDatabase.isStudentRole(user) && !AccountDatabase.isInstructorRole(user)) // user is student
-	            			{
-	            				userPane.getChildren().clear();  // Clear the current root
-	            				//updateStage.close();
-	    						SelectRole selectRole = new SelectRole(newRoot, user);
-	    						
-	    						
-	    						
-	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	    		                updateStage.setScene(newScene);
-	    		                updateStage.show();
-	            			}*/
+
 	            		}
 	            		catch(SQLException e) {
 	            			System.err.println("Error: " + e.getMessage());
 	            		}
-	            		
-	            		//DEVELOPER NOTE: Critical step v2 (Experimental implementation idea, keeping for future reference in the coming phases)
-	            		//                (maybe not needed?)
-	            		// If preferred name box is filled in (i.e. not empty)
-	            		//if(preferredString != "") {
-	            			// Replace first name in user display menu with preferred name
-	            			// someName.somePlace() == preferredString; // Something like this (I think)
-	            		//}
 	            	}
             }
         });

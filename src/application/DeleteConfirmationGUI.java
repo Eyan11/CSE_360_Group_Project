@@ -18,6 +18,21 @@ import javafx.stage.Stage;
 import java.sql.SQLException;	// To catch errors for database
 
 
+/**
+ * <p> DeleteConfirmationGUI Class </p>
+ * 
+ * <p> Description: The Java/FX-based user interface for confirming user account deletion 
+ * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
+ * 
+ * <p> Copyright: Evan Espinosa © 2024 </p>
+ * 
+ * @author Evan Espinosa
+ * 
+ * @version 1.00		2024-10-30 The JavaFX-based GUI for the implementation of the user's delete account page
+ *  
+ */
+
+
 // public class DeleteConfirmationGUI extends Application {
 public class DeleteConfirmationGUI {
 	
@@ -39,8 +54,7 @@ public class DeleteConfirmationGUI {
 	/** Constructors
 	 */
 	
-	/** Constructor for setting up the user's GUI for the update account info page
-	 */
+	/** Constructor for setting up the user's GUI for the delete account page	 */
 	DeleteConfirmationGUI(Pane userPane, String user) { // user passed in from previous step
 		Stage updateStage = new Stage();
 		updateStage.setTitle("Delete Confirmation");
@@ -51,29 +65,21 @@ public class DeleteConfirmationGUI {
 		// Label the email input field with a title just above it, left aligned
 				setupLabelUI(sceneLabel, "Arial", 14, WINDOW_WIDTH-10, 
 						Pos.CENTER, 10, 200, Color.GREEN);
-		// Establish the button which will be used to check and send new user info
+		// Establish the button which will be used to confirm user account deletion
 		// to the respective methods required to update the user info currently in the database
         Button buttonYes = new Button("Yes");
         setupButtonUI(buttonYes, "Arial", 14, WINDOW_WIDTH-20, 
         		Pos.CENTER, 10, 300, Color.GREEN);
 
-		// Establish the button which will be used to check and send new user info
+        // Establish the button which will be used to abort user account deletion
 		// to the respective methods required to update the user info currently in the database
         Button buttonNo = new Button("No");
         setupButtonUI(buttonNo, "Arial", 14, WINDOW_WIDTH-20, 
         		Pos.CENTER, 10, 400, Color.GREEN);
         
-        // Sends all previously established settings for the pane to the scene for setup
+        // Sends all previously established parameters for the pane to the scene for setup
         userPane.getChildren().addAll(buttonYes, buttonNo, sceneLabel); 
         
-        /*Scene userScene = new Scene(userPane, 800, 500);
-        userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-        updateStage.setScene(userScene);
-        updateStage.show();*/
-        
-        // Establishes the button logic for each press
-        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
-        //                 he will add functionality for repeated valid input.
         
         // Used for testing
         /*try {
@@ -85,6 +91,9 @@ public class DeleteConfirmationGUI {
 
 		}*/
         
+        // Establishes the button logic for each press
+        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
+        //                 he will add functionality for repeated valid input.
         // Both yes and no go back to ModifyAccountsGUI
         buttonYes.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
@@ -132,6 +141,8 @@ public class DeleteConfirmationGUI {
 				Pane newRoot = new Pane();
 					
 				try {
+					
+					// Load new window
 					ModifyAccountsGUI modify = new ModifyAccountsGUI(newRoot);
 					
 	            	
@@ -192,6 +203,7 @@ private void setupButtonUI(Button b, String ff, double f, double w, Pos p, doubl
 	b.setTextFill(color);
 }	
 
+// Main and start kept for testing purposes
 /*public static void main(String[] args) {
 	launch(args);
 }*/
