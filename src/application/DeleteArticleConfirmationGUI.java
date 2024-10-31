@@ -1,4 +1,6 @@
 package application;
+import java.sql.SQLException;
+
 import database.ArticleDatabase;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -51,11 +53,17 @@ public class DeleteArticleConfirmationGUI {
 
         // put all the labels and buttons needed onto the pane 
         pane.getChildren().addAll(sceneLabel, messageLabel, yesButton, noButton);
-        yesButton.setOnAction(event -> yesButtonFunction(pane, articleId));
-        noButton.setOnAction(event -> noButtonFuntion(pane));
+        yesButton.setOnAction(event -> yesButtonFunction(pane, id));
+        noButton.setOnAction(event -> noButtonFunction(pane));
     }
     private void yesButtonFunction(Pane pane, int id) {
-    	boolean isdeleted = ArticleDatabase.deleteArticle(id);
+    	boolean isdeleted;
+		try {
+			isdeleted = ArticleDatabase.deleteArticle(id);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	if (!isdeleted) { 
     		errorLabel.setText("failed to delete article with id" + id);
     	}
@@ -63,7 +71,7 @@ public class DeleteArticleConfirmationGUI {
     		pane.getChildren().clear();
     		Pane newRoot = new Pane();
     		new ModifyArticlesGUI(newRoot);
-    		Scene newScene = Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+    		Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
     		Stage currentStage = (Stage) pane.getScene().getWindow();
     		currentStage.setScene(newScene);
     	}

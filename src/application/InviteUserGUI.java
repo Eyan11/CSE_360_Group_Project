@@ -7,6 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+
+import java.sql.SQLException;
+
+import database.AccountDatabase;
 //ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
 //However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 //(especially before changing anything!)
@@ -72,9 +76,18 @@ public class InviteUserGUI {
     }
 
     private String generateOneTimeKey() {
-        //eventually will create logic for generating key using some encryption maybe 
-        return "J8S2-00ES-K3RI-FS36";
+        boolean isStudent = studentCheckBox.isSelected();
+        boolean isInstructor = instructorCheckBox.isSelected();
+        boolean isAdmin = adminCheckBox.isSelected();
+
+        try {
+            return AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Key generation error";  
+        }
     }
+
 
     private void setupLabelUI(Label label, String font, double fontSize, double minWidth, Pos pos, double x, double y, Color color) {
         label.setFont(Font.font(font, fontSize));
