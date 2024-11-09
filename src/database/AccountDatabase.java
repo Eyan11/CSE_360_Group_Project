@@ -77,6 +77,16 @@ public class AccountDatabase {
 	}
 	
 	
+	/**********
+	 * Deletes all rows in accounts database
+	 */
+	public static void deleteAllAccounts() throws SQLException {
+		query = "DELETE FROM accounts";		// delete all accounts in table
+		statement.execute(query);			// execute query
+		System.out.println("All accounts in 'accounts' table deleted");
+	}
+	
+	
 	/**********************************************************************************************
 
 	Public Getter Methods To Check/Return Database Values

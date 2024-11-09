@@ -57,6 +57,7 @@ public class ArticleDatabase {
 				+ "body VARCHAR(500), "
 				+ "references VARCHAR(100))";
 		statement.execute(query);
+		System.out.println("'articles' table created if it did not already exist");
 	}
 	
 	
@@ -65,13 +66,24 @@ public class ArticleDatabase {
 	 */
 	public static void deleteTable() throws SQLException {
 		query = "DROP TABLE articles";		// delete database
-		statement.execute(query);						// execute query
+		statement.execute(query);			// execute query
+		System.out.println("'articles' table deleted");
+	}
+	
+	
+	/**********
+	 * Deletes all rows in articles database
+	 */
+	public static void deleteAllArticles() throws SQLException {
+		query = "DELETE FROM articles";		// delete all articles in table
+		statement.execute(query);			// execute query
+		System.out.println("All accounts in 'articles' table deleted");
 	}
 
 	
 	/**********************************************************************************************
 
-	 Public Methods To Check Database Information
+	 Public Methods To Get Database Information
 	
 	**********************************************************************************************/
 
@@ -135,9 +147,111 @@ public class ArticleDatabase {
 	}
 	
 	
+	/**********
+	 * Returns the id, header, and title for every article in table as a String
+	 * in format of "id1,header1,title1,group1|id2,header2,title2,group2|..."
+	 */
+	public static String getAllArticles() throws SQLException {
+		
+		// Prevent getting articles if empty
+		if(isTableEmpty()) {
+			System.err.println("Cannot get all articles because database is empty!");
+			return "";
+		}
+		
+		// Select all rows from database
+		query = "SELECT * FROM articles"; 
+		statement = connection.createStatement();
+		resultSet = statement.executeQuery(query); 	// Execute query
+		
+		String returnString = "";
+
+		// While the next row exists, check next row
+		while(resultSet.next()) { 
+			// Get current article info
+			returnString += resultSet.getInt("id") + ","; 
+			returnString += resultSet.getString("header") + ",";
+			returnString += resultSet.getString("title") + ",";
+			returnString += resultSet.getString("groups") + "|";
+		}
+		return returnString;
+	}
+	
+	
+	/**********
+	 * Returns the all information about an article given its id number
+	 * in format of "id,header,title,description,keywords,groups,body,references"
+	 */
+	public static String getArticleByID(int id) throws SQLException {
+		
+		// Prevent getting an article that does not exist
+		if(!doesArticleIDExist(id)) {
+			System.err.println("Cannot get article id: " + id + " because it is not found in database!");
+			return "";
+		}
+		
+		// Select the row from database where id = placeholder variable ?
+	    query = "SELECT * FROM articles WHERE id = ?";
+	    
+	    PreparedStatement pstmt = connection.prepareStatement(query);
+	        
+        pstmt.setInt(1, id);				// id = id
+        resultSet = pstmt.executeQuery();	// Execute query
+        
+        String returnString = "";
+        
+        // While next row exists, check next row
+        if (resultSet.next()) {
+        	// Get article info
+        	returnString += id + ",";
+        	returnString += resultSet.getString("header") + ","; 
+        	returnString += resultSet.getString("title") + ",";
+        	returnString += resultSet.getString("description") + ","; 
+        	returnString += resultSet.getString("keywords") + ",";
+        	returnString += resultSet.getString("groups") + ",";
+        	returnString += resultSet.getString("body") + ",";
+        	returnString += resultSet.getString("references"); 
+        }
+        return returnString;
+	}
+	
+	
+	/**********
+	 * Returns the id, header, title, and groups as String for every all articles with matching groups column
+	 * in format of "id1,header1,title1,group1|\nid2,header2,title2,group2|\n...".
+	 * To get articles in group1 or group2, groups should equal "group1,group2".
+	 * To get articles in group1 and group2, groups should equal "group1&group2".
+	 */
+	public static String getArticlesByGroups(String groups) throws SQLException {
+		
+		// Craft query to get articles that contain any of the groups provided in groups column
+	    resultSet = craftQueryToGetArticlesByGroups(groups);
+        
+        String returnString = "";
+        
+		// While the next row exists, check next row
+		while(resultSet.next()) { 
+			// Get current article info
+			returnString += resultSet.getInt("id") + ","; 
+			returnString += resultSet.getString("header") + ",";
+			returnString += resultSet.getString("title") + ",";
+			returnString += resultSet.getString("groups") + "|";
+			returnString += "\n"; // adds new line for each article
+		}
+		
+		// Check if there is anything in the string
+		if (returnString.length() > 0)
+		{
+			// Removes the last "|\n"
+			returnString = returnString.substring(0, returnString.length() - 2);
+		}
+		
+		return returnString;
+	}
+	
 	/**********************************************************************************************
 
-	 Public Methods To Modify Database
+	 Public Methods To Set Database Information
 	
 	**********************************************************************************************/
 	
@@ -342,116 +456,6 @@ public class ArticleDatabase {
 			System.out.println("Failed to edit article id: " + id);
 			return false;
 		}
-	}
-	
-	
-	/**********************************************************************************************
-
-	 Public Methods To Return Database Information
-	
-	**********************************************************************************************/
-	
-
-	/**********
-	 * Returns the id, header, and title for every article in table as a String
-	 * in format of "id1,header1,title1,group1|id2,header2,title2,group2|..."
-	 */
-	public static String getAllArticles() throws SQLException {
-		
-		// Prevent getting articles if empty
-		if(isTableEmpty()) {
-			System.err.println("Cannot get all articles because database is empty!");
-			return "";
-		}
-		
-		// Select all rows from database
-		query = "SELECT * FROM articles"; 
-		statement = connection.createStatement();
-		resultSet = statement.executeQuery(query); 	// Execute query
-		
-		String returnString = "";
-
-		// While the next row exists, check next row
-		while(resultSet.next()) { 
-			// Get current article info
-			returnString += resultSet.getInt("id") + ","; 
-			returnString += resultSet.getString("header") + ",";
-			returnString += resultSet.getString("title") + ",";
-			returnString += resultSet.getString("groups") + "|";
-		}
-		return returnString;
-	}
-	
-	
-	/**********
-	 * Returns the all information about an article given its id number
-	 * in format of "id,header,title,description,keywords,groups,body,references"
-	 */
-	public static String getArticleByID(int id) throws SQLException {
-		
-		// Prevent getting an article that does not exist
-		if(!doesArticleIDExist(id)) {
-			System.err.println("Cannot get article id: " + id + " because it is not found in database!");
-			return "";
-		}
-		
-		// Select the row from database where id = placeholder variable ?
-	    query = "SELECT * FROM articles WHERE id = ?";
-	    
-	    PreparedStatement pstmt = connection.prepareStatement(query);
-	        
-        pstmt.setInt(1, id);				// id = id
-        resultSet = pstmt.executeQuery();	// Execute query
-        
-        String returnString = "";
-        
-        // While next row exists, check next row
-        if (resultSet.next()) {
-        	// Get article info
-        	returnString += id + ",";
-        	returnString += resultSet.getString("header") + ","; 
-        	returnString += resultSet.getString("title") + ",";
-        	returnString += resultSet.getString("description") + ","; 
-        	returnString += resultSet.getString("keywords") + ",";
-        	returnString += resultSet.getString("groups") + ",";
-        	returnString += resultSet.getString("body") + ",";
-        	returnString += resultSet.getString("references"); 
-        }
-        return returnString;
-	}
-	
-	
-	/**********
-	 * Returns the id, header, title, and groups as String for every all articles with matching groups column
-	 * in format of "id1,header1,title1,group1|\nid2,header2,title2,group2|\n...".
-	 * To get articles in group1 or group2, groups should equal "group1,group2".
-	 * To get articles in group1 and group2, groups should equal "group1&group2".
-	 */
-	public static String getArticlesByGroups(String groups) throws SQLException {
-		
-		// Craft query to get articles that contain any of the groups provided in groups column
-	    resultSet = craftQueryToGetArticlesByGroups(groups);
-        
-        String returnString = "";
-        
-		// While the next row exists, check next row
-		while(resultSet.next()) { 
-			// Get current article info
-			returnString += resultSet.getInt("id") + ","; 
-			returnString += resultSet.getString("header") + ",";
-			returnString += resultSet.getString("title") + ",";
-			returnString += resultSet.getString("groups") + "|";
-			returnString += "\n"; // adds new line for each article
-		}
-		
-		// Check if there is anything in the string
-		if (returnString.length() > 0)
-		{
-			// Removes the last "|\n"
-			returnString = returnString.substring(0, returnString.length() - 2);
-		}
-		
-		return returnString;
 	}
 	
 	

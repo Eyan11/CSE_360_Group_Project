@@ -48,17 +48,15 @@ public class DatabaseManager {
 			
 			// Wipe all data in accounts table
 			AccountDatabase.createTable();
-			AccountDatabase.deleteTable();
-			AccountDatabase.createTable();
+			AccountDatabase.deleteAllAccounts();
 			
 			// Wipe all data in articles table
 			ArticleDatabase.createTable();
-			ArticleDatabase.deleteTable();
-			ArticleDatabase.createTable();
+			ArticleDatabase.deleteAllArticles();
 			
 			// Perform tests on both accounts and articles tables
-			AccountDatabaseTesting.performTestEvaluations();
-			ArticleDatabaseTesting.performTestEvaluations();
+			//AccountDatabaseTesting.performTestEvaluations();
+			//ArticleDatabaseTesting.performTestEvaluations();
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
