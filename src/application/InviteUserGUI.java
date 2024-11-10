@@ -99,12 +99,7 @@ public class InviteUserGUI {
         boolean isInstructor = instructorCheckBox.isSelected();
         boolean isAdmin = adminCheckBox.isSelected();
 
-        try {
-            return AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "Key generation error";  
-        }
+        return AccountDatabase.inviteUser(isStudent, isInstructor, isAdmin);
     }
 
 

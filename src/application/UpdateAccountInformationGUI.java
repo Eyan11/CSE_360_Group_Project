@@ -201,66 +201,62 @@ public class UpdateAccountInformationGUI {
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
-	            		try {
-	            			AccountDatabase.updateAccountInformation(user, emailString, firstString, middleString, lastString, preferredString);
-	            			
-	            			/**
-	            			 * Transitions to different home pages
-	            			 */
-	            			
-	            			if(LoginEvaluator.adminLogin(user)) // check if user is an admin
-	            			{
-	            				theRoot.getChildren().clear();  // Clear the current root
-	            				Pane newRoot = new Pane();
-	            				
-	    						AdminHome adminHome = new AdminHome(newRoot);
-	    						
-	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-	    					    currentStage.setScene(newScene); // 
-	            			}
-	            			else if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
-	            			{
-	            				theRoot.getChildren().clear();  // Clear the current root
-	            				Pane newRoot = new Pane();
-	            				
-	            				//Method used for setting up for next part
-	    						SelectRole selectRole = new SelectRole(newRoot, user);
-	    						
-	    						// Load next part
-	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-	    					    currentStage.setScene(newScene); // 
-	            			}
-	            			else if(LoginEvaluator.studentRole(user)) // user is student or instructor
-	            			{
-	            				theRoot.getChildren().clear();  // Clear the current root
-	            				Pane newRoot = new Pane();
-	            				
-	            				//Method used for setting up next part
-	    						StudentHomeGUI sHome = new StudentHomeGUI(newRoot);
-	    						// Load next part
-	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-	    					    currentStage.setScene(newScene); // 
-	            			}
-	            			else if(LoginEvaluator.instructorRole(user)) // user is student or instructor
-	            			{
-	            				theRoot.getChildren().clear();  // Clear the current root
-	            				Pane newRoot = new Pane();
-	            				
-	            				//Method used for setting up for next part
-	    						InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot);
-	    						
-	    						// Load next part
-	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-	    					    currentStage.setScene(newScene); // 
-	            			}
-	            		}
-	            		catch(SQLException e) {
-	            			System.err.println("Error: " + e.getMessage());
-	            		}
+            			AccountDatabase.updateAccountInformation(user, emailString, firstString, middleString, lastString, preferredString);
+            			
+            			/**
+            			 * Transitions to different home pages
+            			 */
+            			
+            			if(LoginEvaluator.adminLogin(user)) // check if user is an admin
+            			{
+            				theRoot.getChildren().clear();  // Clear the current root
+            				Pane newRoot = new Pane();
+            				
+    						AdminHome adminHome = new AdminHome(newRoot);
+    						
+    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+    					    currentStage.setScene(newScene); // 
+            			}
+            			else if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
+            			{
+            				theRoot.getChildren().clear();  // Clear the current root
+            				Pane newRoot = new Pane();
+            				
+            				//Method used for setting up for next part
+    						SelectRole selectRole = new SelectRole(newRoot, user);
+    						
+    						// Load next part
+    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+    					    currentStage.setScene(newScene); // 
+            			}
+            			else if(LoginEvaluator.studentRole(user)) // user is student or instructor
+            			{
+            				theRoot.getChildren().clear();  // Clear the current root
+            				Pane newRoot = new Pane();
+            				
+            				//Method used for setting up next part
+    						StudentHomeGUI sHome = new StudentHomeGUI(newRoot);
+    						// Load next part
+    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+    					    currentStage.setScene(newScene); // 
+            			}
+            			else if(LoginEvaluator.instructorRole(user)) // user is student or instructor
+            			{
+            				theRoot.getChildren().clear();  // Clear the current root
+            				Pane newRoot = new Pane();
+            				
+            				//Method used for setting up for next part
+    						InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot);
+    						
+    						// Load next part
+    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+    					    currentStage.setScene(newScene); // 
+            			}
+            		}
 	            		
 	            		//DEVELOPER NOTE: Critical step v2 (Experimental implementation idea, keeping for future reference in the coming phases)
 	            		//                (maybe not needed?)
@@ -269,10 +265,10 @@ public class UpdateAccountInformationGUI {
 	            			// Replace first name in user display menu with preferred name
 	            			// someName.somePlace() == preferredString; // Something like this (I think)
 	            		//}
-	            	}
-            }
-        });
+            	}
+        	});
 	}
+	
 
 	
 	/**

@@ -306,18 +306,14 @@ public class ModifyAccountsGUI
 				// Collect user name from user for input
 				userInput = userText.getText();
 				
-				try {
-					// Make sure inputed user name from user exists in database
-					if(AccountDatabase.doesUsernameExist(userInput))
-					{
-						// Updates role changes for user name inputed from user
-						AccountDatabase.updateUserRoles(userInput, addStudentRole, addInstructorRole, addAdminRole);
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				// Make sure inputed user name from user exists in database
+				if(AccountDatabase.doesUsernameExist(userInput))
+				{
+					// Updates role changes for user name inputed from user
+					AccountDatabase.updateUserRoles(userInput, addStudentRole, addInstructorRole, addAdminRole);
 				}
 			}
 		});
+
 	}
 }

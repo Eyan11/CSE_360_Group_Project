@@ -66,11 +66,8 @@ public class ResetPassword {
                 errorMessage.setVisible(false);
                 
                 // Send verification key and password to AccountDatabase
-                try {
-					AccountDatabase.resetPassword(newPassword, confirmPassword);
-				} catch (SQLException e) {
-					System.err.println("Error: " + e.getMessage());
-				}
+				AccountDatabase.resetPassword(newPassword, confirmPassword);
+
             } else {
                 // Show error message if passwords don't match
                 errorMessage.setText("Passwords do not match!");

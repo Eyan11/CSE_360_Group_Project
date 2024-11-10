@@ -64,20 +64,13 @@ public class ResetAccountGUI {
 		//String thisPass = "pass";
 		
 		String key = "";
+			
+		// Used for testing
+		//AccountDatabase.createFirstAccount(thisUser, thisPass);
+		//key = AccountDatabase.resetUser(thisUser);
 		
-		try {
-			
-			// Used for testing
-			//AccountDatabase.createFirstAccount(thisUser, thisPass);
-			//key = AccountDatabase.resetUser(thisUser);
-			
-			
-			key = AccountDatabase.resetUser(user);
-			System.out.println(key);
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			key = "Error occured"; // Default message for key if an error occurs
-		}
+		key = AccountDatabase.resetUser(user);
+		System.out.println(key);
 		
 		// Create new Pane to prevent conflict with defining a new Pane with an existing Pane object
 		Pane resetPane = new Pane();

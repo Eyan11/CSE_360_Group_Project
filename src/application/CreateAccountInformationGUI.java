@@ -160,13 +160,7 @@ public class CreateAccountInformationGUI {
 	            			usernameInput = usernameText.getText();
 	            			passwordInput = passwordText.getText();
 	            			
-	            			try {
-	            				AccountDatabase.createFirstAccount(usernameInput, passwordInput);
-	            			}
-	            			//catch SQL error
-	            			catch(SQLException e) {
-	            				System.err.println("JDBC Driver not found: " + e.getMessage());
-	            			}
+            				AccountDatabase.createFirstAccount(usernameInput, passwordInput);
 	            			
 	            			theRoot.getChildren().clear();  // Clear the current root
 	            			//

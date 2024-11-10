@@ -48,20 +48,13 @@ public class LoginEvaluator
 		userInput = username;
 		passwordInput = password;
 		
-		try {
-			//check database to see if login information exists and corresponds to one another
-			if(AccountDatabase.doesLoginExist(userInput, passwordInput)) // check if login exists
-			{
-				return true; // login DOES exist
-			}
-			//login does NOT exist
-			return false;
+		//check database to see if login information exists and corresponds to one another
+		if(AccountDatabase.doesLoginExist(userInput, passwordInput)) // check if login exists
+		{
+			return true; // login DOES exist
 		}
-		//catch SQL error
-		catch(SQLException e) {
-			System.err.println("JDBC Driver not found: " + e.getMessage());
-			return false;
-		}
+		//login does NOT exist
+		return false;
 	}
 	
 	/**
@@ -69,26 +62,19 @@ public class LoginEvaluator
 	 * @param one-time key
 	 * @return
 	 */
-	
+	 
 	public static boolean OneTimeKeyChecker(String onetimekey)
 	{
 		//stores inputed parameter
 		keyInput = onetimekey;
 		
-		try {
-			//check database to see if one-time key exists
-			if(AccountDatabase.doesKeyExist(keyInput)) // check if key exists
-			{
-				return true; // key DOES exist
-			}
-			//key does NOT exist
-			return false;
+		//check database to see if one-time key exists
+		if(AccountDatabase.doesKeyExist(keyInput)) // check if key exists
+		{
+			return true; // key DOES exist
 		}
-		//catch SQL error
-		catch(SQLException e) {
-			System.err.println("JDBC Driver not found: " + e.getMessage());
-			return false;
-		}
+		//key does NOT exist
+		return false;
 	}
 	
 	/**

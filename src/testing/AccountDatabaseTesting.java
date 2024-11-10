@@ -3,6 +3,7 @@ package testing;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import database.AccountDatabase;	// To test AccountDatabase methods
+import database.DatabaseManager;	// TO start and close database connection
 
 class AccountDatabaseTesting {
 
@@ -14,6 +15,9 @@ class AccountDatabaseTesting {
 	
 	@Test
 	private void testIsTableEmpty() {
+		DatabaseManager.connectToDatabase();
+		AccountDatabase.createTable();
+		AccountDatabase.deleteAllAccounts();
 		fail("Not yet implemented");
 	}
 	

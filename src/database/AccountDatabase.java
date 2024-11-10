@@ -46,7 +46,7 @@ public class AccountDatabase {
 	/**********
 	 * Creates a table called accounts and initializes columns.
 	 */
-	public static void createTable() throws SQLException {
+	public static void createTable() {
 		query = "CREATE TABLE IF NOT EXISTS accounts ("
 				+ "username VARCHAR(50) PRIMARY KEY UNIQUE, "
 				+ "password VARCHAR(50), "		// VARCHAR(#) is a string with a max of # characters
@@ -62,28 +62,46 @@ public class AccountDatabase {
 				+ "is_admin BIT,"
 				+ "is_account_updated BIT,"
 				+ "expiration TIMESTAMP)";			// TIMESTAMP is when key expires (Format: YYYY-MM-DD HH:MI:SS)
-		statement.execute(query);
-		System.out.println("'accounts' table created if it did not already exist");
+		try {
+			statement.execute(query);
+			System.out.println("'accounts' table created if it did not already exist");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.createTable \n\n");
+			e.printStackTrace();
+		}
 	}
 	
 	
 	/**********
 	 * Deletes the entire accounts table in database
 	 */
-	public static void deleteTable() throws SQLException {
+	public static void deleteTable() {
 		query = "DROP TABLE accounts";		// delete accounts table
-		statement.execute(query);			// execute query
-		System.out.println("'accounts' table deleted");
+		try {
+			statement.execute(query);		// execute query
+			System.out.println("'accounts' table deleted");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.deleteTable \n\n");
+			e.printStackTrace();
+		}
 	}
 	
 	
 	/**********
 	 * Deletes all rows in accounts database
 	 */
-	public static void deleteAllAccounts() throws SQLException {
+	public static void deleteAllAccounts() {
 		query = "DELETE FROM accounts";		// delete all accounts in table
-		statement.execute(query);			// execute query
-		System.out.println("All accounts in 'accounts' table deleted");
+		try {
+			statement.execute(query);			// execute query
+			System.out.println("All accounts in 'accounts' table deleted");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.deleteAllAccounts \n\n");
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -97,23 +115,31 @@ public class AccountDatabase {
 	/**********
 	 * Checks if there is at least one row of data in database.
 	 */
-	public static boolean isTableEmpty() throws SQLException {
+	public static boolean isTableEmpty() {
 		// Counts total number of rows in accounts database
 		query = "SELECT COUNT(*) AS count FROM accounts";
-		resultSet = statement.executeQuery(query);
 		
-		// if there is a next row, return the number of rows 
-		if (resultSet.next()) {
-			return resultSet.getInt("count") == 0;
+		try {
+			resultSet = statement.executeQuery(query);
+			
+			// if there is a next row, return the number of rows 
+			if (resultSet.next()) {
+				return resultSet.getInt("count") == 0;
+			}
+			return false;	// if no rows
 		}
-		return true;
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.isTableEmpty \n\n");
+			e.printStackTrace();
+		}
+		return false;	// for error
 	}
 	
 	
 	/**********
 	 * Checks if the given username and password exist in the same row in the database.
 	 */
-	public static boolean doesLoginExist(String user, String pass) throws SQLException {
+	public static boolean doesLoginExist(String user, String pass) {
 		// Query gets all data in accounts database where username and password equal placeholder variable ?
 		query = "SELECT * FROM accounts WHERE username = ? AND password = ? AND is_key = false";
 		// Prepare the previous query to be executed
@@ -125,13 +151,18 @@ public class AccountDatabase {
 			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
 			return resultSet.next();				// Returns if first row exists or not			
 		}
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.doesLoginExist \n\n");
+			e.printStackTrace();
+		}
+		return false;	// for error
 	}
 	
 	
 	/**********
 	 * Checks if the given key exists and is_key is true in the database.
 	 */
-	public static boolean doesKeyExist(String key) throws SQLException {
+	public static boolean doesKeyExist(String key) {
 		// Query gets all data in accounts database where is_key and password equal placeholder variable ?
 		query = "SELECT * FROM accounts WHERE is_key = true AND password = ?";
 		// Prepare the previous query to be executed
@@ -142,6 +173,11 @@ public class AccountDatabase {
 			resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
 			return resultSet.next();				// Returns if first row exists or not			
 		}
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.doesKeyExist \n\n");
+			e.printStackTrace();
+		}
+		return false;	// for error
 	}
 	
 	
@@ -160,7 +196,8 @@ public class AccountDatabase {
 	        if (resultSet.next()) {						// Move resultSet cursor to first row
 	            return resultSet.getInt(1) > 0;			// If returned at least 1 row, user exists
 	        }
-	    } catch (SQLException e) {
+	    } 
+	    catch (SQLException e) {
 	        e.printStackTrace();						// print trace of exception
 	    }
 	    return false; 									// If an error occurs, assume user doesn't exist
@@ -285,7 +322,7 @@ public class AccountDatabase {
 	 * Checks if current time is past the expiration time for a given key
 	 * Returns true if expired OR key/expiration timestamp does not exist in account database
 	 */
-	public static boolean isKeyExpired(String key) throws SQLException{
+	public static boolean isKeyExpired(String key) {
 		// Prevents using method if key does NOT exist
 		if(!doesKeyExist(key)) {
 			System.err.println("Cannot check if key is expired because key does not exist in account database");
@@ -315,6 +352,11 @@ public class AccountDatabase {
 				}
 			}
 		}
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.isKeyExpired \n\n");
+			e.printStackTrace();
+			return true;	// for error
+		}
 		
 		// Return results
 		if(key_expiration.after(cur_time))
@@ -327,7 +369,7 @@ public class AccountDatabase {
 	/**********
 	 * Returns the expiration date of a given key
 	 */
-	public static String getKeyExpiration(String key) throws SQLException {
+	public static String getKeyExpiration(String key) {
 		// Prevents using method if key does NOT exist
 		if(!doesKeyExist(key)) {
 			System.err.println("Cannot get expiration date because key does not exist in account database");
@@ -346,7 +388,11 @@ public class AccountDatabase {
 				return resultSet.getString(1);		// Return expiration date of first row
 			}
 		}
-		return "";									// If error occurred, assume query failed
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.getKeyExpiration \n\n");
+			e.printStackTrace();
+		}
+		return "";	// for error
 	}
 	
 	
@@ -355,33 +401,40 @@ public class AccountDatabase {
 	 * in format of "username1,display_name1,is_student,is_instructor,is_admin|\nusername2,display_name2,is_student,is_instructor,is_admin|\n..."
 	 * Notes: A username can be a one-time key, a display_name can be empty, and all accounts are separated by "|\n"
 	 */
-	public static String getAllAccounts() throws SQLException {
+	public static String getAllAccounts() {
 		
 		// Counts total number of rows in accounts database
 		query = "SELECT username, display_name, is_student, is_instructor, is_admin FROM accounts";
-		resultSet = statement.executeQuery(query);
-		
 		// To build a string containing all accounts username and display name
 		String returnString = "";
 		
-		// Loop through every row
-		while (resultSet.next()) {
-			// Get username and separate with , (Note: one-time key is stored in both username and password)
-			returnString += resultSet.getString("username") + ",";
+		try {
+			resultSet = statement.executeQuery(query);
 			
-			// Get display name if NOT null
-			if(resultSet.getString("display_name") != null)
-				returnString += resultSet.getString("display_name") + ",";
-			// Return empty string in place of display name if null
-			else
-				returnString += ",";
-			
-			// Return account roles seperated by "," and seperate each account with "|\n"
-			returnString += resultSet.getInt("is_student") + ",";
-			returnString += resultSet.getInt("is_instructor") + ",";
-			returnString += resultSet.getInt("is_admin") + "|";
-			
-			returnString += "\n"; // adds new line for each article
+			// Loop through every row
+			while (resultSet.next()) {
+				// Get username and separate with , (Note: one-time key is stored in both username and password)
+				returnString += resultSet.getString("username") + ",";
+				
+				// Get display name if NOT null
+				if(resultSet.getString("display_name") != null)
+					returnString += resultSet.getString("display_name") + ",";
+				// Return empty string in place of display name if null
+				else
+					returnString += ",";
+				
+				// Return account roles seperated by "," and seperate each account with "|\n"
+				returnString += resultSet.getInt("is_student") + ",";
+				returnString += resultSet.getInt("is_instructor") + ",";
+				returnString += resultSet.getInt("is_admin") + "|";
+				
+				returnString += "\n"; // adds new line for each article
+			}
+		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.getAllAccounts \n\n");
+			e.printStackTrace();
+			return "";
 		}
 		
 		// Check if there is anything in the string
@@ -407,7 +460,7 @@ public class AccountDatabase {
 	 * Creates the first account in accounts database with provided username and password.
 	 * If there is already an account, it will exit the method and print an error message.
 	 */
-	public static boolean createFirstAccount(String user, String pass) throws SQLException {
+	public static boolean createFirstAccount(String user, String pass) {
 		
 		// Prevents using method when not the first account in database
 		if(!isTableEmpty()) {
@@ -441,6 +494,10 @@ public class AccountDatabase {
 			pstmt.setInt(7, 0);					// is_account_updated = false
 			pstmt.executeUpdate();				// Execute query
 		}
+		catch(SQLException e) {
+			System.err.println("SQLException in AccountDatabase.createFirstAccount \n\n");
+			e.printStackTrace();
+		}
 		
 		// Print results
 		if(doesLoginExist(user, pass)) {
@@ -458,7 +515,7 @@ public class AccountDatabase {
 	 * Updates account username and password to the account corresponding to the given key in database.
 	 * If key doesn't exist in database, or username already exists, it will exit with error message.
 	 */
-	public static boolean createAccountWithKey(String user, String pass, String key) throws SQLException {
+	public static boolean createAccountWithKey(String user, String pass, String key) {
 		
 		// Prevents duplicate usernames
 		if(doesUsernameExist(user)) {
@@ -493,6 +550,10 @@ public class AccountDatabase {
 			pstmt.setString(4, key);
 			pstmt.executeUpdate();				// Execute query
 		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.createAccountWithKey \n\n");
+			e.printStackTrace();
+		}
 		
 		// Print results
 		if(doesLoginExist(user, pass)) {
@@ -511,7 +572,7 @@ public class AccountDatabase {
 	 * If username doesn't exist, or email already exists, it will exit and print an error message.
 	 */
 	public static boolean updateAccountInformation(String user, String email, String firstName, String middleName, 
-			String lastName, String prefName) throws SQLException{
+			String lastName, String prefName) {
 		
 		// Checks if username doesn't exist
 		if(!doesUsernameExist(user)) {
@@ -589,6 +650,11 @@ public class AccountDatabase {
 			System.out.println("Successfully updated " + user + "'s account");
 			return true;
 		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.updateAccountInformation \n\n");
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	
@@ -597,7 +663,7 @@ public class AccountDatabase {
 	 * If username doesn't exist, or email already exists, it will exit and print an error message.
 	 */
 	public static boolean updateUserRoles(String user, boolean isStudent, 
-			boolean isInstructor, boolean isAdmin) throws SQLException{
+			boolean isInstructor, boolean isAdmin) {
 		
 		// Checks if username doesn't exist
 		if(!doesUsernameExist(user)) {
@@ -619,14 +685,19 @@ public class AccountDatabase {
 		query = "UPDATE accounts SET is_student = ?, is_instructor = ?, is_admin = ? WHERE username = ?";
 		
 		// Prepare the previous query to be executed
-		PreparedStatement pstmt = connection.prepareStatement(query);
-			
-		// Set the placeholder ? variables
-		pstmt.setInt(1, isStudent ? 1 : 0);			// is_student = isStudent
-		pstmt.setInt(2, isInstructor ? 1 : 0);		// is_instructor = isInstructor
-		pstmt.setInt(3, isAdmin ? 1 : 0);			// is_admin = isAdmin
-		pstmt.setString(4, user);
-		pstmt.executeUpdate();			// execute query
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+				
+			// Set the placeholder ? variables
+			pstmt.setInt(1, isStudent ? 1 : 0);			// is_student = isStudent
+			pstmt.setInt(2, isInstructor ? 1 : 0);		// is_instructor = isInstructor
+			pstmt.setInt(3, isAdmin ? 1 : 0);			// is_admin = isAdmin
+			pstmt.setString(4, user);
+			pstmt.executeUpdate();			// execute query
+		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.updateUserRoles \n\n");
+			e.printStackTrace();
+		}
 		
 		if(isStudentRole(user) == isStudent && isInstructorRole(user) == isInstructor && 
 				isAdminRole(user) == isAdmin) {
@@ -645,7 +716,7 @@ public class AccountDatabase {
 	 * Adds a random unique key and user roles into database, then returns the key.
 	 * Returns an empty string when invite failed.
 	 */
-	public static String inviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin) throws SQLException{
+	public static String inviteUser(boolean isStudent, boolean isInstructor, boolean isAdmin) {
 		
 		// Prevent an account from having no roles
 		if(!isStudent && !isInstructor && !isAdmin) {
@@ -659,15 +730,18 @@ public class AccountDatabase {
 			return "";
 		}
 		
-		// generate random unique key
-		String key = generateKey();
+		String key = "";
 		
-		// Query inserts placeholder variables ? for below columns into a new row in accounts database
-		query = "INSERT INTO accounts (username, password, is_student, is_instructor, "
-				+ "is_admin, is_key, is_account_updated, expiration) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-		// Prepare the previous query to be executed
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+		try {
+			// generate random unique key
+			key = generateKey();
 			
+			// Query inserts placeholder variables ? for below columns into a new row in accounts database
+			query = "INSERT INTO accounts (username, password, is_student, is_instructor, "
+					+ "is_admin, is_key, is_account_updated, expiration) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			// Prepare the previous query to be executed
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
 			// Set the placeholder ? variables
 			pstmt.setString(1, key);				// username = key (since username can't be null and has to be unique)
 			pstmt.setString(2, key);				// password = key
@@ -679,6 +753,10 @@ public class AccountDatabase {
 			// expiration = current time + 10 min in format: YYYY-MM-DD HH:MI:SS
 			pstmt.setTimestamp(8, new Timestamp(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)));
 			pstmt.executeUpdate();					// Execute query
+		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.inviteUser \n\n");
+			e.printStackTrace();
 		}
 		
 		// Print results
@@ -697,32 +775,38 @@ public class AccountDatabase {
 	 * Replaces a user's password with a one-time key, then returns the key
 	 * Returns an empty string when reset failed
 	 */
-	public static String resetUser(String user) throws SQLException {
+	public static String resetUser(String user) {
 		// Checks if username doesn't exist
 		if(!doesUsernameExist(user)) {
 			System.err.println("Cannot reset account, username does not exist in accounts database");
 			return "";
 		}
 		
+		String key = "";
 		
-		// generate random unique key
-		String key = generateKey();
-		
-		// Query inserts placeholder variables ? into accounts database 
-		// where the username matches user parameter
-		String query = "UPDATE accounts "
-				+ "SET password = ?, is_key = true, expiration = ? "
-				+ "WHERE username = ?";
-		
-		// Prepare the previous query to be executed
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+		try {
+			// generate random unique key
+			key = generateKey();
 			
-			// Set the placeholder ? variables
-			pstmt.setString(1, key);			// set password = key
-			// expiration = current time + 10 min in format: YYYY-MM-DD HH:MI:SS
-			pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)));
-			pstmt.setString(3, user);			// update account where username = user
-			pstmt.executeUpdate();				// Execute query
+			// Query inserts placeholder variables ? into accounts database 
+			// where the username matches user parameter
+			String query = "UPDATE accounts "
+					+ "SET password = ?, is_key = true, expiration = ? "
+					+ "WHERE username = ?";
+			
+			// Prepare the previous query to be executed
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
+				// Set the placeholder ? variables
+				pstmt.setString(1, key);			// set password = key
+				// expiration = current time + 10 min in format: YYYY-MM-DD HH:MI:SS
+				pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)));
+				pstmt.setString(3, user);			// update account where username = user
+				pstmt.executeUpdate();				// Execute query
+		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.resetUser \n\n");
+			e.printStackTrace();
 		}
 		
 		// Print results
@@ -740,7 +824,7 @@ public class AccountDatabase {
 	/**********
 	 * Replaces a user's password with given password
 	 */
-	public static boolean resetPassword(String key, String pass) throws SQLException {
+	public static boolean resetPassword(String key, String pass) {
 		// Checks if key doesn't exist
 		if(!doesKeyExist(key)) {
 			System.err.println("Cannot reset password, key does not exist in accounts database");
@@ -754,13 +838,18 @@ public class AccountDatabase {
 				+ "SET password = ?, is_key = false, expiration = null "
 				+ "WHERE password = ?";
 		
-		// Prepare the previous query to be executed
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			
+		try {
+			// Prepare the previous query to be executed
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
 			// Set the placeholder ? variables
 			pstmt.setString(1, pass);			// Set password = pass
 			pstmt.setString(2, key);			// Update account where password = key
 			pstmt.executeUpdate();				// Execute query
+		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.resetPassword \n\n");
+			e.printStackTrace();
 		}
 		
 		// Print results
@@ -778,22 +867,27 @@ public class AccountDatabase {
 	/**********
 	 * Removes a user's account from database
 	 */
-	public static boolean deleteUser(String user) throws SQLException {
+	public static boolean deleteUser(String user) {
 		// Checks if username doesn't exist
 		if(!doesUsernameExist(user)) {
 			System.err.println("Cannot delete account, username does not exist in accounts database");
 			return false;
 		}
-
 		
 		// Query deletes row from database where username = placeholder variable ?
 		String query = "DELETE FROM accounts WHERE username = ?";
 		
-		PreparedStatement pstmt = connection.prepareStatement(query);
-		
-		// Set the placeholder ? variables
-		pstmt.setString(1, user);	// Delete account where username = user
-		pstmt.executeUpdate();		// Execute query
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(query);
+			
+			// Set the placeholder ? variables
+			pstmt.setString(1, user);	// Delete account where username = user
+			pstmt.executeUpdate();		// Execute query
+		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.deleteUser \n\n");
+			e.printStackTrace();
+		}
 		
 		// Print results
 		if(!doesUsernameExist(user)) {
@@ -817,52 +911,59 @@ public class AccountDatabase {
 	/**********
 	 * Prints all account information for all accounts in account database for testing purposes.
 	 */
-	public static void printAccountsToConsole() throws SQLException{
+	public static void printAccountsToConsole() {
 		// get entire accounts table
 		query = "SELECT * FROM accounts"; 
-		statement = connection.createStatement();
-		resultSet = statement.executeQuery(query); 
 		
-		System.out.println("----------------------------------------------------");
-		System.out.println("Printing All Accounts: \n");
-		System.out.println("----------------------------------------------------");
-		
-		// while the row exists
-		while(resultSet.next()) { 
-			// Retrieve by column name 
-			String user = resultSet.getString("username"); 
-			String pass = resultSet.getString("password"); 
-			String email = resultSet.getString("email"); 
-			String fName = resultSet.getString("first_name");
-			String mName = resultSet.getString("middle_name");
-			String lName = resultSet.getString("last_name");
-			String pName = resultSet.getString("preferred_name");
-			String dName = resultSet.getString("display_name");
-			int isKey = resultSet.getInt("is_key"); 
-			int isStudent = resultSet.getInt("is_student");
-			int isInstructor = resultSet.getInt("is_instructor");
-			int isAdmin = resultSet.getInt("is_admin");
-			int isAccountUpdated = resultSet.getInt("is_account_updated");
-			Timestamp expiration = resultSet.getTimestamp("expiration");
-
-			// Display values 
-			System.out.println("Account: ");
-			System.out.println("Username: " + user); 
-			System.out.println("Password: " + pass); 
-			System.out.println("Email: " + email); 
-			System.out.println("First Name: " + fName); 
-			System.out.println("Middle Name: " + mName); 
-			System.out.println("Last Name: " + lName); 
-			System.out.println("Preferred Name: " + pName); 
-			System.out.println("Display Name: " + dName); 
-			System.out.println("isKey: " + isKey); 
-			System.out.println("isStudent: " + isStudent); 
-			System.out.println("isInstructor: " + isInstructor); 
-			System.out.println("isAdmin: " + isAdmin); 
-			System.out.println("isAccountUpdated: " + isAccountUpdated); 
-			System.out.println("key expiration: " + expiration); 
-			System.out.println("----------------------------------------------------\n");
-		} 
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query); 
+			
+			System.out.println("----------------------------------------------------");
+			System.out.println("Printing All Accounts: \n");
+			System.out.println("----------------------------------------------------");
+			
+			// while the row exists
+			while(resultSet.next()) { 
+				// Retrieve by column name 
+				String user = resultSet.getString("username"); 
+				String pass = resultSet.getString("password"); 
+				String email = resultSet.getString("email"); 
+				String fName = resultSet.getString("first_name");
+				String mName = resultSet.getString("middle_name");
+				String lName = resultSet.getString("last_name");
+				String pName = resultSet.getString("preferred_name");
+				String dName = resultSet.getString("display_name");
+				int isKey = resultSet.getInt("is_key"); 
+				int isStudent = resultSet.getInt("is_student");
+				int isInstructor = resultSet.getInt("is_instructor");
+				int isAdmin = resultSet.getInt("is_admin");
+				int isAccountUpdated = resultSet.getInt("is_account_updated");
+				Timestamp expiration = resultSet.getTimestamp("expiration");
+	
+				// Display values 
+				System.out.println("Account: ");
+				System.out.println("Username: " + user); 
+				System.out.println("Password: " + pass); 
+				System.out.println("Email: " + email); 
+				System.out.println("First Name: " + fName); 
+				System.out.println("Middle Name: " + mName); 
+				System.out.println("Last Name: " + lName); 
+				System.out.println("Preferred Name: " + pName); 
+				System.out.println("Display Name: " + dName); 
+				System.out.println("isKey: " + isKey); 
+				System.out.println("isStudent: " + isStudent); 
+				System.out.println("isInstructor: " + isInstructor); 
+				System.out.println("isAdmin: " + isAdmin); 
+				System.out.println("isAccountUpdated: " + isAccountUpdated); 
+				System.out.println("key expiration: " + expiration); 
+				System.out.println("----------------------------------------------------\n");
+			} 
+		}
+		catch (SQLException e) {
+			System.err.println("SQLException in AccountDatabase.printAccountsToConsole \n\n");
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -876,7 +977,7 @@ public class AccountDatabase {
 	/**********
 	 * Generates a random key with a-z, A-z, and 0-9 characters of length 15
 	 */
-	private static String generateKey() throws SQLException{
+	private static String generateKey() {
 		String newKey = "";
 		random = new Random();
 		int randValue;
@@ -895,7 +996,6 @@ public class AccountDatabase {
 				newKey += KEY_CHARS.substring(randValue, randValue + 1);
 			}
 		}
-		
 		return newKey;	// successfully generated unique key
 	}
 }

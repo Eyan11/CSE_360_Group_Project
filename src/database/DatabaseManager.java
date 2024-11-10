@@ -36,7 +36,7 @@ public class DatabaseManager {
 	/**********
 	 * Starts the connection to the H2 database.
 	 */
-	public static void connectToDatabase() throws SQLException, Exception {
+	public static void connectToDatabase() {
 		try {
 			Class.forName(JDBC_DRIVER); // Load the JDBC driver
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -60,7 +60,16 @@ public class DatabaseManager {
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
+			System.err.println("ClassNotFoundException in DatabaseManager.connectToDatabase \n\n");
 			System.err.println("JDBC Driver not found: " + e.getMessage());
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in DatabaseManager.connectToDatabase \n\n");
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			System.err.println("Exception in DatabaseManager.connectToDatabase \n\n");
+			e.printStackTrace();
 		}
 	}
 	
