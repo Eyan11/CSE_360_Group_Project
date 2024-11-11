@@ -246,60 +246,54 @@ public class EditArticleGUI {
 		            		
 		            		// DEVELOPER NOTE: Critical step v1
 		            		// Pass info onto the next part!
-		            		try {
-		            			
-		            			ArticleDatabase.editArticle(articleID, headerString, titleString, descriptionString, keywordsString, 
-		            					groupsString, bodyString, referencesString);
-		            			
-		            			/**
-		            			 * Transitions to different home pages
-		            			 */
-		            			
-		            			userPane.getChildren().clear();  // Clear the current root
-		            			
-		            			Pane newRoot = new Pane();
-		            			ManageArticlesGUI manageArticlesGUI = new ManageArticlesGUI(newRoot); 
-		            			
-		            			Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-							    Stage currentStage = (Stage) userPane.getScene().getWindow();
-							    currentStage.setScene(newScene); // sets new scene
-		            			
+	            			ArticleDatabase.editArticle(articleID, headerString, titleString, descriptionString, keywordsString, 
+	            					groupsString, bodyString, referencesString);
+	            			
+	            			/**
+	            			 * Transitions to different home pages
+	            			 */
+	            			
+	            			userPane.getChildren().clear();  // Clear the current root
+	            			
+	            			Pane newRoot = new Pane();
+	            			ManageArticlesGUI manageArticlesGUI = new ManageArticlesGUI(newRoot); 
+	            			
+	            			Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+						    Stage currentStage = (Stage) userPane.getScene().getWindow();
+						    currentStage.setScene(newScene); // sets new scene
+	            			
+    						
+    						/*Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+    		                updateStage.setScene(newScene);
+    		                updateStage.show();*/
+	            			
+	            			/*if(LoginEvaluator.adminLogin(user)) // check if user is an admin
+	            			{
+	            				userPane.getChildren().clear();  // Clear the current root
+	    						AdminHome adminHome = new AdminHome(newRoot);
 	    						
-	    						/*Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 	    		                updateStage.setScene(newScene);
-	    		                updateStage.show();*/
-		            			
-		            			/*if(LoginEvaluator.adminLogin(user)) // check if user is an admin
-		            			{
-		            				userPane.getChildren().clear();  // Clear the current root
-		    						AdminHome adminHome = new AdminHome(newRoot);
-		    						
-		    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-		    		                updateStage.setScene(newScene);
-		    		                updateStage.show();
-		            			}
-		            			else if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
-		            			{
-		            				userPane.getChildren().clear();  // Clear the current root
-		    						SelectRole selectRole = new SelectRole(newRoot, user);
-		    						
-		    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-		    		                updateStage.setScene(newScene);
-		    		                updateStage.show();
-		            			}
-		            			else if(LoginEvaluator.studentInstructorRole(user)) // user is student or instructor
-		            			{
-		            				userPane.getChildren().clear();  // Clear the current root
-		    						SelectRole selectRole = new SelectRole(newRoot, user);
-		    						
-		    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-		    		                updateStage.setScene(newScene);
-		    		                updateStage.show();
-		            			}*/
-		            		}
-		            		catch(SQLException e) {
-		            			System.err.println("Error: " + e.getMessage());
-		            		}
+	    		                updateStage.show();
+	            			}
+	            			else if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
+	            			{
+	            				userPane.getChildren().clear();  // Clear the current root
+	    						SelectRole selectRole = new SelectRole(newRoot, user);
+	    						
+	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    		                updateStage.setScene(newScene);
+	    		                updateStage.show();
+	            			}
+	            			else if(LoginEvaluator.studentInstructorRole(user)) // user is student or instructor
+	            			{
+	            				userPane.getChildren().clear();  // Clear the current root
+	    						SelectRole selectRole = new SelectRole(newRoot, user);
+	    						
+	    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    		                updateStage.setScene(newScene);
+	    		                updateStage.show();
+	            			}*/
 		            		
 		            		//DEVELOPER NOTE: Critical step v2 (Experimental implementation idea, keeping for future reference in the coming phases)
 		            		//                (maybe not needed?)

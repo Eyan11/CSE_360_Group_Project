@@ -45,7 +45,7 @@ public class ArticleDatabase {
 	/**********
 	 * Creates a table called articles and initializes columns.
 	 */
-	public static void createTable() throws SQLException {
+	public static void createTable() {
 		// Create article table in database
 		query = "CREATE TABLE IF NOT EXISTS articles ("
 				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
@@ -56,28 +56,46 @@ public class ArticleDatabase {
 				+ "groups VARCHAR(50), "
 				+ "body VARCHAR(500), "
 				+ "references VARCHAR(100))";
-		statement.execute(query);
-		System.out.println("'articles' table created if it did not already exist");
+		try {
+			statement.execute(query);
+			System.out.println("'articles' table created if it did not already exist");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.createTable \n\n");
+			e.printStackTrace();
+		}
 	}
 	
 	
 	/**********
 	 * Deletes the entire articles table in database
 	 */
-	public static void deleteTable() throws SQLException {
+	public static void deleteTable() {
 		query = "DROP TABLE articles";		// delete database
-		statement.execute(query);			// execute query
-		System.out.println("'articles' table deleted");
+		try {
+			statement.execute(query);			// execute query
+			System.out.println("'articles' table deleted");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.deleteTable \n\n");
+			e.printStackTrace();
+		}
 	}
 	
 	
 	/**********
 	 * Deletes all rows in articles database
 	 */
-	public static void deleteAllArticles() throws SQLException {
+	public static void deleteAllArticles() {
 		query = "DELETE FROM articles";		// delete all articles in table
-		statement.execute(query);			// execute query
-		System.out.println("All accounts in 'articles' table deleted");
+		try {
+			statement.execute(query);			// execute query
+			System.out.println("All accounts in 'articles' table deleted");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.deleteAllArticles \n\n");
+			e.printStackTrace();
+		}
 	}
 
 	
@@ -91,35 +109,47 @@ public class ArticleDatabase {
 	/**********
 	 * Checks if there is at least one row of data in table.
 	 */
-	public static boolean isTableEmpty() throws SQLException {
+	public static boolean isTableEmpty() {
 		query = "SELECT COUNT(*) AS count FROM articles";
-		resultSet = statement.executeQuery(query);
-		
-		// While the next row exists, check next row
-		if (resultSet.next()) {
-			return resultSet.getInt("count") == 0;
+		try {
+			resultSet = statement.executeQuery(query);
+			
+			// While the next row exists, check next row
+			if (resultSet.next()) {
+				return resultSet.getInt("count") == 0;
+			}
 		}
-		return true;
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.isTableEmpty \n\n");
+			e.printStackTrace();
+		}
+		return true;	// for error
 	}
 	
 	
 	/**********
 	 * Checks if an article has the given id number
 	 */
-	public static boolean doesArticleIDExist(int id) throws SQLException {
+	public static boolean doesArticleIDExist(int id) {
 		
 		// Select all rows from database where id = placeholder variable ?
 	    query = "SELECT COUNT(*) FROM articles WHERE id = ?";
-	    PreparedStatement pstmt = connection.prepareStatement(query);
+	    try {
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		        
+	        pstmt.setInt(1, id);	// id = id
+	        resultSet = pstmt.executeQuery();
 	        
-        pstmt.setInt(1, id);	// id = id
-        resultSet = pstmt.executeQuery();
-        
-        // If the next row exists
-        if (resultSet.next()) {
-            // Return true if 1 or more articles have a matching id
-            return resultSet.getInt(1) > 0;
-        }
+	        // If the next row exists
+	        if (resultSet.next()) {
+	            // Return true if 1 or more articles have a matching id
+	            return resultSet.getInt(1) > 0;
+	        }
+	    }
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.doesArticleIDExist \n\n");
+			e.printStackTrace();
+		}
 	    return false; // If an error occurs, assume article doesn't exist
 	}
 	
@@ -127,22 +157,27 @@ public class ArticleDatabase {
 	/**********
 	 * Checks if an article has the given title
 	 */
-	public static boolean doesArticleHeaderExist(String header) throws SQLException {
+	public static boolean doesArticleHeaderExist(String header) {
 		
 		// Select all rows from database where header = placeholder variable ?
 	    String query = "SELECT COUNT(*) FROM articles WHERE header = ?";
-	    PreparedStatement pstmt = connection.prepareStatement(query);
-	    
-	    // Set placeholder ? variable to header
-        pstmt.setString(1, header);
-        resultSet = pstmt.executeQuery();
-        
-        // If the next row exists
-        if (resultSet.next()) {
-            // Return true if 1 or more articles have a matching header
-            return resultSet.getInt(1) > 0;
-        }
-
+	    try {
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+		    // Set placeholder ? variable to header
+	        pstmt.setString(1, header);
+	        resultSet = pstmt.executeQuery();
+	        
+	        // If the next row exists
+	        if (resultSet.next()) {
+	            // Return true if 1 or more articles have a matching header
+	            return resultSet.getInt(1) > 0;
+	        }
+	    }
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.doesArticleHeaderExist \n\n");
+			e.printStackTrace();
+		}
 	    return false; // If an error occurs, assume title doesn't exist
 	}
 	
@@ -151,7 +186,7 @@ public class ArticleDatabase {
 	 * Returns the id, header, and title for every article in table as a String
 	 * in format of "id1,header1,title1,group1|id2,header2,title2,group2|..."
 	 */
-	public static String getAllArticles() throws SQLException {
+	public static String getAllArticles() {
 		
 		// Prevent getting articles if empty
 		if(isTableEmpty()) {
@@ -161,20 +196,26 @@ public class ArticleDatabase {
 		
 		// Select all rows from database
 		query = "SELECT * FROM articles"; 
-		statement = connection.createStatement();
-		resultSet = statement.executeQuery(query); 	// Execute query
-		
 		String returnString = "";
-
-		// While the next row exists, check next row
-		while(resultSet.next()) { 
-			// Get current article info
-			returnString += resultSet.getInt("id") + ","; 
-			returnString += resultSet.getString("header") + ",";
-			returnString += resultSet.getString("title") + ",";
-			returnString += resultSet.getString("groups") + "|";
+		
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query); 	// Execute query
+	
+			// While the next row exists, check next row
+			while(resultSet.next()) { 
+				// Get current article info
+				returnString += resultSet.getInt("id") + ","; 
+				returnString += resultSet.getString("header") + ",";
+				returnString += resultSet.getString("title") + ",";
+				returnString += resultSet.getString("groups") + "|";
+			}
 		}
-		return returnString;
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.getAllArticles \n\n");
+			e.printStackTrace();
+		}
+		return returnString;	// for error
 	}
 	
 	
@@ -182,7 +223,7 @@ public class ArticleDatabase {
 	 * Returns the all information about an article given its id number
 	 * in format of "id,header,title,description,keywords,groups,body,references"
 	 */
-	public static String getArticleByID(int id) throws SQLException {
+	public static String getArticleByID(int id) {
 		
 		// Prevent getting an article that does not exist
 		if(!doesArticleIDExist(id)) {
@@ -192,26 +233,31 @@ public class ArticleDatabase {
 		
 		// Select the row from database where id = placeholder variable ?
 	    query = "SELECT * FROM articles WHERE id = ?";
+	    String returnString = "";
 	    
-	    PreparedStatement pstmt = connection.prepareStatement(query);
+	    try {
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		        
+	        pstmt.setInt(1, id);				// id = id
+	        resultSet = pstmt.executeQuery();	// Execute query
 	        
-        pstmt.setInt(1, id);				// id = id
-        resultSet = pstmt.executeQuery();	// Execute query
-        
-        String returnString = "";
-        
-        // While next row exists, check next row
-        if (resultSet.next()) {
-        	// Get article info
-        	returnString += id + ",";
-        	returnString += resultSet.getString("header") + ","; 
-        	returnString += resultSet.getString("title") + ",";
-        	returnString += resultSet.getString("description") + ","; 
-        	returnString += resultSet.getString("keywords") + ",";
-        	returnString += resultSet.getString("groups") + ",";
-        	returnString += resultSet.getString("body") + ",";
-        	returnString += resultSet.getString("references"); 
-        }
+	        // While next row exists, check next row
+	        if (resultSet.next()) {
+	        	// Get article info
+	        	returnString += id + ",";
+	        	returnString += resultSet.getString("header") + ","; 
+	        	returnString += resultSet.getString("title") + ",";
+	        	returnString += resultSet.getString("description") + ","; 
+	        	returnString += resultSet.getString("keywords") + ",";
+	        	returnString += resultSet.getString("groups") + ",";
+	        	returnString += resultSet.getString("body") + ",";
+	        	returnString += resultSet.getString("references"); 
+	        }
+	    }
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.getArticleByID \n\n");
+			e.printStackTrace();
+		}
         return returnString;
 	}
 	
@@ -222,31 +268,34 @@ public class ArticleDatabase {
 	 * To get articles in group1 or group2, groups should equal "group1,group2".
 	 * To get articles in group1 and group2, groups should equal "group1&group2".
 	 */
-	public static String getArticlesByGroups(String groups) throws SQLException {
+	public static String getArticlesByGroups(String groups) {
 		
-		// Craft query to get articles that contain any of the groups provided in groups column
-	    resultSet = craftQueryToGetArticlesByGroups(groups);
-        
         String returnString = "";
-        
-		// While the next row exists, check next row
-		while(resultSet.next()) { 
-			// Get current article info
-			returnString += resultSet.getInt("id") + ","; 
-			returnString += resultSet.getString("header") + ",";
-			returnString += resultSet.getString("title") + ",";
-			returnString += resultSet.getString("groups") + "|";
-			returnString += "\n"; // adds new line for each article
+		try {
+			// Craft query to get articles that contain any of the groups provided in groups column
+		    resultSet = craftQueryToGetArticlesByGroups(groups);
+	        
+			// While the next row exists, check next row
+			while(resultSet.next()) { 
+				// Get current article info
+				returnString += resultSet.getInt("id") + ","; 
+				returnString += resultSet.getString("header") + ",";
+				returnString += resultSet.getString("title") + ",";
+				returnString += resultSet.getString("groups") + "|";
+				returnString += "\n"; // adds new line for each article
+			}
+			
+			// Check if there is anything in the string
+			if (returnString.length() > 0) {
+				// Removes the last "|\n"
+				returnString = returnString.substring(0, returnString.length() - 2);
+			}
 		}
-		
-		// Check if there is anything in the string
-		if (returnString.length() > 0)
-		{
-			// Removes the last "|\n"
-			returnString = returnString.substring(0, returnString.length() - 2);
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.getArticlesByGroups \n\n");
+			e.printStackTrace();
 		}
-		
-		return returnString;
+		return returnString;	// for error
 	}
 	
 	/**********************************************************************************************
@@ -262,7 +311,7 @@ public class ArticleDatabase {
 	 * 	groups or keywords cannot have the "," symbol in them because that is how the user searches for multiple groups/keywords
 	 */
 	public static boolean createArticle(String header, String title, String description, String keywords, 
-			String groups, String body, String references) throws SQLException {
+			String groups, String body, String references) {
 		
 		// Prevent printing an article that does not exist
 		if(doesArticleHeaderExist(header)) {
@@ -312,18 +361,25 @@ public class ArticleDatabase {
 		
 		
 		// Insert a new row into database and fill in the following column values
-		query = "INSERT INTO articles (header, title, description, keywords, groups, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
-		PreparedStatement pstmt = connection.prepareStatement(query);
-			
-		// Set the placeholder ? variables
-		pstmt.setString(1, header);
-		pstmt.setString(2, title);
-		pstmt.setString(3, description);
-		pstmt.setString(4, keywords);
-		pstmt.setString(5, groups);
-		pstmt.setString(6, body);
-		pstmt.setString(7, references);
-		pstmt.executeUpdate();		// Execute query
+		query = "INSERT INTO articles (header, title, description, keywords, groups, body, references) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
+			// Set the placeholder ? variables
+			pstmt.setString(1, header);
+			pstmt.setString(2, title);
+			pstmt.setString(3, description);
+			pstmt.setString(4, keywords);
+			pstmt.setString(5, groups);
+			pstmt.setString(6, body);
+			pstmt.setString(7, references);
+			pstmt.executeUpdate();		// Execute query
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.createArticle \n\n");
+			e.printStackTrace();
+		}
 		
 		// Print and return result
 		if(doesArticleHeaderExist(header)) {
@@ -340,7 +396,7 @@ public class ArticleDatabase {
 	/**********
 	 * Deletes the article that matches the given id parameter
 	 */
-	public static boolean deleteArticle(int id) throws SQLException {
+	public static boolean deleteArticle(int id) {
 		
 		// Prevent deleting an article that does not exist
 		if(!doesArticleIDExist(id)) {
@@ -350,10 +406,17 @@ public class ArticleDatabase {
 		
 		// Deletes the row from database where id = placeholder variable ?
 		query = "DELETE FROM articles WHERE id = ?";
-		PreparedStatement pstmt = connection.prepareStatement(query);
 		
-		pstmt.setInt(1, id);		// id = id
-		pstmt.executeUpdate();		// Execute query
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(query);
+			
+			pstmt.setInt(1, id);		// id = id
+			pstmt.executeUpdate();		// Execute query
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.deleteArticle \n\n");
+			e.printStackTrace();
+		}
 		
 		// Print and return result
 		if(doesArticleIDExist(id)) {
@@ -371,7 +434,7 @@ public class ArticleDatabase {
 	 * Edits the article that matches the given id parameter
 	 */
 	public static boolean editArticle(int id, String header, String title, String description, String keywords, 
-			String groups, String body, String references) throws SQLException {
+			String groups, String body, String references) {
 		
 		// Prevent editing an article that does not exist
 		if(!doesArticleIDExist(id)) {
@@ -429,21 +492,26 @@ public class ArticleDatabase {
 		query = "UPDATE articles "
 				+ "SET header = ?, title = ?, description = ?, keywords = ?, groups = ?, body = ?, references = ? "
 				+ "WHERE id = ?";
-		
-		// Prepare the previous query to be executed
-		PreparedStatement pstmt = connection.prepareStatement(query);
+		try {
+			// Prepare the previous query to be executed
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
+			// Set the placeholder ? variables
+			pstmt.setString(1, header);
+			pstmt.setString(2, title);
+			pstmt.setString(3, description);
+			pstmt.setString(4, keywords);
+			pstmt.setString(5, groups);
+			pstmt.setString(6, body);
+			pstmt.setString(7, references);
+			pstmt.setInt(8, id);
 			
-		// Set the placeholder ? variables
-		pstmt.setString(1, header);
-		pstmt.setString(2, title);
-		pstmt.setString(3, description);
-		pstmt.setString(4, keywords);
-		pstmt.setString(5, groups);
-		pstmt.setString(6, body);
-		pstmt.setString(7, references);
-		pstmt.setInt(8, id);
-		
-		pstmt.executeUpdate();	// execute query
+			pstmt.executeUpdate();	// execute query
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.editArticle \n\n");
+			e.printStackTrace();
+		}
 		
 		// Print and return result
 		if(getArticleByID(id).equals(id + "," + header + "," + title + "," + description + "," + 
@@ -469,179 +537,196 @@ public class ArticleDatabase {
 	/**********
 	 * Prints all article table contents to a user specified file
 	 */
-	public static boolean backupArticles(String filePath, String groups) throws IOException, SQLException {
+	public static boolean backupArticles(String filePath, String groups) {
 		
 		BufferedWriter writer = null;
 		try {
 			// write to file
 			writer = new BufferedWriter(new FileWriter(filePath));
-		}
-		catch(IOException e) {
-			// File not found
-			System.err.println("File path: " + filePath + " is not found!");
-			return false;
-		}
-		
-		// Returns result set of all articles with matching groups
-		resultSet = craftQueryToGetArticlesByGroups(groups);
 
-		// While the next row exists, check next row
-		while(resultSet.next()) { 
-        	// Write all article info into file
-			writer.write("\n" + resultSet.getInt("id") + "\n");
-			writer.write(resultSet.getString("header") + "\n"); 
-			writer.write(resultSet.getString("title") + "\n"); 
-			writer.write(resultSet.getString("description") + "\n"); 
-			writer.write(resultSet.getString("keywords") + "\n"); 
-			writer.write(resultSet.getString("groups") + "\n"); 
-			writer.write(resultSet.getString("body") + "\n"); 
-			writer.write(resultSet.getString("references") + "\n"); 
-			
-			// Print result
-			System.out.println("Article id: " + resultSet.getInt("id") + " backed up to: " + filePath);
-		} 
-		writer.close();		// Stop writing to file
-		return true;
+			// Returns result set of all articles with matching groups
+			resultSet = craftQueryToGetArticlesByGroups(groups);
+	
+			// While the next row exists, check next row
+			while(resultSet.next()) { 
+	        	// Write all article info into file
+				writer.write("\n" + resultSet.getInt("id") + "\n");
+				writer.write(resultSet.getString("header") + "\n"); 
+				writer.write(resultSet.getString("title") + "\n"); 
+				writer.write(resultSet.getString("description") + "\n"); 
+				writer.write(resultSet.getString("keywords") + "\n"); 
+				writer.write(resultSet.getString("groups") + "\n"); 
+				writer.write(resultSet.getString("body") + "\n"); 
+				writer.write(resultSet.getString("references") + "\n"); 
+				
+				// Print result
+				System.out.println("Article id: " + resultSet.getInt("id") + " backed up to: " + filePath);
+			} 
+			writer.close();		// Stop writing to file
+			return true;
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.backupArticles \n\n");
+			e.printStackTrace();
+		}
+		catch(IOException e) {
+			System.err.println("IOException in ArticleDatabase.backupArticles \n\n");
+			System.err.println("File path: " + filePath + " is not found!");
+			e.printStackTrace();
+		}
+		return false;	// for errors
 	}
 	
 	
 	/**********
 	 * Gathers backup articles info from file and replaces the current table with restored table
 	 */
-	public static boolean restoreByOverriding(String filePath) throws IOException, SQLException {
+	public static boolean restoreByOverriding(String filePath) {
 		
 		BufferedReader reader = null;
+		boolean returnValue = true;
 		try {
 			// Read from file
 			reader = new BufferedReader(new FileReader(filePath));
+		
+			// Temporary strings to collect file contents
+			String idString, header, title, description, keywords, groups, body, references = null;
+			
+			// Wipe the articles table and start a new one
+			deleteTable();
+			createTable();
+			
+			// While the next line isn't empty
+			while((reader.readLine()) != null) {
+				// Get article info from file
+				idString = reader.readLine();
+				int id = Integer.parseInt(idString);
+				header = reader.readLine();
+				title = reader.readLine();
+				description = reader.readLine();
+				keywords = reader.readLine();
+				groups = reader.readLine();
+				body = reader.readLine();
+				references = reader.readLine();
+				
+				// Insert a new row into database and fill in the following column values
+				query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				PreparedStatement pstmt = connection.prepareStatement(query);
+					
+				// Set the placeholder ? variables
+				pstmt.setInt(1, id);
+				pstmt.setString(2, header);
+				pstmt.setString(3, title);
+				pstmt.setString(4, description);
+				pstmt.setString(5, keywords);
+				pstmt.setString(6, groups);
+				pstmt.setString(7, body);
+				pstmt.setString(8, references);
+				pstmt.executeUpdate();		// Execute query
+				
+				// Print result to console
+				if(doesArticleIDExist(id))
+					System.out.println("Article id: " + idString + " successfully restored from " + filePath);
+				else {
+					System.err.println("Article id: " + idString + " failed to be restored from " + filePath);
+					returnValue = false;
+				}
+			}
+			reader.close();		// Stop reading from file
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.restoreByOverriding \n\n");
+			e.printStackTrace();
+			returnValue = false;
 		}
 		catch(IOException e) {
-			// File not found, print error message
+			System.err.println("IOException in ArticleDatabase.restoreByOverriding \n\n");
 			System.err.println("File path: " + filePath + " is not found!");
-			return false;
+			e.printStackTrace();
+			returnValue = false;
 		}
-		
-		// Temporary strings to collect file contents
-		String idString, header, title, description, keywords, groups, body, references = null;
-		boolean returnValue = true;
-		
-		// Wipe the articles table and start a new one
-		deleteTable();
-		createTable();
-		
-		// While the next line isn't empty
-		while((reader.readLine()) != null) {
-			// Get article info from file
-			idString = reader.readLine();
-			int id = Integer.parseInt(idString);
-			header = reader.readLine();
-			title = reader.readLine();
-			description = reader.readLine();
-			keywords = reader.readLine();
-			groups = reader.readLine();
-			body = reader.readLine();
-			references = reader.readLine();
-			
-			// Insert a new row into database and fill in the following column values
-			query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			PreparedStatement pstmt = connection.prepareStatement(query);
-				
-			// Set the placeholder ? variables
-			pstmt.setInt(1, id);
-			pstmt.setString(2, header);
-			pstmt.setString(3, title);
-			pstmt.setString(4, description);
-			pstmt.setString(5, keywords);
-			pstmt.setString(6, groups);
-			pstmt.setString(7, body);
-			pstmt.setString(8, references);
-			pstmt.executeUpdate();		// Execute query
-			
-			// Print result to console
-			if(doesArticleIDExist(id))
-				System.out.println("Article id: " + idString + " successfully restored from " + filePath);
-			else {
-				System.err.println("Article id: " + idString + " failed to be restored from " + filePath);
-				returnValue = false;
-			}
-		}
-		reader.close();		// Stop reading from file
-		return returnValue;
+		return returnValue;		// False if any article wasn't added or exception occurred
 	}
 	
 	
 	/**********
 	 * Gathers backup articles info from file and replaces the current table with restored table
 	 */
-	public static boolean restoreByMerging(String filePath) throws IOException, SQLException {
+	public static boolean restoreByMerging(String filePath) {
 		
 		BufferedReader reader = null;
+		boolean returnValue = true;
 		try {
 			// Read from file
 			reader = new BufferedReader(new FileReader(filePath));
+		
+			// Temporary strings to collect file contents
+			String idString, header, title, description, keywords, groups, body, references = null;
+			int id = 0;
+			
+			// While the next line isn't empty
+			while((reader.readLine()) != null) {
+				// Get article info from file
+				idString = reader.readLine();
+				id = Integer.parseInt(idString);	// change id from string to int
+				header = reader.readLine();
+				title = reader.readLine();
+				description = reader.readLine();
+				keywords = reader.readLine();
+				groups = reader.readLine();
+				body = reader.readLine();
+				references = reader.readLine();
+				
+				// Skip adding article if it already exists
+				if(doesArticleIDExist(id)) {
+					System.out.println("Article id: " + idString + " not added to article table because id already exists");
+					continue;
+				}
+				// Prevent adding duplicate header
+				else if(doesArticleHeaderExist(header)) {
+					System.out.println("Article id: " + idString + "not added to article table because header: " + header + "already exists");
+					continue;
+				}
+				
+				// Insert a new row into database and fill in the following column values
+				query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				PreparedStatement pstmt = connection.prepareStatement(query);
+					
+				// Set the placeholder ? variables
+				pstmt.setInt(1, id);
+				pstmt.setString(2, header);
+				pstmt.setString(3, title);
+				pstmt.setString(4, description);
+				pstmt.setString(5, keywords);
+				pstmt.setString(6, groups);
+				pstmt.setString(7, body);
+				pstmt.setString(8, references);
+				pstmt.executeUpdate();		// Execute query
+				
+				// Print result to console
+				if(doesArticleIDExist(id))
+					System.out.println("Article id: " + idString + " successfully restored from " + filePath);
+				else {
+					System.err.println("Article id: " + idString + " failed to be restored from " + filePath);
+					returnValue = false;
+				}
+			}
+			reader.close();		// Stop reading from file
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.restoreByMerging \n\n");
+			e.printStackTrace();
+			returnValue = false;
 		}
 		catch(IOException e) {
-			// File not found, print error message
+			System.err.println("IOException in ArticleDatabase.restoreByMerging \n\n");
 			System.err.println("File path: " + filePath + " is not found!");
-			return false;
+			e.printStackTrace();
+			returnValue = false;
 		}
-		
-		// Temporary strings to collect file contents
-		String idString, header, title, description, keywords, groups, body, references = null;
-		int id = 0;
-		boolean returnValue = true;
-		
-		// While the next line isn't empty
-		while((reader.readLine()) != null) {
-			// Get article info from file
-			idString = reader.readLine();
-			id = Integer.parseInt(idString);	// change id from string to int
-			header = reader.readLine();
-			title = reader.readLine();
-			description = reader.readLine();
-			keywords = reader.readLine();
-			groups = reader.readLine();
-			body = reader.readLine();
-			references = reader.readLine();
-			
-			// Skip adding article if it already exists
-			if(doesArticleIDExist(id)) {
-				System.out.println("Article id: " + idString + " not added to article table because id already exists");
-				continue;
-			}
-			// Prevent adding duplicate header
-			else if(doesArticleHeaderExist(header)) {
-				System.out.println("Article id: " + idString + "not added to article table because header: " + header + "already exists");
-				continue;
-			}
-			
-			// Insert a new row into database and fill in the following column values
-			query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			PreparedStatement pstmt = connection.prepareStatement(query);
-				
-			// Set the placeholder ? variables
-			pstmt.setInt(1, id);
-			pstmt.setString(2, header);
-			pstmt.setString(3, title);
-			pstmt.setString(4, description);
-			pstmt.setString(5, keywords);
-			pstmt.setString(6, groups);
-			pstmt.setString(7, body);
-			pstmt.setString(8, references);
-			pstmt.executeUpdate();		// Execute query
-			
-			// Print result to console
-			if(doesArticleIDExist(id))
-				System.out.println("Article id: " + idString + " successfully restored from " + filePath);
-			else {
-				System.err.println("Article id: " + idString + " failed to be restored from " + filePath);
-				returnValue = false;
-			}
-		}
-		reader.close();		// Stop reading from file
-		return returnValue;
+		return returnValue;		// False if any article wasn't added or exception occurred
 	}
 	
 	

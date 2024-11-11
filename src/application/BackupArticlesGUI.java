@@ -149,32 +149,23 @@ public class BackupArticlesGUI
 				// Retrieves group(s) from user
 				groupInput = groupText.getText();
 				
-				// Try and Catch block needed for exception handling
-				try {
-					// Back-up Articles
-					if(ArticleDatabase.backupArticles(filePathInput, groupInput))
-					{
-						// Returns user back to previous page
-						theRoot.getChildren().clear();  // Clear the current root
-						
-						// Create new pane for next interface
-						Pane newRoot = new Pane();
-						ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); //returns user to previous interface
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-					    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-					    currentStage.setScene(newScene); // sets new scene
-					}
-					else // Back-Up Failed
-					{
-						// Print to console letting user know back-up failed
-						System.out.println("Backup Failed!");
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				// Back-up Articles
+				if(ArticleDatabase.backupArticles(filePathInput, groupInput))
+				{
+					// Returns user back to previous page
+					theRoot.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); //returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
+				else // Back-Up Failed
+				{
+					// Print to console letting user know back-up failed
+					System.out.println("Backup Failed!");
 				}
 			}
 		});

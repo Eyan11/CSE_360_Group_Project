@@ -70,12 +70,9 @@ public class DeleteArticleConfirmationGUI {
     
     private void yesButtonFunction(Pane pane, int id) {
     	boolean isdeleted = true; //new
-		try {
-			isdeleted = ArticleDatabase.deleteArticle(id);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		isdeleted = ArticleDatabase.deleteArticle(id);
+		
     	if (!isdeleted) { 
     		errorLabel.setText("failed to delete article with id" + id);
     	}

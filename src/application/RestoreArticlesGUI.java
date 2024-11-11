@@ -136,32 +136,23 @@ public class RestoreArticlesGUI
 				// Retrieves file path from user
 				filePathInput = filePathText.getText();
 				
-				// Try and Catch block needed for exception handling
-				try {
-					// Restore Articles
-					if(ArticleDatabase.restoreByOverriding(filePathInput))
-					{
-						// Returns user to previous page
-						theRoot.getChildren().clear();  // Clear the current root
-						
-						//create new pane for next interface
-						Pane newRoot = new Pane(); // 
-						ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // returns user to previous interface
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-					    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-					    currentStage.setScene(newScene); // sets new scene
-					}
-					else // Restore Failed
-					{
-						// Print to console letting user know restoration failed
-						System.out.println("Restore by Overriding Failed!");
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				// Restore Articles
+				if(ArticleDatabase.restoreByOverriding(filePathInput))
+				{
+					// Returns user to previous page
+					theRoot.getChildren().clear();  // Clear the current root
+					
+					//create new pane for next interface
+					Pane newRoot = new Pane(); // 
+					ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
+				else // Restore Failed
+				{
+					// Print to console letting user know restoration failed
+					System.out.println("Restore by Overriding Failed!");
 				}
 			}
 		});
@@ -177,32 +168,23 @@ public class RestoreArticlesGUI
 				// Retrieves file path from user
 				filePathInput = filePathText.getText();
 				
-				// Try and Catch block needed for exception handling
-				try {
-					// Restore Articles
-					if(ArticleDatabase.restoreByMerging(filePathInput))
-					{
-						// Returns user to previous page
-						theRoot.getChildren().clear();  // Clear the current root
-						
-						// Create new pane for next interface
-						Pane newRoot = new Pane(); // 
-						ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // returns user to previous interface
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-					    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-					    currentStage.setScene(newScene); // sets new scene
-					}
-					else // Restore Failed
-					{
-						// Print to console letting user know merging failed
-						System.out.println("Restore by Merging Failed!");
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				// Restore Articles
+				if(ArticleDatabase.restoreByMerging(filePathInput))
+				{
+					// Returns user to previous page
+					theRoot.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane(); // 
+					ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
+				else // Restore Failed
+				{
+					// Print to console letting user know merging failed
+					System.out.println("Restore by Merging Failed!");
 				}
 			}
 		});

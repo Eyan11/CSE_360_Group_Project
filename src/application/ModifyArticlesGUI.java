@@ -96,22 +96,17 @@ public class ModifyArticlesGUI {
 				String id = idTextField.getText();
 				int integerInput = Integer.parseInt(id);
 				
-				try {
-					if(ArticleDatabase.doesArticleIDExist(integerInput))
-					{
-						//
-						pane.getChildren().clear();  // Clear the current root
-						
-						// Create new pane for next interface
-						Pane newRoot = new Pane();
-						EditArticleGUI editArticle = new EditArticleGUI(newRoot, integerInput); // returns user to previous interface
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-					    Stage currentStage = (Stage) pane.getScene().getWindow();
-					    currentStage.setScene(newScene); // sets new scene
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(ArticleDatabase.doesArticleIDExist(integerInput))
+				{
+					//
+					pane.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					EditArticleGUI editArticle = new EditArticleGUI(newRoot, integerInput); // returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) pane.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
 				}
 			}
 		});
@@ -123,24 +118,19 @@ public class ModifyArticlesGUI {
 				System.out.println("Delete 1");
 				String id = idTextField.getText();
 				int integerInput = Integer.parseInt(id);
-				
-				try {
-					if(ArticleDatabase.doesArticleIDExist(integerInput))
-					{
-						System.out.println("Delete 2");
-						//
-						pane.getChildren().clear();  // Clear the current root
-						
-						// Create new pane for next interface
-						Pane newRoot = new Pane();
-						DeleteArticleConfirmationGUI deleteConfirmation = new DeleteArticleConfirmationGUI(newRoot, integerInput); //
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-					    Stage currentStage = (Stage) pane.getScene().getWindow();
-					    currentStage.setScene(newScene); // sets new scene
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				if(ArticleDatabase.doesArticleIDExist(integerInput))
+				{
+					System.out.println("Delete 2");
+					//
+					pane.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					DeleteArticleConfirmationGUI deleteConfirmation = new DeleteArticleConfirmationGUI(newRoot, integerInput); //
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) pane.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
 				}
 			}
 		});
@@ -148,31 +138,27 @@ public class ModifyArticlesGUI {
 
     // Method to retrieve and display articles in rows
     private void displayArticleRows(Pane pane) {
-        try {
-            String allArticles = ArticleDatabase.getAllArticles(); //allArticles accessing all the articles currently in database
-            if (allArticles.isEmpty()) { // if there are no articles in the database then 
-                Label noDataLabel = new Label("No articles found."); // it will say none found 
-                setupLabelUI(noDataLabel, "Arial", 14, WINDOW_WIDTH, Pos.CENTER, 0, 160, Color.GRAY);
-                pane.getChildren().add(noDataLabel); // display it on pane 
-                return;
-            }
 
-            String[] articleEntries = allArticles.split("\\|");  // Each article separated by "|"
-            int yOffset = 160;
+        String allArticles = ArticleDatabase.getAllArticles(); //allArticles accessing all the articles currently in database
+        if (allArticles.isEmpty()) { // if there are no articles in the database then 
+            Label noDataLabel = new Label("No articles found."); // it will say none found 
+            setupLabelUI(noDataLabel, "Arial", 14, WINDOW_WIDTH, Pos.CENTER, 0, 160, Color.GRAY);
+            pane.getChildren().add(noDataLabel); // display it on pane 
+            return;
+        }
 
-            for (String entry : articleEntries) {
-                String[] articleData = entry.split(",");
-                if (articleData.length >= 4) {  // ID, Header, Title, Group fields are present
-                    String displayText = articleData[0] + "          " + articleData[1] + "       " + articleData[2] + "       " + articleData[3];
-                    Label articleRow = new Label(displayText);
-                    setupLabelUI(articleRow, "Arial", 14, WINDOW_WIDTH - 20, Pos.CENTER_LEFT, 40, yOffset, Color.GRAY);
-                    pane.getChildren().add(articleRow);
-                    yOffset += 30;
-                }
+        String[] articleEntries = allArticles.split("\\|");  // Each article separated by "|"
+        int yOffset = 160;
+
+        for (String entry : articleEntries) {
+            String[] articleData = entry.split(",");
+            if (articleData.length >= 4) {  // ID, Header, Title, Group fields are present
+                String displayText = articleData[0] + "          " + articleData[1] + "       " + articleData[2] + "       " + articleData[3];
+                Label articleRow = new Label(displayText);
+                setupLabelUI(articleRow, "Arial", 14, WINDOW_WIDTH - 20, Pos.CENTER_LEFT, 40, yOffset, Color.GRAY);
+                pane.getChildren().add(articleRow);
+                yOffset += 30;
             }
-        } catch (SQLException e) {
-            errorLabel.setText("Error loading articles.");
-            e.printStackTrace();
         }
     }
 

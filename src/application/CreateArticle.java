@@ -264,26 +264,20 @@ public class CreateArticle {
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
-	            		try {
-	            			
-	            			ArticleDatabase.createArticle(headerString, titleString, descriptionString, keywordsString, 
-	            					groupsString, bodyString, referencesString);
-	            				
-	            			/**
-	            			 * Transitions to different home pages
-	            			 */
-	            			userPane.getChildren().clear();  // Clear the current root
-	            			
-	            			Pane newRoot = new Pane();
-	            			// Load next step
-	            			ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); 
-    						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-    						Stage currentStage = (Stage) userPane.getScene().getWindow(); // 
-    						currentStage.setScene(newScene);
-	            		}
-	            		catch(SQLException e) {
-	            			System.err.println("Error: " + e.getMessage());
-	            		}
+            			ArticleDatabase.createArticle(headerString, titleString, descriptionString, keywordsString, 
+            					groupsString, bodyString, referencesString);
+            				
+            			/**
+            			 * Transitions to different home pages
+            			 */
+            			userPane.getChildren().clear();  // Clear the current root
+            			
+            			Pane newRoot = new Pane();
+            			// Load next step
+            			ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); 
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+						Stage currentStage = (Stage) userPane.getScene().getWindow(); // 
+						currentStage.setScene(newScene);
 	            	}
             }
         });

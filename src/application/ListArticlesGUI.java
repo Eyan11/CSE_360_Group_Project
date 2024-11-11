@@ -132,34 +132,29 @@ public class ListArticlesGUI
 				// Retrieves ID from user and converts it into a integer
 				userInput = userText.getText();
 				int integerInput = Integer.parseInt(userInput);
-				// Try and Catch Block for exception handling
-				try {
-					// Make sure inputed Article ID from user is valid
-					if(ArticleDatabase.doesArticleIDExist(integerInput))
-					{
-						//Send user to ListByIdGUI class
-						theRoot.getChildren().clear();  // Clear the current root
-						
-						// Create new pane for next interface
-						Pane newRoot = new Pane();
-						try {
-							ListByIdGUI listID = new ListByIdGUI(newRoot, integerInput); // ListByIdGUI helper class
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-					    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-					    currentStage.setScene(newScene); // sets new scene
+
+				// Make sure inputed Article ID from user is valid
+				if(ArticleDatabase.doesArticleIDExist(integerInput))
+				{
+					//Send user to ListByIdGUI class
+					theRoot.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					try {
+						ListByIdGUI listID = new ListByIdGUI(newRoot, integerInput); // ListByIdGUI helper class
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else
-					{
-						// inputed user Article ID is invalid
-						System.out.println("Article ID Does Not Exist!");
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
+				else
+				{
+					// inputed user Article ID is invalid
+					System.out.println("Article ID Does Not Exist!");
 				}
 			}
 		});
