@@ -43,8 +43,10 @@ public class DatabaseManager {
 			System.out.println("Connection Successful!");
 			statement = connection.createStatement(); 
 			
-			AccountDatabase.setConnection(connection, statement);	// Let account class access database
-			ArticleDatabase.setConnection(connection, statement);	// Let article class access database
+			// Let each class access database
+			AccountDatabase.setConnection(connection, statement);
+			ArticleDatabase.setConnection(connection, statement);
+			HelpMessageDatabase.setConnection(connection, statement);
 			
 			// Wipe all data in accounts table
 			AccountDatabase.createTable();
@@ -53,6 +55,10 @@ public class DatabaseManager {
 			// Wipe all data in articles table
 			ArticleDatabase.createTable();
 			ArticleDatabase.deleteAllArticles();
+			
+			// Wipe all data in help_messages table
+			HelpMessageDatabase.createTable();
+			HelpMessageDatabase.deleteAllMessages();
 			
 			// Perform tests on both accounts and articles tables
 			//AccountDatabaseTesting.performTestEvaluations();

@@ -1,5 +1,16 @@
 package database;
 
+/**
+ * <p> LoginTracker. </p>
+ * 
+ * <p> Description: Stores basic information of currently logged in user.</p>
+ * 
+ * @author Eyan Martucci
+ * 
+ * @version 1.00		TODO
+ *  
+ */
+
 public class LoginTracker {
 	
 	// Private variables to store logged in user info
