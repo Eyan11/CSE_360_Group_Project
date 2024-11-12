@@ -21,6 +21,7 @@ import java.sql.*; // For SQL related objects
  * @author Eyan Martucci
  * 
  * @version 1.00		10/26/2024 Phase 2 implementation and documentation
+ * @version TODO
  *  
  */
 
@@ -51,8 +52,10 @@ public class ArticleDatabase {
 				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "header VARCHAR(50) UNIQUE, "
 				+ "title VARCHAR(50), "
+				+ "author VARCHAR(50), "
 				+ "description VARCHAR(100), "
 				+ "keywords VARCHAR(50), "
+				+ "level VARCHAR(20), "
 				+ "groups VARCHAR(50), "
 				+ "body VARCHAR(500), "
 				+ "references VARCHAR(100))";
@@ -184,7 +187,7 @@ public class ArticleDatabase {
 	
 	/**********
 	 * Returns the id, header, and title for every article in table as a String
-	 * in format of "id1,header1,title1,group1|id2,header2,title2,group2|..."
+	 * in format of "id1+header1+title1+group1|id2+header2+title2+group2|..."
 	 */
 	public static String getAllArticles() {
 		
@@ -205,9 +208,9 @@ public class ArticleDatabase {
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
 				// Get current article info
-				returnString += resultSet.getInt("id") + ","; 
-				returnString += resultSet.getString("header") + ",";
-				returnString += resultSet.getString("title") + ",";
+				returnString += resultSet.getInt("id") + "+"; 
+				returnString += resultSet.getString("header") + "+";
+				returnString += resultSet.getString("title") + "+";
 				returnString += resultSet.getString("groups") + "|";
 			}
 		}
@@ -221,7 +224,7 @@ public class ArticleDatabase {
 	
 	/**********
 	 * Returns the all information about an article given its id number
-	 * in format of "id,header,title,description,keywords,groups,body,references"
+	 * in format of "id+header+title+author+description+keywords+content level+groups+body+references"
 	 */
 	public static String getArticleByID(int id) {
 		
@@ -245,12 +248,14 @@ public class ArticleDatabase {
 	        if (resultSet.next()) {
 	        	// Get article info
 	        	returnString += id + ",";
-	        	returnString += resultSet.getString("header") + ","; 
-	        	returnString += resultSet.getString("title") + ",";
-	        	returnString += resultSet.getString("description") + ","; 
-	        	returnString += resultSet.getString("keywords") + ",";
-	        	returnString += resultSet.getString("groups") + ",";
-	        	returnString += resultSet.getString("body") + ",";
+	        	returnString += resultSet.getString("header") + "+"; 
+	        	returnString += resultSet.getString("title") + "+";
+	        	returnString += resultSet.getString("author") + "+";
+	        	returnString += resultSet.getString("description") + "+"; 
+	        	returnString += resultSet.getString("keywords") + "+";
+	        	returnString += resultSet.getString("level") + "+";
+	        	returnString += resultSet.getString("groups") + "+";
+	        	returnString += resultSet.getString("body") + "+";
 	        	returnString += resultSet.getString("references"); 
 	        }
 	    }
@@ -262,25 +267,26 @@ public class ArticleDatabase {
 	}
 	
 	
-	/**********
+	/********** 
 	 * Returns the id, header, title, and groups as String for every all articles with matching groups column
-	 * in format of "id1,header1,title1,group1|\nid2,header2,title2,group2|\n...".
+	 * in format of "id1+header1+title1+group1|\nid2+header2+title2+group2|\n...".
 	 * To get articles in group1 or group2, groups should equal "group1,group2".
-	 * To get articles in group1 and group2, groups should equal "group1&group2".
+	 * To get articles in group1 and group2, groups should equal "group1 & group2".
+	 * TODO, delete once ListArticleGUI switches to searchByContents()
 	 */
 	public static String getArticlesByGroups(String groups) {
 		
         String returnString = "";
 		try {
 			// Craft query to get articles that contain any of the groups provided in groups column
-		    resultSet = craftQueryToGetArticlesByGroups(groups);
+		    resultSet = craftResultSetToGetArticlesByGroups(groups);
 	        
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
 				// Get current article info
-				returnString += resultSet.getInt("id") + ","; 
-				returnString += resultSet.getString("header") + ",";
-				returnString += resultSet.getString("title") + ",";
+				returnString += resultSet.getInt("id") + "+"; 
+				returnString += resultSet.getString("header") + "+";
+				returnString += resultSet.getString("title") + "+";
 				returnString += resultSet.getString("groups") + "|";
 				returnString += "\n"; // adds new line for each article
 			}
@@ -298,6 +304,105 @@ public class ArticleDatabase {
 		return returnString;	// for error
 	}
 	
+	
+	/**********
+	 * Returns the sequence number, title, author, and description as String for all matching articles
+	 * 	in format of "Groups: group1, group2|Content Levels: 1 beginner, 3 advanced|
+	 * 	1+title1+author1+description1|\n2+title2+author2+description2|\n...".
+	 */
+	private static String searchByContents(String groupFilter, String levelFilter, String searchContents) {
+		
+		String returnString = "";
+		try {
+			// Get a result set of all matching articles
+			resultSet = craftResultSetToSearchArticles(groupFilter, levelFilter, searchContents);
+			
+			// Temporary variables for collecting data
+			String returnGroups = "Groups: ";
+			String returnLevels = "Content Levels: ";
+			String tempGroups = "";
+			String[] groupsArr = new String[10];
+			int numBeg = 0;
+			int numInt = 0;
+			int numAdv = 0;
+			int numExp = 0;
+
+			
+			int i = 1;	// stores sequence number
+			
+			// While the next row exists, check next row
+			while(resultSet.next()) { 
+				// Get current article info
+				returnString += i + ","; 	// sequence number
+				returnString += resultSet.getString("title") + "+";
+				returnString += resultSet.getString("author") + "+";
+				returnString += resultSet.getString("description") + "|";
+				returnString += "\n"; // adds new line for each article
+				
+				
+				// Get content level of article
+				switch(resultSet.getString("level").toLowerCase()) {
+					case "beginner":
+						numBeg++;
+						break;
+					case "intermediate":
+						numInt++;
+						break;
+					case "advanced":
+						numAdv++;
+						break;
+					case "expert":
+						numExp++;
+						break;
+					default:
+						System.err.println("Content level not returned in ArticleDatabase.searchByContents sequence number: " + i);
+						break;
+				}
+				
+				
+				// Get groups in article
+				tempGroups = resultSet.getString("groups");
+				groupsArr = tempGroups.split(" & ");
+				
+				// Loop through each group
+				for(int j = 0; i < groupsArr.length; j++) {
+					
+					// If group is not already in list, add it to list
+					if(!returnGroups.contains(groupsArr[j]))
+						returnGroups += groupsArr[j] + ", ";
+				}
+			}
+	
+			
+			// If non-empty, remove the last ", " in groups string
+			if (returnGroups.length() > 0)
+				returnGroups = returnGroups.substring(0, returnGroups.length() - 1);
+			
+			// Build content levels string
+			if(numBeg > 0)
+				returnLevels += numBeg + " beginner";
+			if(numInt > 0)
+				returnLevels += ", " + numInt + " intermediate";
+			if(numAdv > 0)
+				returnLevels += ", " + numAdv + " advanced";
+			if(numExp > 0)
+				returnLevels += ", " + numExp + " expert";
+			
+			// If non-empty, remove the last "|\n" in return string
+			if (returnString.length() > 0)
+				returnString = returnString.substring(0, returnString.length() - 2);
+			
+			// Combine all return strings into one
+			returnString = returnGroups + "|" + returnLevels + "|" + returnString;
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.searchByContents \n\n");
+			e.printStackTrace();
+		}
+		return returnString;
+	}
+	
+	
 	/**********************************************************************************************
 
 	 Public Methods To Set Database Information
@@ -307,73 +412,63 @@ public class ArticleDatabase {
 	
 	/**********
 	 * Creates a new article and stores in database, returns if successful or not.
-	 * Note: if an article has multiple groups or keywords, separate with "&", example: "group1&group2&group3".
-	 * 	groups or keywords cannot have the "," symbol in them because that is how the user searches for multiple groups/keywords
+	 * Note: if an article has multiple groups or keywords, separate with " & ", example: "group1 & group2 & group3".
+	 * Note: all fields cannot have the "+" or "|" symbol in them because it is used to separate data when returning articles
 	 */
-	public static boolean createArticle(String header, String title, String description, String keywords, 
-			String groups, String body, String references) {
+	public static boolean createArticle(String header, String title, String author, String description, 
+			String keywords, String level, String groups, String body, String references) {
 		
 		// Prevent printing an article that does not exist
 		if(doesArticleHeaderExist(header)) {
 			System.err.println("Cannot create article because header: " + header + " already exists in database!");
 			return false;
 		}
-		// Prevent keywords or groups from containing "," symbol
-		if((keywords.indexOf(',') != -1) || (groups.indexOf(',') != -1)) {
-			System.err.println("Cannot create article, keywords or groups contain ',' character");
+		// Prevent "+" or "|" symbol in any field since it is used to separate article info
+		if(containsInvalidCharacter(header + title + author + description + keywords + level + groups + body + references)) {
+			System.err.println("Cannot create article because a field contains a '+' or '|' symbol");
 			return false;
 		}
-		// Prevents very long header
-		if(header.length() > 50) {
-			System.err.println("Cannot create article, header is over 50 characters");
+
+		level = level.toLowerCase();
+		// Prevents level from being anything other than "beginner", "intermediate", "advanced", or "expert"
+		if(!level.equals("beginner") && !level.equals("intermediate") && !level.equals("advanced") && !level.equals("expert")) {
+			System.err.println("Cannot create article since content level is not 'beginner', 'intermediate', 'advanced, or 'expert");
 			return false;
 		}
-		// Prevents very long header
-		if(title.length() > 50) {
-			System.err.println("Cannot create article, title is over 50 characters");
+		// Prevents very long header, title, author, keywords, or groups
+		if(header.length() > 50 || title.length() > 50 || author.length() > 50 || 
+				keywords.length() > 50 || groups.length() > 50) {
+			System.err.println("Cannot create article since header, title, keywords, or groups are over 50 characters");
 			return false;
 		}
-		// Prevents very long description
-		if(description.length() > 100) {
-			System.err.println("Cannot create article, description is over 100 characters");
-			return false;
-		}
-		// Prevents very long keywords
-		if(keywords.length() > 50) {
-			System.err.println("Cannot create article, keywords are over 50 characters");
-			return false;
-		}
-		// Prevents very long groups
-		if(groups.length() > 50) {
-			System.err.println("Cannot create article, groups are over 50 characters");
+		// Prevents very long description or references
+		if(description.length() > 100 || references.length() > 100) {
+			System.err.println("Cannot create article since description or references are over 100 characters");
 			return false;
 		}
 		// Prevents very long body
 		if(body.length() > 500) {
-			System.err.println("Cannot create article, body is over 500 characters");
-			return false;
-		}
-		// Prevents very long references
-		if(references.length() > 100) {
-			System.err.println("Cannot create article, references are over 100 characters");
+			System.err.println("Cannot create article since body is over 500 characters");
 			return false;
 		}
 		
 		
 		// Insert a new row into database and fill in the following column values
-		query = "INSERT INTO articles (header, title, description, keywords, groups, body, references) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+		query = "INSERT INTO articles (header, title, author, description, keywords, level, groups, body, references) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(query);
 				
 			// Set the placeholder ? variables
 			pstmt.setString(1, header);
 			pstmt.setString(2, title);
-			pstmt.setString(3, description);
-			pstmt.setString(4, keywords);
-			pstmt.setString(5, groups);
-			pstmt.setString(6, body);
-			pstmt.setString(7, references);
+			pstmt.setString(3, author);
+			pstmt.setString(4, description);
+			pstmt.setString(5, keywords);
+			pstmt.setString(6, level);
+			pstmt.setString(7, groups);
+			pstmt.setString(8, body);
+			pstmt.setString(9, references);
 			pstmt.executeUpdate();		// Execute query
 		}
 		catch(SQLException e) {
@@ -433,8 +528,8 @@ public class ArticleDatabase {
 	/**********
 	 * Edits the article that matches the given id parameter
 	 */
-	public static boolean editArticle(int id, String header, String title, String description, String keywords, 
-			String groups, String body, String references) {
+	public static boolean editArticle(int id, String header, String title, String author, String description, 
+			String keywords, String level, String groups, String body, String references) {
 		
 		// Prevent editing an article that does not exist
 		if(!doesArticleIDExist(id)) {
@@ -446,52 +541,40 @@ public class ArticleDatabase {
 			System.err.println("Cannot edit article because header: " + header + " already exists in database!");
 			return false;
 		}
-		// Prevent keywords or groups from containing "," symbol
-		if((keywords.indexOf(',') != -1) || (groups.indexOf(',') != -1)) {
-			System.err.println("Cannot create article, keywords or groups contain ',' character");
+		// Prevent "+" or "|" symbol in any field since it is used to separate article info
+		if(containsInvalidCharacter(header + title + author + description + keywords + level + groups + body + references)) {
+			System.err.println("Cannot edit article because a field contains a '+' or '|' symbol");
 			return false;
 		}
-		// Prevents very long header
-		if(header.length() > 50) {
-			System.err.println("Cannot edit article, header is over 50 characters");
+		
+		level = level.toLowerCase();
+		// Prevents level from being anything other than "beginner", "intermediate", "advanced", or "expert"
+		if(!level.equals("beginner") && !level.equals("intermediate") && !level.equals("advanced") && !level.equals("expert")) {
+			System.err.println("Cannot edit article since content level is not 'beginner', 'intermediate', 'advanced, or 'expert");
 			return false;
 		}
-		// Prevents very long header
-		if(title.length() > 50) {
-			System.err.println("Cannot edit article, title is over 50 characters");
+		// Prevents very long header, title, author, keywords, or groups
+		if(header.length() > 50 || title.length() > 50 || author.length() > 50 || 
+				keywords.length() > 50 || groups.length() > 50) {
+			System.err.println("Cannot edit article since header, title, keywords, or groups are over 50 characters");
 			return false;
 		}
-		// Prevents very long description
-		if(description.length() > 100) {
-			System.err.println("Cannot edit article, description is over 100 characters");
-			return false;
-		}
-		// Prevents very long keywords
-		if(keywords.length() > 50) {
-			System.err.println("Cannot edit article, keywords are over 50 characters");
-			return false;
-		}
-		// Prevents very long groups
-		if(groups.length() > 50) {
-			System.err.println("Cannot edit article, groups are over 50 characters");
+		// Prevents very long description or references
+		if(description.length() > 100 || references.length() > 100) {
+			System.err.println("Cannot edit article since description or references are over 100 characters");
 			return false;
 		}
 		// Prevents very long body
 		if(body.length() > 500) {
-			System.err.println("Cannot edit article, body is over 500 characters");
-			return false;
-		}
-		// Prevents very long references
-		if(references.length() > 100) {
-			System.err.println("Cannot edit article, references are over 100 characters");
+			System.err.println("Cannot edit article since body is over 500 characters");
 			return false;
 		}
 		
 		
 		// Update all columns in articles column where id matches placeholder variable ?
 		query = "UPDATE articles "
-				+ "SET header = ?, title = ?, description = ?, keywords = ?, groups = ?, body = ?, references = ? "
-				+ "WHERE id = ?";
+				+ "SET header = ?, title = ?, author = ?, description = ?, keywords = ?, "
+				+ "level = ?, groups = ?, body = ?, references = ? WHERE id = ?";
 		try {
 			// Prepare the previous query to be executed
 			PreparedStatement pstmt = connection.prepareStatement(query);
@@ -499,11 +582,13 @@ public class ArticleDatabase {
 			// Set the placeholder ? variables
 			pstmt.setString(1, header);
 			pstmt.setString(2, title);
-			pstmt.setString(3, description);
-			pstmt.setString(4, keywords);
-			pstmt.setString(5, groups);
-			pstmt.setString(6, body);
-			pstmt.setString(7, references);
+			pstmt.setString(3, author);
+			pstmt.setString(4, description);
+			pstmt.setString(5, keywords);
+			pstmt.setString(6, level);
+			pstmt.setString(7, groups);
+			pstmt.setString(8, body);
+			pstmt.setString(9, references);
 			pstmt.setInt(8, id);
 			
 			pstmt.executeUpdate();	// execute query
@@ -512,10 +597,10 @@ public class ArticleDatabase {
 			System.err.println("SQLException in ArticleDatabase.editArticle \n\n");
 			e.printStackTrace();
 		}
-		
+
 		// Print and return result
-		if(getArticleByID(id).equals(id + "," + header + "," + title + "," + description + "," + 
-				keywords + "," + groups + "," + body + "," + references)) {
+		if(getArticleByID(id).equals(id + "+" + header + "+" + title + "+" + author + "+" + description + 
+				"+" + keywords + "+" + level + "+" + groups + "+" + body + "+" + references)) {
 			
 			System.out.println("Successfully edited article id: " + id);
 			return true;
@@ -545,7 +630,7 @@ public class ArticleDatabase {
 			writer = new BufferedWriter(new FileWriter(filePath));
 
 			// Returns result set of all articles with matching groups
-			resultSet = craftQueryToGetArticlesByGroups(groups);
+			resultSet = craftResultSetToGetArticlesByGroups(groups);
 	
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
@@ -553,8 +638,10 @@ public class ArticleDatabase {
 				writer.write("\n" + resultSet.getInt("id") + "\n");
 				writer.write(resultSet.getString("header") + "\n"); 
 				writer.write(resultSet.getString("title") + "\n"); 
+				writer.write(resultSet.getString("author") + "\n"); 
 				writer.write(resultSet.getString("description") + "\n"); 
 				writer.write(resultSet.getString("keywords") + "\n"); 
+				writer.write(resultSet.getString("level") + "\n"); 
 				writer.write(resultSet.getString("groups") + "\n"); 
 				writer.write(resultSet.getString("body") + "\n"); 
 				writer.write(resultSet.getString("references") + "\n"); 
@@ -590,7 +677,7 @@ public class ArticleDatabase {
 			reader = new BufferedReader(new FileReader(filePath));
 		
 			// Temporary strings to collect file contents
-			String idString, header, title, description, keywords, groups, body, references = null;
+			String idString, header, title, author, description, keywords, level, groups, body, references = null;
 			
 			// Wipe the articles table and start a new one
 			deleteTable();
@@ -603,26 +690,31 @@ public class ArticleDatabase {
 				int id = Integer.parseInt(idString);
 				header = reader.readLine();
 				title = reader.readLine();
+				author = reader.readLine();
 				description = reader.readLine();
 				keywords = reader.readLine();
+				level = reader.readLine();
 				groups = reader.readLine();
 				body = reader.readLine();
 				references = reader.readLine();
 				
 				// Insert a new row into database and fill in the following column values
-				query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				query = "INSERT INTO articles (id, header, title, author, description, "
+						+ "keywords, level, groups, body, references) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				PreparedStatement pstmt = connection.prepareStatement(query);
 					
 				// Set the placeholder ? variables
 				pstmt.setInt(1, id);
 				pstmt.setString(2, header);
 				pstmt.setString(3, title);
-				pstmt.setString(4, description);
-				pstmt.setString(5, keywords);
-				pstmt.setString(6, groups);
-				pstmt.setString(7, body);
-				pstmt.setString(8, references);
+				pstmt.setString(4, author);
+				pstmt.setString(5, description);
+				pstmt.setString(6, keywords);
+				pstmt.setString(7, level);
+				pstmt.setString(8, groups);
+				pstmt.setString(8, body);
+				pstmt.setString(9, references);
 				pstmt.executeUpdate();		// Execute query
 				
 				// Print result to console
@@ -662,7 +754,7 @@ public class ArticleDatabase {
 			reader = new BufferedReader(new FileReader(filePath));
 		
 			// Temporary strings to collect file contents
-			String idString, header, title, description, keywords, groups, body, references = null;
+			String idString, header, author, title, description, keywords, level, groups, body, references = null;
 			int id = 0;
 			
 			// While the next line isn't empty
@@ -672,8 +764,10 @@ public class ArticleDatabase {
 				id = Integer.parseInt(idString);	// change id from string to int
 				header = reader.readLine();
 				title = reader.readLine();
+				author = reader.readLine();
 				description = reader.readLine();
 				keywords = reader.readLine();
+				level = reader.readLine();
 				groups = reader.readLine();
 				body = reader.readLine();
 				references = reader.readLine();
@@ -690,16 +784,19 @@ public class ArticleDatabase {
 				}
 				
 				// Insert a new row into database and fill in the following column values
-				query = "INSERT INTO articles (id, header, title, description, keywords, groups, body, references) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				query = "INSERT INTO articles (id, header, title, author, description, "
+						+ "keywords, level, groups, body, references) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				PreparedStatement pstmt = connection.prepareStatement(query);
 					
 				// Set the placeholder ? variables
 				pstmt.setInt(1, id);
 				pstmt.setString(2, header);
 				pstmt.setString(3, title);
+				pstmt.setString(3, author);
 				pstmt.setString(4, description);
 				pstmt.setString(5, keywords);
+				pstmt.setString(3, level);
 				pstmt.setString(6, groups);
 				pstmt.setString(7, body);
 				pstmt.setString(8, references);
@@ -737,59 +834,99 @@ public class ArticleDatabase {
 	**********************************************************************************************/
 	
 	
-	/**********
+	/********** TODO, update documentation and method
 	 * Returns the result set containing all rows with matching groups
 	 * groups parameter is in format of "group1,group2,group3&group4"
 	 * Note: if groups = empty string or whitespace then return all articles, 
 	 * 	Assumes groups parameter always contains contains a non-whitespace between every ",".
 	 */
-	private static ResultSet craftQueryToGetArticlesByGroups(String groups) throws SQLException {
+	private static ResultSet craftResultSetToGetArticlesByGroups(String groups) throws SQLException {
 		
-		// If string is only whitespace
-		if(groups.trim().isEmpty()) {
-
-			// Get all articles
-			query = "SELECT * FROM articles"; 
-			statement = connection.createStatement();
-			return statement.executeQuery(query); 	// Return result set of query
-		}
+		// Get all articles, then filter through them later
+		query = "SELECT * FROM articles"; 
+		statement = connection.createStatement();
 		
-		// If only searching for one group (no "," character)
-		if(!groups.contains(String.valueOf(','))) {
-
-			// Search for only one substring in groups
-			query = "SELECT * FROM articles WHERE groups LIKE ?";
-			PreparedStatement pstmt = connection.prepareStatement(query);
-
-			pstmt.setString(1, "%" + groups + "%");		// Set the placeholder ? variable
-			return pstmt.executeQuery();				// Return result set of query
-		}
-
 		
-		// Store each group in an array
-		String[] groupsArr = groups.split(",");
-		query = "SELECT * FROM articles WHERE";
-
-		// For each group element in groupsArr
-		for(int i = 0; i < groupsArr.length; i++) {
+		// If filtering by groups (not empty or "all")
+		if(!groups.trim().isEmpty() || !groups.toLowerCase().equals("all")) {
 			
-			// Add group to the search
-			query += " groups LIKE ? OR";
+			// Check all articles
+			while(resultSet.next()) { 
+				
+				// If the groups do not exist in article
+				if(!resultSet.getString("groups").contains(groups))
+					resultSet.deleteRow();	// Filter out article
+			}
 		}
-
-		// Remove the last 3 characters of string (remove the " OR" at the end)
-		query = query.substring(0, query.length() - 3);
-		PreparedStatement pstmt = connection.prepareStatement(query);
-
-		int i = 1;	// To track loop iteration
-
-		// For each group element in groupsArr
-		for(String group : groupsArr) {
+		
+		// TODO once I finish group database, I will make sure currently logged in user is a 
+		//	group admin of all of the groups in that article
+		// Check all articles with matching groups
+		/*
+		while(resultSet.next()) { 
 			
-			pstmt.setString(i, "%" + group + "%");		// Set the placeholder ? variables
-			i++;
+			// If the groups do not exist in article
+			if(!resultSet.getString("groups").contains(groups))
+				resultSet.deleteRow();	// Filter out article
 		}
-
-		return pstmt.executeQuery();	// Return result set of query
+		*/
+		return resultSet;
+	}
+	
+	
+	/**********
+	 * TODO
+	 */
+	private static ResultSet craftResultSetToSearchArticles(String groupFilter, String levelFilter, 
+			String searchContents) throws SQLException {
+		
+		resultSet = craftResultSetToGetArticlesByGroups(groupFilter);
+		levelFilter = levelFilter.toLowerCase();
+		
+		// If filtering by level (not empty or "all")
+		if(!levelFilter.trim().isEmpty() || !levelFilter.equals("all")) {
+			
+			// Check all matching groups
+			while(resultSet.next()) { 
+				
+				// If the level filter does NOT match the article level
+				if(!resultSet.getString("level").equals(levelFilter))
+					resultSet.deleteRow();	// Filter out article
+			}
+		}
+		
+		
+		// if filtering by search contents (not empty)
+		if(!levelFilter.trim().isEmpty()) {
+			
+			// Check all matching groups
+			while(resultSet.next()) { 
+				
+				// If search contents are NOT in title, author, or description
+				if(!resultSet.getString("title").contains(searchContents) || 
+					!resultSet.getString("author").contains(searchContents) ||
+					!resultSet.getString("description").contains(searchContents)) {
+							
+					resultSet.deleteRow();	// Filter out article
+				}
+			}
+		}
+		return resultSet;	// Returned filtered search as result set
+	}
+	
+	
+	/**********
+	 * Returns true if input string contains a "+" or "|" character
+	 */
+	private static boolean containsInvalidCharacter(String inputString) {
+		// Prevent keywords or groups from containing "+" symbol
+		if(inputString.contains("+"))
+			return false;
+		// Prevent keywords or groups from containing "|" symbol
+		else if(inputString.contains("|"))
+			return false;
+		// No invalid characters in input string
+		else
+			return true;
 	}
 }
