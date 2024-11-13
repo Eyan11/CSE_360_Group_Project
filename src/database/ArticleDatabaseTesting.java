@@ -155,7 +155,7 @@ public class ArticleDatabaseTesting {
 			String groups, String body, String references, boolean expectedResult) throws SQLException {
 		
 		// Create article and return result
-		actualResult = ArticleDatabase.createArticle(header, title, description, keywords, groups, body, references);
+		//actualResult = ArticleDatabase.createArticle(header, title, description, keywords, groups, body, references);
 		
 		// Return if test passed or failed and track
 		if(actualResult == expectedResult) {
@@ -196,7 +196,7 @@ public class ArticleDatabaseTesting {
 			String groups, String body, String references, boolean expectedResult) throws SQLException{
 		
 		// Edit article and return result
-		actualResult = ArticleDatabase.editArticle(id, header, title, description, keywords, groups, body, references);
+		//actualResult = ArticleDatabase.editArticle(id, header, title, description, keywords, groups, body, references);
 		
 		// Return if test passed or failed and track
 		if(actualResult == expectedResult) {

@@ -246,9 +246,11 @@ public class EditArticleGUI {
 		            		
 		            		// DEVELOPER NOTE: Critical step v1
 		            		// Pass info onto the next part!
+		            		/* TODO - add author and content level arguments
 	            			ArticleDatabase.editArticle(articleID, headerString, titleString, descriptionString, keywordsString, 
 	            					groupsString, bodyString, referencesString);
-	            			
+	            			*/
+		            		
 	            			/**
 	            			 * Transitions to different home pages
 	            			 */
