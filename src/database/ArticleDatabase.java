@@ -267,50 +267,12 @@ public class ArticleDatabase {
 	}
 	
 	
-	/********** 
-	 * Returns the id, header, title, and groups as String for every all articles with matching groups column
-	 * in format of "id1+header1+title1+group1|\nid2+header2+title2+group2|\n...".
-	 * To get articles in group1 or group2, groups should equal "group1,group2".
-	 * To get articles in group1 and group2, groups should equal "group1 & group2".
-	 * TODO, delete once ListArticleGUI switches to searchByContents()
-	 */
-	public static String getArticlesByGroups(String groups) {
-		
-        String returnString = "";
-		try {
-			// Craft query to get articles that contain any of the groups provided in groups column
-		    resultSet = craftResultSetToGetArticlesByGroups(groups);
-	        
-			// While the next row exists, check next row
-			while(resultSet.next()) { 
-				// Get current article info
-				returnString += resultSet.getInt("id") + "+"; 
-				returnString += resultSet.getString("header") + "+";
-				returnString += resultSet.getString("title") + "+";
-				returnString += resultSet.getString("groups") + "|";
-				returnString += "\n"; // adds new line for each article
-			}
-			
-			// Check if there is anything in the string
-			if (returnString.length() > 0) {
-				// Removes the last "|\n"
-				returnString = returnString.substring(0, returnString.length() - 2);
-			}
-		}
-		catch(SQLException e) {
-			System.err.println("SQLException in ArticleDatabase.getArticlesByGroups \n\n");
-			e.printStackTrace();
-		}
-		return returnString;	// for error
-	}
-	
-	
 	/**********
 	 * Returns the sequence number, title, author, and description as String for all matching articles
 	 * 	in format of "Groups: group1, group2|Content Levels: 1 beginner, 3 advanced|
 	 * 	1+title1+author1+description1|\n2+title2+author2+description2|\n...".
 	 */
-	private static String searchByContents(String groupFilter, String levelFilter, String searchContents) {
+	public static String searchByContents(String groupFilter, String levelFilter, String searchContents) {
 		
 		String returnString = "";
 		try {

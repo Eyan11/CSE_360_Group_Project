@@ -323,7 +323,7 @@ public class ArticleDatabaseTesting {
 	private static void testGetArticlesByGroups(String groups, String expectedString) throws SQLException {
 		
 		// Get id, header, and title of all articles with matching groups
-		actualResultString = ArticleDatabase.getArticlesByGroups(groups);
+		//actualResultString = ArticleDatabase.getArticlesByGroups(groups);
 		
 		// Return if test passed or failed and track
 		if(actualResultString.equals(expectedString)) {

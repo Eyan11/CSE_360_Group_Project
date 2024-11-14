@@ -58,7 +58,8 @@ public class ListByGroupGUI
 		// Initialize group with inputed parameter
 		this.group = group;
 		// Grab all articles with shared group
-		String formattedInput = ArticleDatabase.getArticlesByGroups(this.group);
+		// TODO - include group filter, content level filter, and search contents. Eyan updated this line to remove errors
+		String formattedInput = ArticleDatabase.searchByContents(this.group, "", "");
 		// Create a label with group information to display
 		Label displayArticles = new Label(formattedInput);
 		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons

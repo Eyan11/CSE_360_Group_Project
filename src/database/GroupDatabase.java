@@ -26,7 +26,7 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Sets connection and statement variables so this class can access the database
+	 * Sets connection and statement variables so this class can access the database.
 	 */
 	public static void setConnection(Connection _connection, Statement _statement) {
 		connection = _connection;
@@ -55,7 +55,7 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Deletes the entire groups table in database
+	 * Deletes the entire groups table in database.
 	 */
 	public static void deleteTable() {
 		query = "DROP TABLE groups";	// delete groups table
@@ -71,7 +71,7 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Deletes all rows in groups database
+	 * Deletes all rows in groups database.
 	 */
 	public static void deleteAllGroups() {
 		query = "DELETE FROM help_messages";	// Clear the groups table
@@ -118,16 +118,16 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Returns true if the given group name already exists in the groups table
+	 * Returns true if the given group name already exists in the groups table.
 	 */
 	public static boolean doesGroupNameExist(String groupName) {
 		
 		// Group names are all lowercase
 		groupName = groupName.toLowerCase();
 		
-		// Select all rows from database where name = placeholder variable ?
-	    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
 	    try {
+			// Select all rows from database where name = placeholder variable ?
+		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
 		    PreparedStatement pstmt = connection.prepareStatement(query);
 		    
 	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
@@ -209,12 +209,12 @@ public class GroupDatabase {
 			return false;
 		}
 		// Prevent adding a user that doesn't exist
-		if(AccountDatabase.doesUsernameExist(firstAdmin)) {
+		if(!AccountDatabase.doesUsernameExist(firstAdmin)) {
 			System.err.println("Cannot create group because username: " + firstAdmin + " does not exists in database!");
 			return false;
 		}
-		// Prevent adding a student as a group admin
-		if(AccountDatabase.isStudentRole(firstAdmin)) {
+		// Prevent adding a user with only the student role as a group admin
+		if(!AccountDatabase.isAdminRole(firstAdmin) && !AccountDatabase.isInstructorRole(firstAdmin)) {
 			System.err.println("Cannot create group because username: " + firstAdmin + " cannot be a student!");
 			return false;
 		}
@@ -255,11 +255,290 @@ public class GroupDatabase {
 	}
 	
 	
+	/**********
+	 * Adds a user to a group as a group admin or group viewer and returns true if the user was added.
+	 * If the user is in the opposite group role, then they are switched to the requested role because a user
+	 * 	cannot be in both the group admins and viewers list.
+	 */
+	private static boolean addUserToGroup(String user, String groupName, boolean isViewer) {
+		
+		// Convert to lowercase to avoid case sensitive issues
+		groupName = groupName.toLowerCase();
+		
+		// Prevent adding a user that doesn't exist
+		if(!AccountDatabase.doesUsernameExist(user)) {
+			System.err.println("Cannot add to group because username: " + user + " does not exists in database!");
+			return false;
+		}
+		// Prevent adding a user with only the student role as a group admin
+		if(!isViewer && !AccountDatabase.isAdminRole(user) && !AccountDatabase.isInstructorRole(user)) {
+			System.err.println("Cannot add username: " + user + " as a group admin because they are a student!");
+			return false;
+		}
+		// Prevent adding a user to a group that doesn't exist
+		if(!doesGroupNameExist(groupName)) {
+			System.err.println("Cannot add to group because group name: " + groupName + " doesn't exist!");
+			return false;
+		}
+		// Prevent instructor from adding admins or instructors
+		if(LoginTracker.usingInstructorRole() && (AccountDatabase.isAdminRole(user) || AccountDatabase.isInstructorRole(user))) {
+			System.err.println("Cannot add user: " + user + " to group because the user is an admin or instructor and the "
+					+ "currently logged in user is an instructor (they need to be an admin to do this)!");
+			return false;
+		}
+		// Prevent duplicate users in list (covers both admin and viewers list)
+		if(isUserInGroup(groupName, user, isViewer)) {
+    		System.err.println("Cannot add user: " + user + " to group: " + groupName +
+    				"because they are already in that group list!");
+    		return false;
+		}
+		
+    	// Get list of admins and viewers for the given group name
+    	String groupAdmins = getGroupAdminsOrViewers(groupName, false);
+    	String groupViewers = getGroupAdminsOrViewers(groupName, true);
+    	
+    	// If adding as group viewer
+    	if(isViewer) {
+    		
+    		// If user is admin, remove from admin list and return false if removal failed, otherwise continue
+    		if(!removeUserFromGroup(user, groupName, false)) {
+        		System.err.println("Cannot add user: " + user + " to group: " + groupName + " as group viewer "
+        				+ "because it failed to be removed from group admins list!");
+        		return false;
+    		}
+    		
+    		// Add user to empty group viewers list
+    		if(groupViewers.equals(""))
+    			groupViewers = user;
+    		// Add user to the end of group viewers list
+    		else
+    			groupViewers += ", " + user;
+    	}
+    	// If adding as group admin
+    	else {
+        	
+        	// Prevent user from being in both group admins and viewers list
+        	if(groupViewers.contains(user))
+        		groupViewers = removeNameFromList(groupViewers, user);
+        	
+        	// Add user to end of admins list (admins list can never be empty)
+        	groupAdmins += ", " + user;
+        }
+	    	
+	    try {
+    		// Update the matching group name with the updated admins and viewers list
+    		query = "UPDATE groups SET admins = ?, viewers = ? WHERE name = ?";
+			// Prepare the previous query to be executed
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
+			// Set the placeholder ? variables
+			pstmt.setString(1, groupAdmins);
+			pstmt.setString(2, groupViewers);
+			pstmt.setString(3, groupName);
+			pstmt.executeUpdate();	// execute query
+			return true;
+	    }
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.addUserToGroup \n\n");
+			e.printStackTrace();
+		}
+	    
+	    // Check and print result
+		if(isUserInGroup(groupName, user, isViewer)) {
+    		System.out.println("User: " + user + " successfully added to group: " + groupName);
+    		return true;
+		}
+		else {
+    		System.err.println("User: " + user + " failed to be added to group: " + groupName);
+    		return false;
+		}
+	}
+	
+	
+	/**********
+	 * Removes a user from a right the group admins or viewers list and returns true if they were removed.
+	 */
+	private static boolean removeUserFromGroup(String user, String groupName, boolean isViewer) {
+		
+		// Convert to lowercase to avoid case sensitive issues
+		groupName = groupName.toLowerCase();
+		
+		// Prevent removing a user that doesn't exist
+		if(!AccountDatabase.doesUsernameExist(user)) {
+			System.err.println("Cannot remove from group because username: " + user + " does not exists in database!");
+			return false;
+		}
+		// Prevent removing a user to a group that doesn't exist
+		if(!doesGroupNameExist(groupName)) {
+			System.err.println("Cannot remove from group because group name: " + groupName + " doesn't exist!");
+			return false;
+		}
+		// Prevent removing users from a list they are not already in
+		if(!isUserInGroup(groupName, user, isViewer)) {
+    		System.err.println("Cannot remove user: " + user + " from group: " + groupName +
+    				"because they are not in that group list!");
+    		return false;
+		}
+		// Prevent instructor from removing admins or instructors
+		if(LoginTracker.usingInstructorRole() && (AccountDatabase.isAdminRole(user) || AccountDatabase.isInstructorRole(user))) {
+			System.err.println("Cannot remove user: " + user + " from group because the user is an admin or instructor and the "
+					+ "currently logged in user is an instructor (they need to be an admin to do this)!");
+			return false;
+		}
+		
+    	// Get list of admins and viewers for the given group name
+    	String groupAdmins = getGroupAdminsOrViewers(groupName, false);
+    	String groupViewers = getGroupAdminsOrViewers(groupName, true);
+    	
+    	// Prevent removing the only admin from admins list
+    	if(!isViewer && atLeastOneAdminAfterRemoval(groupAdmins, user)) {
+			System.err.println("Cannot remove from admins list since user: " + user + " is the only user "
+					+ "with account admin role in the list! There must be at least one admin in group admins list.");
+			return false;
+    	}
+    	
+    	// Remove from viewers list string
+    	if(isViewer)
+    		groupViewers = removeNameFromList(groupViewers, user);
+    	// Remove from admins list string
+    	else
+    		groupAdmins = removeNameFromList(groupAdmins, user);
+		
+	    try {
+    		// Update the matching group name with the updated admins and viewers list
+    		query = "UPDATE groups SET admins = ?, viewers = ? WHERE name = ?";
+			// Prepare the previous query to be executed
+			PreparedStatement pstmt = connection.prepareStatement(query);
+				
+			// Set the placeholder ? variables
+			pstmt.setString(1, groupAdmins);
+			pstmt.setString(2, groupViewers);
+			pstmt.setString(3, groupName);
+			pstmt.executeUpdate();	// execute query
+			return true;
+	    }
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.removeUserFromGroup \n\n");
+			e.printStackTrace();
+		}
+
+	    // Check and print result
+		if(!isUserInGroup(groupName, user, isViewer)) {
+    		System.out.println("User: " + user + " successfully removed from group: " + groupName);
+    		return true;
+		}
+		else {
+    		System.err.println("User: " + user + " failed to be removed from group: " + groupName);
+    		return false;
+		}
+	}
+	
+	
 	/**********************************************************************************************
 
 	 Private Helper Methods
 	
 	**********************************************************************************************/
+	
+	
+	/**********
+	 * Returns all group admins or viewers for the provided group name.
+	 */
+	private static String getGroupAdminsOrViewers(String groupName, boolean getViewers) {
+		
+		// Prevent getting admins if group name doesn't exist
+		if(doesGroupNameExist(groupName)) {
+			System.err.println("Cannot get group admins because group name: " + groupName + " doesn't exist!");
+			return "";
+		}
+		
+		try {
+			// Select all rows from database where name = placeholder variable ?
+		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
+	        resultSet = pstmt.executeQuery();
+	        
+	        if(getViewers)
+	        	return resultSet.getString("viewers");
+	        else
+	        	return resultSet.getString("admins");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.getGroupAdminsOrViewers \n\n");
+			e.printStackTrace();
+		}
+		return "";	// for error
+	}
+	
+	
+	/**********
+	 * Returns true if there is at least one admin in the given admins list besides for the given user.
+	 */
+	private static boolean atLeastOneAdminAfterRemoval(String adminsList, String user) {
+		String[] adminsArr = adminsList.split(", ");
+		
+		// Make sure there is at least one other user in group admins list with admin account role
+		for(String groupAdmin : adminsArr) {
+
+			// if an admin is in the list and it is not the user being remove, return true
+			if(AccountDatabase.isAdminRole(user) && !groupAdmin.equals(user))
+				return true;
+		}
+		return false;
+	}
+	
+	
+	/**********
+	 * Returns true if the user belongs to the group admins or viewers list of the specified group.
+	 */
+	private static boolean isUserInGroup(String groupName, String user, boolean isViewer) {
+		
+		try {
+			// Select all rows from database where name = placeholder variable ?
+		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
+	        resultSet = pstmt.executeQuery();
+	        
+	        // If user is in group viewers list, return true
+	        if(isViewer && resultSet.getString("viewers").contains(user))
+	        	return true;
+	        // If user is in group admins list, return true
+	        else if(!isViewer && resultSet.getString("admins").contains(user))
+	        	return true;
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.isUserInGroup \n\n");
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	
+	/**********
+	 * Removes a name from a string list of names while keeping the order and format of the list correct.
+	 * Returns strings in format of "Name1" or "Name1, Name2, Name3".
+	 */
+	private static String removeNameFromList(String list, String name) {
+		
+		// If list contains 0 or 1 names, return an empty list
+		if(!list.contains(","))
+			return "";
+		// If name is not the last in list, remove it and keep format
+		else if(list.contains(name + ", "))
+			return list.replace(name + ", ", "");
+		// If name is the last name in list, remove it and keep format
+		else if(list.contains(", " + name))
+			return list.replace(", " + name, "");
+		
+		// Error since list is in wrong format
+		System.err.println("Cannot remove name from the list: " + list + " because list is in the wrong format!"
+				+ " Returning original list.");
+		return list;
+	}
 	
 	
 	/**********
