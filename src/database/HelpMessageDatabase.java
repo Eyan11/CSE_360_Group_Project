@@ -5,7 +5,7 @@ import java.sql.*; // For SQL related objects
 /**
  * <p> HelpMessageDatabase. </p>
  * 
- * <p> Description: Manages the Help Message Table in the H2 database.</p>
+ * <p> Description: Manages the Help Messages Table in the H2 database.</p>
  * 
  * <p> Source: Lynn Robert Carter from FirstDatabase project, DatabaseHelper class, 
  * 				available at: https://canvas.asu.edu/courses/193728/files/92728837?module_item_id=14758007 </p>

@@ -875,7 +875,8 @@ public class ArticleDatabase {
 	
 	
 	/**********
-	 * TODO
+	 * Returns the result set with matching groups, content level, and search contents
+	 * 	for all articles that the user has permission to view.
 	 */
 	private static ResultSet craftResultSetToSearchArticles(String groupFilter, String levelFilter, 
 			String searchContents) throws SQLException {
@@ -919,14 +920,14 @@ public class ArticleDatabase {
 	 * Returns true if input string contains a "+" or "|" character
 	 */
 	private static boolean containsInvalidCharacter(String inputString) {
-		// Prevent keywords or groups from containing "+" symbol
+		// Prevent input from containing "+" symbol
 		if(inputString.contains("+"))
-			return false;
-		// Prevent keywords or groups from containing "|" symbol
+			return true;
+		// Prevent input from containing "|" symbol
 		else if(inputString.contains("|"))
-			return false;
+			return true;
 		// No invalid characters in input string
 		else
-			return true;
+			return false;
 	}
 }

@@ -14,9 +14,9 @@ package database;
 public class LoginTracker {
 	
 	// Private variables to store logged in user info
-	private boolean isLoggedIn = false;
-	private String username = "";
-	private String currentRole = "";	// If user has multiple roles
+	private static boolean isLoggedIn = false;
+	private static String username = "";
+	private static String currentRole = "";	// If user has multiple roles
 	
 	
 	/**********************************************************************************************
@@ -29,7 +29,7 @@ public class LoginTracker {
 	/**********
 	 * Gets and stores information about the logged in user from AccountDatabase
 	 */
-	public boolean login(String user) {
+	public static boolean login(String user) {
 		
 		// return false if given username doesn't exist
 		if(!AccountDatabase.doesUsernameExist(user))
@@ -44,7 +44,7 @@ public class LoginTracker {
 	/**********
 	 * Clears the information about the logged in user
 	 */
-	public void logout() {
+	public static void logout() {
 		// Clear all user info
 		isLoggedIn = false;
 		username = "";
@@ -54,21 +54,21 @@ public class LoginTracker {
 	/**********
 	 * Sets current role as student when user selects student role at select role page
 	 */
-	public void selectStudentRole() {
+	public static void selectStudentRole() {
 		currentRole = "student";
 	}
 	
 	/**********
 	 * Sets current role as instructor when user selects student role at select role page
 	 */
-	public void selectInstructorRole() {
+	public static void selectInstructorRole() {
 		currentRole = "instructor";
 	}
 	
 	/**********
 	 * Sets current role as admin when user selects student role at select role page
 	 */
-	public void selectAdminRole() {
+	public static void selectAdminRole() {
 		currentRole = "admin";
 	}
 	
@@ -82,63 +82,63 @@ public class LoginTracker {
 	/**********
 	 * Returns true if a user is logged in
 	 */
-	public boolean isLoggedIn() {
+	public static boolean isLoggedIn() {
 		return isLoggedIn;
 	}
 	
 	/**********
 	 * Returns the username of the logged in user or null if nobody is logged in
 	 */
-	public String getUsername() {
+	public static String getUsername() {
 		return username;
 	}
 	
 	/**********
 	 * Returns true if the username of the logged in user is using the student role
 	 */
-	public boolean usingStudentRole() {
+	public static boolean usingStudentRole() {
 		return currentRole.equals("student");
 	}
 	
 	/**********
 	 * Returns true if the username of the logged in user is using the instructor role
 	 */
-	public boolean usingInstructorRole() {
+	public static boolean usingInstructorRole() {
 		return currentRole.equals("instructor");
 	}
 	
 	/**********
 	 * Returns true if the username of the logged in user is using the admin role
 	 */
-	public boolean usingAdminRole() {
+	public static boolean usingAdminRole() {
 		return currentRole.equals("admin");
 	}
 	
 	/**********
 	 * Returns the student role status of logged in user and always returns false if nobody is logged in
 	 */
-	public boolean isStudent() {
+	public static boolean isStudent() {
 		return AccountDatabase.isStudentRole(username);
 	}
 	
 	/**********
 	 * Returns the instructor role status of logged in user and always returns false if nobody is logged in
 	 */
-	public boolean isInstructor() {
+	public static boolean isInstructor() {
 		return AccountDatabase.isInstructorRole(username);
 	}
 	
 	/**********
 	 * Returns the admin role status of logged in user and always returns false if nobody is logged in
 	 */
-	public boolean isAdmin() {
+	public static boolean isAdmin() {
 		return AccountDatabase.isAdminRole(username);
 	}
 	
 	/**********
 	 * Returns the updated account info status of logged in user and always returns false if nobody is logged in
 	 */
-	public boolean isAccountUpdate() {
+	public static boolean isAccountUpdate() {
 		return AccountDatabase.isAccountUpdated(username);
 	}
 }
