@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*; // For SQL related objects
+import java.util.Base64;
 
 /**
  * <p> ArticleDatabase. </p>
@@ -186,8 +187,8 @@ public class ArticleDatabase {
 	
 	
 	/**********
-	 * Returns the id, header, and title for every article in table as a String
-	 * in format of "id1+header1+title1+group1|id2+header2+title2+group2|..."
+	 * Returns the id, header, and title for every article in table as a String for ModifyArticlesGUI.
+	 * Format is "id1+header1+title1+group1|id2+header2+title2+group2|...".
 	 */
 	public static String getAllArticles() {
 		
@@ -227,7 +228,7 @@ public class ArticleDatabase {
 	
 	/**********
 	 * Returns the all information about an article given its id number.
-	 * in format of "id+header+title+author+description+keywords+content level+groups+body+references"
+	 * in format of "id+header+title+author+description+keywords+contentLevel+groups+body+references"
 	 */
 	public static String getArticleByID(int id) {
 		
@@ -261,12 +262,28 @@ public class ArticleDatabase {
 	        	returnString += resultSet.getString("keywords") + "+";
 	        	returnString += resultSet.getString("level") + "+";
 	        	returnString += resultSet.getString("groups") + "+";
-	        	returnString += resultSet.getString("body") + "+";
+	        	
+	        	// If article body is encrypted
+	        	if(GroupDatabase.shouldArticleBeEncrypted(resultSet.getString("groups"))) {
+		        	// Decrypt body using title as IV and add it to return string
+					returnString += EncryptionHelper.toCharArray(EncryptionHelper.decrypt(
+							Base64.getDecoder().decode(resultSet.getString("body")), 
+							EncryptionHelper.getInitializationVector(resultSet.getString("title").toCharArray())));
+					returnString += "+";
+	        	}
+	        	// If article body is not encrypted, return as it is stored in database
+	        	else
+	        		returnString += resultSet.getString("body") + "+";
+	        	
 	        	returnString += resultSet.getString("references"); 
 	        }
 	    }
 		catch(SQLException e) {
 			System.err.println("SQLException in ArticleDatabase.getArticleByID \n\n");
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			System.err.println("Exception in ArticleDatabase.getArticleByID \n\n");
 			e.printStackTrace();
 		}
         return returnString;
@@ -427,13 +444,23 @@ public class ArticleDatabase {
 			System.err.println("Can't create article because user is not a group admin of all groups: " + groups);
 			return false;
 		}
-		
+	
 		
 		// Insert a new row into database and fill in the following column values
 		query = "INSERT INTO articles (header, title, author, description, keywords, level, groups, body, references) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(query);
+			
+			// If at least one group is of special access type, article must be encrypted
+			if(GroupDatabase.shouldArticleBeEncrypted(groups)) {
+				// Encrypt body using title as IV
+				body = Base64.getEncoder().encodeToString(
+						EncryptionHelper.encrypt(body.getBytes(), 
+						EncryptionHelper.getInitializationVector(title.toCharArray())));
+				System.out.println("Encrypted the body of new article");
+			}
+
 				
 			// Set the placeholder ? variables
 			pstmt.setString(1, header);
@@ -443,12 +470,16 @@ public class ArticleDatabase {
 			pstmt.setString(5, keywords);
 			pstmt.setString(6, level);
 			pstmt.setString(7, groups);
-			pstmt.setString(8, body);
+			pstmt.setString(8, body);	// May or may not be encrypted
 			pstmt.setString(9, references);
 			pstmt.executeUpdate();		// Execute query
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in ArticleDatabase.createArticle \n\n");
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			System.err.println("Exception in ArticleDatabase.createArticle \n\n");
 			e.printStackTrace();
 		}
 		
@@ -570,6 +601,15 @@ public class ArticleDatabase {
 		try {
 			// Prepare the previous query to be executed
 			PreparedStatement pstmt = connection.prepareStatement(query);
+			
+			// If at least one group is of special access type, article must be encrypted
+			if(GroupDatabase.shouldArticleBeEncrypted(groups)) {
+				// Encrypt body using title as IV
+				body = Base64.getEncoder().encodeToString(
+						EncryptionHelper.encrypt(body.getBytes(), 
+						EncryptionHelper.getInitializationVector(title.toCharArray())));
+				System.out.println("Encrypted the body of the edited article");
+			}
 				
 			// Set the placeholder ? variables
 			pstmt.setString(1, header);
@@ -589,8 +629,12 @@ public class ArticleDatabase {
 			System.err.println("SQLException in ArticleDatabase.editArticle \n\n");
 			e.printStackTrace();
 		}
+		catch(Exception e) {
+			System.err.println("Exception in ArticleDatabase.editArticle \n\n");
+			e.printStackTrace();
+		}
 
-		// Print and return result
+		// Print and return result TODO: might always return false because encrypted body
 		if(getArticleByID(id).equals(id + "+" + header + "+" + title + "+" + author + "+" + description + 
 				"+" + keywords + "+" + level + "+" + groups + "+" + body + "+" + references)) {
 			

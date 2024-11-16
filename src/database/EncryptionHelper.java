@@ -24,14 +24,14 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class EncryptionHelper {
 	
-	byte[] keyBytes = new byte[] {
+	private static byte[] keyBytes = new byte[] {
             0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
             0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
             0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17 };
 	
 	private static String BOUNCY_CASTLE_PROVIDER_IDENTIFIER = "BC";	
-	private Cipher cipher;
-	private SecretKey key = new SecretKeySpec(keyBytes, "AES");
+	private static Cipher cipher;
+	private static SecretKey key = new SecretKeySpec(keyBytes, "AES");
 	private static int IV_SIZE = 16;
 	
 	public EncryptionHelper() throws Exception {
@@ -39,12 +39,12 @@ public class EncryptionHelper {
 		cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", BOUNCY_CASTLE_PROVIDER_IDENTIFIER);		
 	}
 	
-	public byte[] encrypt(byte[] plainText, byte[] initializationVector) throws Exception {
+	public static byte[] encrypt(byte[] plainText, byte[] initializationVector) throws Exception {
 		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(initializationVector));
 		return cipher.doFinal(plainText);
 	}
 	
-	public byte[] decrypt(byte[] cipherText, byte[] initializationVector) throws Exception {
+	public static byte[] decrypt(byte[] cipherText, byte[] initializationVector) throws Exception {
 		cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(initializationVector));
 		return cipher.doFinal(cipherText);
 	}
@@ -58,7 +58,7 @@ public class EncryptionHelper {
         return Arrays.copyOf(charBuffer.array(), charBuffer.limit());
 	}
 	
-	static byte[] toByteArray(char[] chars) {		
+	public static byte[] toByteArray(char[] chars) {		
         ByteBuffer byteBuffer = Charset.defaultCharset().encode(CharBuffer.wrap(chars));
         return Arrays.copyOf(byteBuffer.array(), byteBuffer.limit());
 	}

@@ -148,6 +148,42 @@ public class GroupDatabase {
 	
 	
 	/**********
+	 * Returns true if at least one group in group list is of the special access type
+	 */
+	public static boolean shouldArticleBeEncrypted(String groupList) {
+		
+		try {
+			// Select all special access groups
+			query = "SELECT * FROM groups WHERE type = special access";
+			resultSet = statement.executeQuery(query);
+			
+			// Separate all groups into array
+			String[] groupsArr = groupList.split(",");
+			
+			// Remove excess whitespace in all groups
+			for(String group : groupsArr)
+				group = group.trim();
+			
+			while(resultSet.next()) {
+				
+				// Loop through all groups in array
+				for(String group : groupsArr) {
+					// If one of the special access groups is in group list
+					if(resultSet.getString("name").equals(group))
+						return true;	// You have to encrypt this article because it belongs to a special access group
+				}
+			}
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.shouldArticleBeEncrypted \n\n");
+			e.printStackTrace();
+		}
+		// If no groups matched, you do not have to encrypt this article because it only has general access groups
+		return false;
+	}
+	
+	
+	/**********
 	 * Returns true if the user belongs to the group admins or viewers list of the specified group.
 	 */
 	public static boolean isUserInGroup(String groupName, String user, boolean isViewer) {
