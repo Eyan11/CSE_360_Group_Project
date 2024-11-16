@@ -204,6 +204,9 @@ public class ArticleDatabase {
 		try {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query); 	// Execute query
+			
+			// Filters out articles where logged in user is not a group admin of all groups in that article
+			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
 	
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
@@ -223,7 +226,7 @@ public class ArticleDatabase {
 	
 	
 	/**********
-	 * Returns the all information about an article given its id number
+	 * Returns the all information about an article given its id number.
 	 * in format of "id+header+title+author+description+keywords+content level+groups+body+references"
 	 */
 	public static String getArticleByID(int id) {
@@ -243,6 +246,9 @@ public class ArticleDatabase {
 		        
 	        pstmt.setInt(1, id);				// id = id
 	        resultSet = pstmt.executeQuery();	// Execute query
+	        
+			// Filters out articles where logged in user is not a group admin of all groups in that article
+			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
 	        
 	        // While next row exists, check next row
 	        if (resultSet.next()) {
@@ -278,6 +284,9 @@ public class ArticleDatabase {
 		try {
 			// Get a result set of all matching articles
 			resultSet = craftResultSetToSearchArticles(groupFilter, levelFilter, searchContents);
+			
+			// Filters out articles where logged in user is not a group admin of all groups in that article
+			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
 			
 			// Temporary variables for collecting data
 			String returnGroups = "Groups: ";
@@ -413,6 +422,11 @@ public class ArticleDatabase {
 			System.err.println("Cannot create article since body is over 500 characters");
 			return false;
 		}
+		// Prevent logged in user from assigning a group to an article that they are not a group admin of
+		if(!GroupDatabase.isUserInAllGroupsInList(groups, LoginTracker.getUsername(), false)) {
+			System.err.println("Can't create article because user is not a group admin of all groups: " + groups);
+			return false;
+		}
 		
 		
 		// Insert a new row into database and fill in the following column values
@@ -458,6 +472,11 @@ public class ArticleDatabase {
 		// Prevent deleting an article that does not exist
 		if(!doesArticleIDExist(id)) {
 			System.err.println("Cannot delete article id: " + id + " because it is not found in database!");
+			return false;
+		}
+		// Prevent logged in user from deleting an article where they are not a group admin of all groups
+		if(!GroupDatabase.isUserInAllGroupsInList(getArticleGroups(id), LoginTracker.getUsername(), false)) {
+			System.err.println("Can't delete article because user is not a group admin of all groups in article id: " + id);
 			return false;
 		}
 		
@@ -508,6 +527,16 @@ public class ArticleDatabase {
 			System.err.println("Cannot edit article because a field contains a '+' or '|' symbol");
 			return false;
 		}
+		// Prevent logged in user from editing an article where they are not a group admin of all groups (use old groups)
+		if(!GroupDatabase.isUserInAllGroupsInList(getArticleGroups(id), LoginTracker.getUsername(), false)) {
+			System.err.println("Can't edit article because user is not a group admin of all previous groups in article id: " + id);
+			return false;
+		}
+		// Prevent logged in user from editing an article where they are not a group admin of all groups (use new groups)
+		if(!GroupDatabase.isUserInAllGroupsInList(groups, LoginTracker.getUsername(), false)) {
+			System.err.println("Can't delete article because user is not a group admin of all new groups in article id: " + id);
+			return false;
+		}
 		
 		level = level.toLowerCase();
 		// Prevents level from being anything other than "beginner", "intermediate", "advanced", or "expert"
@@ -531,6 +560,7 @@ public class ArticleDatabase {
 			System.err.println("Cannot edit article since body is over 500 characters");
 			return false;
 		}
+		
 		
 		
 		// Update all columns in articles column where id matches placeholder variable ?
@@ -593,9 +623,13 @@ public class ArticleDatabase {
 
 			// Returns result set of all articles with matching groups
 			resultSet = craftResultSetToGetArticlesByGroups(groups);
+			
+			// Filters out articles where logged in user is not a group admin of all groups in that article
+			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
 	
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
+				
 	        	// Write all article info into file
 				writer.write("\n" + resultSet.getInt("id") + "\n");
 				writer.write(resultSet.getString("header") + "\n"); 
@@ -796,11 +830,10 @@ public class ArticleDatabase {
 	**********************************************************************************************/
 	
 	
-	/********** TODO, update documentation and method
+	/**********
 	 * Returns the result set containing all rows with matching groups
-	 * groups parameter is in format of "group1,group2,group3&group4"
-	 * Note: if groups = empty string or whitespace then return all articles, 
-	 * 	Assumes groups parameter always contains contains a non-whitespace between every ",".
+	 * Note: groups should be separated by a comma for OR operation and an ampersand for AND operation
+	 * Note: if groups = empty string or whitespace then return all articles.
 	 */
 	private static ResultSet craftResultSetToGetArticlesByGroups(String groups) throws SQLException {
 		
@@ -808,37 +841,50 @@ public class ArticleDatabase {
 		query = "SELECT * FROM articles"; 
 		statement = connection.createStatement();
 		
+		// Separate groups into an array
+		String[] groupsArr = groups.split(",");
+		boolean keepArticle;
+		
+		// Trim all groups
+		for(String group : groupsArr)
+			group = group.trim();
+		
 		
 		// If filtering by groups (not empty or "all")
 		if(!groups.trim().isEmpty() || !groups.toLowerCase().equals("all")) {
 			
+			// Get list of groups in article
+			String articleGroups = resultSet.getString("groups");
+			
 			// Check all articles
 			while(resultSet.next()) { 
+				keepArticle = false;
 				
-				// If the groups do not exist in article
-				if(!resultSet.getString("groups").contains(groups))
+				// For every group that is requested from user
+				for(String group : groupsArr) {
+					
+					// If the requested group is in the article
+					if(articleGroups.contains(group)) {
+						// Keep article in the result set and leave loop
+						keepArticle = true;
+						break;
+					}
+				}
+				
+				// If none of the requested groups are in the article
+				if(!keepArticle)
 					resultSet.deleteRow();	// Filter out article
 			}
 		}
-		
-		// TODO once I finish group database, I will make sure currently logged in user is a 
-		//	group admin of all of the groups in that article
-		// Check all articles with matching groups
-		/*
-		while(resultSet.next()) { 
-			
-			// If the groups do not exist in article
-			if(!resultSet.getString("groups").contains(groups))
-				resultSet.deleteRow();	// Filter out article
-		}
-		*/
 		return resultSet;
 	}
 	
 	
 	/**********
 	 * Returns the result set with matching groups, content level, and search contents
-	 * 	for all articles that the user has permission to view.
+	 * 	for all articles that the user has permission to view
+	 * Note: groups should be separated by a comma for OR operation and an ampersand for AND operation
+	 * Note: if groups, level filter, or search contents = empty string or whitespace then ignore that filter
 	 */
 	private static ResultSet craftResultSetToSearchArticles(String groupFilter, String levelFilter, 
 			String searchContents) throws SQLException {
@@ -860,14 +906,14 @@ public class ArticleDatabase {
 		
 		
 		// if filtering by search contents (not empty)
-		if(!levelFilter.trim().isEmpty()) {
+		if(!searchContents.trim().isEmpty()) {
 			
 			// Check all matching groups
 			while(resultSet.next()) { 
 				
-				// If search contents are NOT in title, author, or description
-				if(!resultSet.getString("title").contains(searchContents) || 
-					!resultSet.getString("author").contains(searchContents) ||
+				// If search contents are NOT in title, author, AND description
+				if(!resultSet.getString("title").contains(searchContents) && 
+					!resultSet.getString("author").contains(searchContents) &&
 					!resultSet.getString("description").contains(searchContents)) {
 							
 					resultSet.deleteRow();	// Filter out article
@@ -875,6 +921,27 @@ public class ArticleDatabase {
 			}
 		}
 		return resultSet;	// Returned filtered search as result set
+	}
+	
+	
+	/**********
+	 * Filters out articles where the logged in user is not a group admin of all groups 
+	 * 	in the article for all articles in result set.
+	 */
+	private static ResultSet removeUnauthorizedArticlesFromResultSet(ResultSet rs) throws SQLException {
+		
+		// Loop through all articles in result set
+		while(rs.next()) {
+			
+			// If logged in user is not a group admin of ALL groups in this article
+			if(!GroupDatabase.isUserInAllGroupsInList(resultSet.getString("groups"), LoginTracker.getUsername(), false)) {
+				System.out.println("Filtering out article id: " + resultSet.getInt("id") + 
+						" since user is not in group admins list for all groups in article.");
+				
+				rs.deleteRow();		// Filter this article out of result set
+			}
+		}
+		return rs;
 	}
 	
 	
@@ -891,5 +958,32 @@ public class ArticleDatabase {
 		// No invalid characters in input string
 		else
 			return false;
+	}
+	
+	
+	/**********
+	 * Returns all groups in article.
+	 */
+	private static String getArticleGroups(int id) {
+		
+	    try {
+			// Select all rows from database where id = placeholder variable ?
+			query = "SELECT * FROM articles WHERE id = ?";
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+	        pstmt.setInt(1, id);	// id = id
+	        resultSet = pstmt.executeQuery();
+	        
+	        // If the next row exists
+	        if (resultSet.next()) {
+	            // Return the groups column of article
+	            return resultSet.getString("groups");
+	        }
+	    }
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.doesArticleIDExist \n\n");
+			e.printStackTrace();
+		}
+	    return "";	// For error
 	}
 }

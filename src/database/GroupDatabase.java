@@ -148,7 +148,90 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Returns a String that differs depending on the role of the logged in user.
+	 * Returns true if the user belongs to the group admins or viewers list of the specified group.
+	 */
+	public static boolean isUserInGroup(String groupName, String user, boolean isViewer) {
+		
+		try {
+			// Select all rows from database where name = placeholder variable ?
+		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
+	        resultSet = pstmt.executeQuery();
+	        
+	        // If user is in group viewers list, return true
+	        if(isViewer && resultSet.getString("viewers").contains(user))
+	        	return true;
+	        // If user is in group admins list, return true
+	        else if(!isViewer && resultSet.getString("admins").contains(user))
+	        	return true;
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.isUserInGroup \n\n");
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	
+	/**********
+	 * Returns true if the user belongs to the group admins/viewers lists for all groups in group list
+	 */
+	public static boolean isUserInAllGroupsInList(String groupList, String user, boolean isViewer) {
+		
+		// Separate groups into an array
+		String[] groupsArr = groupList.split(", ");
+		
+		// Check all groups in group list
+		for(String group : groupsArr) {
+			group = group.trim();	// Trim whitespace
+			
+			// If the user is not in the group admin/viewers list
+			if(!isUserInGroup(group, user, isViewer)) {
+				System.out.println("User: " + user + " is not in group: " + group + " \n\n");
+				return false;
+			}
+		}
+		return true;	// User is in all groups in group list
+	}
+	
+	
+	/**********
+	 * Returns all group admins or viewers for the provided group name.
+	 */
+	public static String getGroupAdminsOrViewers(String groupName, boolean getViewers) {
+		
+		// Prevent getting admins if group name doesn't exist
+		if(doesGroupNameExist(groupName)) {
+			System.err.println("Cannot get group admins because group name: " + groupName + " doesn't exist!");
+			return "";
+		}
+		
+		try {
+			// Select all rows from database where name = placeholder variable ?
+		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
+	        resultSet = pstmt.executeQuery();
+	        
+	        if(getViewers)
+	        	return resultSet.getString("viewers");
+	        else
+	        	return resultSet.getString("admins");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.getGroupAdminsOrViewers \n\n");
+			e.printStackTrace();
+		}
+		return "";	// for error
+	}
+	
+	
+	/**********
+	 * Returns a String for ModifyGroupAccessGUI which displays all groups that the user is an admin 
+	 * 	along with their type, viewers list , and admins list for users with admins account role.
 	 * Note: admins can see admins, instructors, and students while instructors can only see students.
 	 */
 	public static String getAllGroupInfo() {
@@ -260,7 +343,7 @@ public class GroupDatabase {
 	 * If the user is in the opposite group role, then they are switched to the requested role because a user
 	 * 	cannot be in both the group admins and viewers list.
 	 */
-	private static boolean addUserToGroup(String user, String groupName, boolean isViewer) {
+	public static boolean addUserToGroup(String user, String groupName, boolean isViewer) {
 		
 		// Convert to lowercase to avoid case sensitive issues
 		groupName = groupName.toLowerCase();
@@ -358,7 +441,7 @@ public class GroupDatabase {
 	/**********
 	 * Removes a user from a right the group admins or viewers list and returns true if they were removed.
 	 */
-	private static boolean removeUserFromGroup(String user, String groupName, boolean isViewer) {
+	public static boolean removeUserFromGroup(String user, String groupName, boolean isViewer) {
 		
 		// Convert to lowercase to avoid case sensitive issues
 		groupName = groupName.toLowerCase();
@@ -442,38 +525,6 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Returns all group admins or viewers for the provided group name.
-	 */
-	private static String getGroupAdminsOrViewers(String groupName, boolean getViewers) {
-		
-		// Prevent getting admins if group name doesn't exist
-		if(doesGroupNameExist(groupName)) {
-			System.err.println("Cannot get group admins because group name: " + groupName + " doesn't exist!");
-			return "";
-		}
-		
-		try {
-			// Select all rows from database where name = placeholder variable ?
-		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
-		    PreparedStatement pstmt = connection.prepareStatement(query);
-		    
-	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
-	        resultSet = pstmt.executeQuery();
-	        
-	        if(getViewers)
-	        	return resultSet.getString("viewers");
-	        else
-	        	return resultSet.getString("admins");
-		}
-		catch(SQLException e) {
-			System.err.println("SQLException in GroupDatabase.getGroupAdminsOrViewers \n\n");
-			e.printStackTrace();
-		}
-		return "";	// for error
-	}
-	
-	
-	/**********
 	 * Returns true if there is at least one admin in the given admins list besides for the given user.
 	 */
 	private static boolean atLeastOneAdminAfterRemoval(String adminsList, String user) {
@@ -485,34 +536,6 @@ public class GroupDatabase {
 			// if an admin is in the list and it is not the user being remove, return true
 			if(AccountDatabase.isAdminRole(user) && !groupAdmin.equals(user))
 				return true;
-		}
-		return false;
-	}
-	
-	
-	/**********
-	 * Returns true if the user belongs to the group admins or viewers list of the specified group.
-	 */
-	private static boolean isUserInGroup(String groupName, String user, boolean isViewer) {
-		
-		try {
-			// Select all rows from database where name = placeholder variable ?
-		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
-		    PreparedStatement pstmt = connection.prepareStatement(query);
-		    
-	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
-	        resultSet = pstmt.executeQuery();
-	        
-	        // If user is in group viewers list, return true
-	        if(isViewer && resultSet.getString("viewers").contains(user))
-	        	return true;
-	        // If user is in group admins list, return true
-	        else if(!isViewer && resultSet.getString("admins").contains(user))
-	        	return true;
-		}
-		catch(SQLException e) {
-			System.err.println("SQLException in GroupDatabase.isUserInGroup \n\n");
-			e.printStackTrace();
 		}
 		return false;
 	}
