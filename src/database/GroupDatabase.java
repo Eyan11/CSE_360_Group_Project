@@ -274,6 +274,45 @@ public class GroupDatabase {
 	
 	
 	/**********
+	 * Returns a list of all the group names where the currently logged in user is a group admin/viewer of.
+	 * Format of "group1+group2+group3".
+	 */
+	public static String getAllGroupNames(boolean isViewer) {
+		
+		// Prevent getting articles if empty
+		if(isTableEmpty()) {
+			System.err.println("Cannot get all group names because groups table is empty!");
+			return "";
+		}
+		
+		String returnString = "";
+		try {
+			// Search for groups where current user is in viewers/admins list
+			if(isViewer)
+				query = "SELECT * FROM groups WHERE viewers LIKE ?";	// Viewers list
+			else
+				query = "SELECT * FROM groups WHERE admins LIKE ?";		// Admins list
+			PreparedStatement pstmt = connection.prepareStatement(query);
+	
+			pstmt.setString(1, "%" + LoginTracker.getUsername() + "%");	// Set the placeholder ? variable
+			resultSet = pstmt.executeQuery();	// Return result set of query
+		
+			// Get name of all groups
+			while(resultSet.next())
+				returnString += resultSet.getString("name") + "+";
+			
+			// Remove the last "+"
+			returnString = returnString.substring(0, returnString.length() - 1);
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in GroupDatabase.getAllGroupInfo \n\n");
+			e.printStackTrace();
+		}
+		return returnString;
+	}
+	
+	
+	/**********
 	 * Returns a String for ModifyGroupAccessGUI which displays all groups that the user is an admin 
 	 * 	along with their type, viewers list , and admins list for users with admins account role.
 	 * Note: admins can see admins, instructors, and students while instructors can only see students.

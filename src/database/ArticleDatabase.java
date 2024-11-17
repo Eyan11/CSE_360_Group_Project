@@ -262,18 +262,22 @@ public class ArticleDatabase {
 	        	returnString += resultSet.getString("keywords") + "+";
 	        	returnString += resultSet.getString("level") + "+";
 	        	returnString += resultSet.getString("groups") + "+";
+	        	        		
 	        	
-	        	// If article body is encrypted
-	        	if(GroupDatabase.shouldArticleBeEncrypted(resultSet.getString("groups"))) {
-		        	// Decrypt body using title as IV and add it to return string
-					returnString += EncryptionHelper.toCharArray(EncryptionHelper.decrypt(
-							Base64.getDecoder().decode(resultSet.getString("body")), 
-							EncryptionHelper.getInitializationVector(resultSet.getString("title").toCharArray())));
-					returnString += "+";
+	        	// Only print body if user is not an admin
+	        	if(!LoginTracker.usingAdminRole()) {
+	        		// If article body is encrypted
+		        	if(GroupDatabase.shouldArticleBeEncrypted(resultSet.getString("groups"))) {
+			        	// Decrypt body using title as IV and add it to return string
+						returnString += EncryptionHelper.toCharArray(EncryptionHelper.decrypt(
+								Base64.getDecoder().decode(resultSet.getString("body")), 
+								EncryptionHelper.getInitializationVector(resultSet.getString("title").toCharArray())));
+						returnString += "+";
+		        	}
+		        	// If article body is not encrypted, return as it is stored in database
+		        	else
+		        		returnString += resultSet.getString("body") + "+";
 	        	}
-	        	// If article body is not encrypted, return as it is stored in database
-	        	else
-	        		returnString += resultSet.getString("body") + "+";
 	        	
 	        	returnString += resultSet.getString("references"); 
 	        }
