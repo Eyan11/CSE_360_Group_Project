@@ -47,6 +47,7 @@ public class DatabaseManager {
 			AccountDatabase.setConnection(connection, statement);
 			ArticleDatabase.setConnection(connection, statement);
 			HelpMessageDatabase.setConnection(connection, statement);
+			GroupDatabase.setConnection(connection, statement);
 			
 			// Wipe all data in accounts table
 			AccountDatabase.createTable();
@@ -60,6 +61,10 @@ public class DatabaseManager {
 			HelpMessageDatabase.createTable();
 			HelpMessageDatabase.deleteAllMessages();
 			
+			// Wipe all data in groups table
+			GroupDatabase.createTable();
+			GroupDatabase.deleteAllGroups();
+			
 			// Perform tests on both accounts and articles tables
 			//AccountDatabaseTesting.performTestEvaluations();
 			//ArticleDatabaseTesting.performTestEvaluations();
@@ -71,10 +76,6 @@ public class DatabaseManager {
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in DatabaseManager.connectToDatabase \n\n");
-			e.printStackTrace();
-		}
-		catch(Exception e) {
-			System.err.println("Exception in DatabaseManager.connectToDatabase \n\n");
 			e.printStackTrace();
 		}
 	}

@@ -35,7 +35,7 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Creates a table called help_messages and initializes columns.
+	 * Creates a table called groups and initializes columns.
 	 */
 	public static void createTable() {
 		query = "CREATE TABLE IF NOT EXISTS groups ("
@@ -74,9 +74,9 @@ public class GroupDatabase {
 	 * Deletes all rows in groups database.
 	 */
 	public static void deleteAllGroups() {
-		query = "DELETE FROM help_messages";	// Clear the groups table
+		query = "DELETE FROM groups";		// Clear the groups table
 		try {
-			statement.execute(query);			// execute query
+			statement.execute(query);		// execute query
 			System.out.println("All groups in 'groups' table deleted");
 		}
 		catch(SQLException e) {
@@ -122,8 +122,8 @@ public class GroupDatabase {
 	 */
 	public static boolean doesGroupNameExist(String groupName) {
 		
-		// Group names are all lowercase
-		groupName = groupName.toLowerCase();
+		groupName = groupName.toLowerCase();	// Group names are all lowercase
+		groupName = groupName.trim();	// Group names don't have excess whitespace
 		
 	    try {
 			// Select all rows from database where name = placeholder variable ?
@@ -151,25 +151,30 @@ public class GroupDatabase {
 	 * Returns true if at least one group in group list is of the special access type
 	 */
 	public static boolean shouldArticleBeEncrypted(String groupList) {
+		groupList = groupList.toLowerCase();	// Group names are all lowercase
 		
 		try {
 			// Select all special access groups
-			query = "SELECT * FROM groups WHERE type = special access";
+			query = "SELECT * FROM groups WHERE type = 'special access'";
 			resultSet = statement.executeQuery(query);
 			
 			// Separate all groups into array
 			String[] groupsArr = groupList.split(",");
 			
 			// Remove excess whitespace in all groups
-			for(String group : groupsArr)
-				group = group.trim();
+			for(int i = 0; i < groupsArr.length; i++)
+				groupsArr[i] = groupsArr[i].trim();
+
 			
+			String nameInDatabase;
 			while(resultSet.next()) {
+				// Get current group name
+				nameInDatabase = resultSet.getString("name");
 				
 				// Loop through all groups in array
 				for(String group : groupsArr) {
 					// If one of the special access groups is in group list
-					if(resultSet.getString("name").equals(group))
+					if(nameInDatabase.equals(group))
 						return true;	// You have to encrypt this article because it belongs to a special access group
 				}
 			}
@@ -187,10 +192,13 @@ public class GroupDatabase {
 	 * Returns true if the user belongs to the group admins or viewers list of the specified group.
 	 */
 	public static boolean isUserInGroup(String groupName, String user, boolean isViewer) {
+		// Adjust group name to avoid error's
+		groupName = groupName.toLowerCase();
+		groupName = groupName.trim();
 		
 		try {
 			// Select all rows from database where name = placeholder variable ?
-		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
+		    query = "SELECT * FROM groups WHERE name = ?";
 		    PreparedStatement pstmt = connection.prepareStatement(query);
 		    
 	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
@@ -381,8 +389,9 @@ public class GroupDatabase {
 	 */
 	public static boolean addUserToGroup(String user, String groupName, boolean isViewer) {
 		
-		// Convert to lowercase to avoid case sensitive issues
-		groupName = groupName.toLowerCase();
+		groupName = groupName.toLowerCase();	// Convert to all lowercase
+		groupName = groupName.trim();			// Remove excess whitespace
+		
 		
 		// Prevent adding a user that doesn't exist
 		if(!AccountDatabase.doesUsernameExist(user)) {
