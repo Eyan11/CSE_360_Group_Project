@@ -7,6 +7,7 @@ import javafx.geometry.Pos; // For Position object (vector2 coordinate used to d
 import javafx.scene.paint.Color; // To set color of UI elements
 
 import javafx.scene.layout.Pane; // For Pane object
+import database.LoginTracker;
 import javafx.event.ActionEvent; // For ActionEvent object
 import javafx.event.EventHandler; // For EventHandler object
 
@@ -160,7 +161,7 @@ public class LoginGUI
 					//IF first time login, send user to UpdateAccountInformationGUI
 					if(LoginEvaluator.firstTimeLogin(userInput))
 					{
-						System.out.println("New Account");
+						LoginTracker.login(userInput); // Keeps track of user logged in
 						
 						theRoot.getChildren().clear();  // Clear the current root
 						
@@ -174,6 +175,8 @@ public class LoginGUI
 					//IF administrator logins AND has updated account info, send user to AdminHomeGUI
 					else if(LoginEvaluator.adminLogin(userInput))
 					{
+						LoginTracker.login(userInput); // Keeps track of user logged in
+						
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
@@ -186,6 +189,8 @@ public class LoginGUI
 					//IF user has two roles (administrator and Student/Instructor), send user to SelectRoleGUI
 					else if(LoginEvaluator.multipleRoles(userInput))
 					{
+						LoginTracker.login(userInput); // Keeps track of user logged in
+						
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
@@ -198,6 +203,8 @@ public class LoginGUI
 					//IF user is Student with updated account info, send user to StudentInstructorHomeGUI
 					else if(LoginEvaluator.studentRole(userInput))
 					{
+						LoginTracker.login(userInput); // Keeps track of user logged in
+						
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
@@ -210,6 +217,8 @@ public class LoginGUI
 					//IF user is Instructor with updated account info, send user to StudentInstructorHomeGUI
 					else if(LoginEvaluator.instructorRole(userInput))
 					{
+						LoginTracker.login(userInput); // Keeps track of user logged in
+						
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();

@@ -139,8 +139,8 @@ public class HelpMessageDatabase {
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
 				// Get current article info
-				returnString += resultSet.getTimestamp("timestamp").toString() + ",";
-				returnString += resultSet.getString("message") + "|";
+				returnString += resultSet.getTimestamp("timestamp").toString() + "\n";
+				returnString += resultSet.getString("message") + "\n\n";
 			}
 		}
 		catch(SQLException e) {
