@@ -2,6 +2,7 @@ package application;
 
 import database.HelpMessageDatabase;
 import database.LoginTracker;
+
 import javafx.scene.control.Label; // For Label object
 import javafx.scene.control.Button; // For Button object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
