@@ -14,9 +14,12 @@ import javafx.stage.Stage;
  * <p> AdminHome. </p>
  * 
  * <p> Description: A JavaFX class responsible for displaying the admin home GUI and providing buttons 
- * for admin-related actions such as managing accounts and articles.</p>
+ * for admin-related actions such as managing accounts, articles, and help messages.</p>
  * 
- * @version 1.01        10/29/2024 Updated layout based on design image
+ * @author Sriram Nesan
+ * 
+ * 
+ * @version 1.02        11/19/2024 Added Help Messages button
  *  
  */
 
@@ -31,7 +34,7 @@ public class AdminHome {
     // Declaration of SetupUIElements Object
     public SetupUIElements setupUI;
 
-    // Constructor for setting up the AdminHome GUI
+    // Constructor 
     public AdminHome(Pane theRoot) {
         // Instantiate
         setupUI = new SetupUIElements();
@@ -46,15 +49,17 @@ public class AdminHome {
         // Buttons for Admin actions
         Button manageAccountsButton = new Button("Manage Accounts");
         Button manageArticlesButton = new Button("Manage Articles");
+        Button helpMessagesButton = new Button("Help Messages");
         Button logoutButton = new Button("Logout");
 
-        // Set up the buttons using SetupUIElements
+        // Set up the buttons
         setupUI.SetupButtonUI(manageAccountsButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(manageArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
+        setupUI.SetupButtonUI(helpMessagesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(logoutButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
 
         // Position the buttons in a vertical layout
-        VBox vbox = new VBox(20, manageAccountsButton, manageArticlesButton, logoutButton);
+        VBox vbox = new VBox(20, manageAccountsButton, manageArticlesButton, helpMessagesButton, logoutButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setLayoutX((WINDOW_WIDTH - 200) / 2); // Center align based on button width
         vbox.setLayoutY(100);
@@ -62,45 +67,59 @@ public class AdminHome {
         // Add both title and VBox layout to root
         theRoot.getChildren().addAll(title, vbox);
 
-        // Handle logout functionality
+        // Handle button functionality
         ManageAccounts(manageAccountsButton, theRoot);
         ManageArticles(manageArticlesButton, theRoot);
+        ManageHelpMessages(helpMessagesButton, theRoot);
         handleLogout(logoutButton, theRoot);
     }
 
     private void handleLogout(Button logoutButton, Pane theRoot) {
         // Event handler for the logout button
         logoutButton.setOnAction(event -> {
-            // LoginGUI
-        	theRoot.getChildren().clear();  // Clear the current root
+            theRoot.getChildren().clear();  // Clear the current root
             
             Pane newRoot = new Pane();
             LoginGUI loginPage = new LoginGUI(newRoot);  // Create a new instance of LoginGUI
-            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-		    currentStage.setScene(newScene); //
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+		    currentStage.setScene(newScene);
         });
     }
+
     private void ManageArticles(Button manageArticlesButton, Pane theRoot) {
         manageArticlesButton.setOnAction(event -> {
         	theRoot.getChildren().clear();
         	
         	Pane newRoot = new Pane();
-        	ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot);  // Create a new instance of LoginGUI
-            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-		    currentStage.setScene(newScene); //
+        	ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot);  // Create a new instance of ManageArticlesGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+		    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+		    currentStage.setScene(newScene);
         });
     }
+
     private void ManageAccounts(Button manageAccountsButton, Pane theRoot) {
-    		manageAccountsButton.setOnAction(event -> {
-    			theRoot.getChildren().clear();
-    			
-    			Pane newRoot = new Pane();
-    			ManageAccountsGUI manageAccounts = new ManageAccountsGUI(newRoot);  // Create a new instance of LoginGUI
-                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-    		    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-    		    currentStage.setScene(newScene); //
-    		});
+        manageAccountsButton.setOnAction(event -> {
+            theRoot.getChildren().clear();
+            
+            Pane newRoot = new Pane();
+            ManageAccountsGUI manageAccounts = new ManageAccountsGUI(newRoot);  // Create a new instance of ManageAccountsGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+            Stage currentStage = (Stage) theRoot.getScene().getWindow();
+            currentStage.setScene(newScene);
+        });
+    }
+
+    private void ManageHelpMessages(Button helpMessagesButton, Pane theRoot) {
+        helpMessagesButton.setOnAction(event -> {
+            theRoot.getChildren().clear();
+            
+            Pane newRoot = new Pane();
+//            ManageHelpMessagesGUI manageHelpMessages = new ManageHelpMessagesGUI(newRoot);  // Create a new instance of ManageHelpMessagesGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+            Stage currentStage = (Stage) theRoot.getScene().getWindow();
+            currentStage.setScene(newScene);
+        });
     }
 }
