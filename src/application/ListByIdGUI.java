@@ -43,8 +43,10 @@ public class ListByIdGUI
 	private String id = "";
 	private String header = "";
 	private String title = "";
+	private String author = "";
 	private String description = "";
 	private String keywords = "";
+	private String level = "";
 	private String groups = "";
     private String body = "";
     private String references = "";
@@ -71,17 +73,19 @@ public class ListByIdGUI
 		String unformattedInput = ArticleDatabase.getArticleByID(this.userID);
 		
 	    // Split the input by commas
-	    String[] formattedInput = unformattedInput.split(",");
+	    String[] formattedInput = unformattedInput.split(",+");
 
         // Parse and store each piece of data
         id = formattedInput[0];
         header = formattedInput[1];
         title = formattedInput[2];
-        description = formattedInput[3];
-        keywords = formattedInput[4];
-        groups = formattedInput[5];
-        body = formattedInput[6];
-        references = formattedInput[7];
+        author = formattedInput[3];
+        description = formattedInput[4];
+        keywords = formattedInput[5];
+        level = formattedInput[6];
+        groups = formattedInput[7];
+        body = formattedInput[8];
+        references = formattedInput[9];
 	    
 	    /*****
 	     * Label Declaration with Article Data
@@ -90,8 +94,10 @@ public class ListByIdGUI
 		Label idLabel = new Label("ID: " + id);
 		Label headerLabel = new Label("Header: " + header);
 		Label titleLabel = new Label("Title: " + title);
+		Label authorLabel = new Label("Author: " + author);
 		Label descriptionLabel = new Label("Description: " + description);
 		Label keywordsLabel = new Label("Keywords: " + keywords);
+		Label levelLabel = new Label("Content Level: " + level);
 		Label groupsLabel = new Label("Group(s): " + groups);
 		Label bodyLabel = new Label("Body: " + body);
 		Label referencesLabel = new Label("References: " + references);
@@ -114,16 +120,20 @@ public class ListByIdGUI
 				Pos.BASELINE_LEFT, 10, 125, Color.BLACK);
 		setupUI.SetupLabelUI(titleLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 150, Color.BLACK);
-		setupUI.SetupLabelUI(descriptionLabel, "Arial", 11, WINDOW_WIDTH-10, 
+		setupUI.SetupLabelUI(authorLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 175, Color.BLACK);
-		setupUI.SetupLabelUI(keywordsLabel, "Arial", 11, WINDOW_WIDTH-10, 
+		setupUI.SetupLabelUI(descriptionLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 200, Color.BLACK);
-		setupUI.SetupLabelUI(groupsLabel, "Arial", 11, WINDOW_WIDTH-10, 
+		setupUI.SetupLabelUI(keywordsLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 225, Color.BLACK);
-		setupUI.SetupLabelUI(bodyLabel, "Arial", 11, WINDOW_WIDTH-10, 
+		setupUI.SetupLabelUI(levelLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 250, Color.BLACK);
-		setupUI.SetupLabelUI(referencesLabel, "Arial", 11, WINDOW_WIDTH-10, 
+		setupUI.SetupLabelUI(groupsLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 275, Color.BLACK);
+		setupUI.SetupLabelUI(bodyLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 300, Color.BLACK);
+		setupUI.SetupLabelUI(referencesLabel, "Arial", 11, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 325, Color.BLACK);
 		
 		/*
 		 * Button Creation
@@ -134,8 +144,8 @@ public class ListByIdGUI
         		Pos.CENTER, 10, 10, false, Color.BLACK);
 		
 		// Sends all previously established settings for the pane to the scene for setup
-		theRoot.getChildren().addAll(articleLabel, idLabel, headerLabel, titleLabel, descriptionLabel, keywordsLabel, 
-				groupsLabel, bodyLabel, referencesLabel, backButton);
+		theRoot.getChildren().addAll(articleLabel, idLabel, headerLabel, titleLabel, authorLabel, descriptionLabel, 
+				keywordsLabel, levelLabel, groupsLabel, bodyLabel, referencesLabel, backButton);
 		
 		/*
 		 * Button Functionality
@@ -148,7 +158,7 @@ public class ListByIdGUI
 		backButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
-			{						
+			{
 				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
 				// Create new pane for next interface

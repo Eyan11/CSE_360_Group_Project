@@ -24,6 +24,7 @@ import java.sql.*;
  * @author Julio Salazar
  * 
  * @version 1.00 10/28/2024 Phase 2 Implementation and Documentation
+ * 			2.00 11/18/2024 Phase 3 Re-haul (Added Three Filters)
  */
 
 public class ListArticlesGUI
@@ -36,19 +37,26 @@ public class ListArticlesGUI
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	// Stores Group or ID input from User
-	private String userInput = "";
+	// String that...
+	private String groupFilter = "";
+	private String contentLvlFilter = "";
+	private String articleContentsFilter = "";
 	
-	// Displays interface instructions
-	private Label userLabel = new Label("Enter ID or Group(s): ");
 	
-	// Text Field for user input (ID or Group(s)
-	private TextField userText = new TextField();
+	// Labels that displays interface instructions
+	private Label groupLabel = new Label("Group Filter: ");
+	private Label contentLvlLabel = new Label("Content Level Filter: ");
+	private Label articleLabel = new Label("Search Article Contents of ID/Sequence Number: ");
+	
+	// Text Fields for user input (ID or Group(s)
+	private TextField groupText = new TextField();
+	private TextField contentLvlText = new TextField();
+	private TextField articleText = new TextField();
 	
 	// Buttons used for navigating interface and listing articles
 	private Button backButton = new Button("<-");
-	private Button listIdButton = new Button("List by ID");
-	private Button listGroupButton = new Button("List by Group(s)");
+	private Button listIdButton = new Button("Search ID/Sequence Number");
+	private Button listContentsButton = new Button("Search Contents");
 	
 	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI;
@@ -67,17 +75,31 @@ public class ListArticlesGUI
 		 * Label Creations
 		 */
 		
-		// Label that gives user instructions
-		setupUI.SetupLabelUI(userLabel, "Arial", 36, WINDOW_WIDTH-10, 
+		// Label that...
+		setupUI.SetupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+		// Label that...
+		setupUI.SetupLabelUI(contentLvlLabel, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 120, Color.BLACK);
+		// Label that...
+		setupUI.SetupLabelUI(articleLabel, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 190, Color.BLACK);
 		
 		/*
 		 * TextField Creations 
 		 */
 		
-		// Text Field that takes user ID or Group(s)
-		setupUI.SetupTextFieldUI(userText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 10, 110, true);
+		// Text Field that..
+		setupUI.SetupTextFieldUI(groupText, "Arial", 18, 400, 40,
+				Pos.BASELINE_LEFT, 10, 80, true);
+		
+		// Text Field that...
+		setupUI.SetupTextFieldUI(contentLvlText, "Arial", 18, 400, 40,
+				Pos.BASELINE_LEFT, 10, 80, true);
+				
+		// Text Field that...
+		setupUI.SetupTextFieldUI(articleText, "Arial", 18, 400, 40,
+				Pos.BASELINE_LEFT, 10, 80, true);
 		
 		/*
 		 * Button Creations
@@ -90,13 +112,13 @@ public class ListArticlesGUI
 		setupUI.SetupButtonUI(listIdButton, "Arial", 18, 175, 50,
         		Pos.CENTER, 35, 325, false, Color.BLACK);
 		// Button that takes user to page with Article information specified by the Group(s)
-		setupUI.SetupButtonUI(listGroupButton, "Arial", 18, 175, 50,
+		setupUI.SetupButtonUI(listContentsButton, "Arial", 18, 175, 50,
         		Pos.CENTER, 250, 325, false, Color.BLACK);
 		
 		
 		// Sends all previously established settings for the pane to the scene for setup
-		theRoot.getChildren().addAll(userLabel, userText, backButton, 
-				listIdButton, listGroupButton);
+		theRoot.getChildren().addAll(groupLabel, contentLvlLabel, articleLabel, groupText,
+				contentLvlText, articleText, backButton, listIdButton, listContentsButton);
 		
 		/*
 		 * Button Functionality
@@ -130,8 +152,8 @@ public class ListArticlesGUI
 			public void handle(ActionEvent event) 
 			{	
 				// Retrieves ID from user and converts it into a integer
-				userInput = userText.getText();
-				int integerInput = Integer.parseInt(userInput);
+				articleContentsFilter = articleText.getText();
+				int integerInput = Integer.parseInt(articleContentsFilter);
 
 				// Make sure inputed Article ID from user is valid
 				if(ArticleDatabase.doesArticleIDExist(integerInput))
@@ -160,22 +182,25 @@ public class ListArticlesGUI
 		});
 		
 		/*****
-		 * List by Group Button
+		 * List ...
 		 */
 		
-		listGroupButton.setOnAction(new EventHandler<>()
+		listContentsButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{	
-				// Retrieves Group(s) from user
-				userInput = userText.getText();
+				// Retrieves...
+				groupFilter = groupText.getText();
+				contentLvlFilter = contentLvlText.getText();
+				articleContentsFilter = articleText.getText();
 				
 				theRoot.getChildren().clear();  // Clear the current root
 				// Create new pane for next interface
 				Pane newRoot = new Pane();
 				// Try and Catch block for exception handling
 				try {
-					ListByGroupGUI listGroup = new ListByGroupGUI(newRoot, userInput); // ListByGroup helper class
+					// ListByGroup helper class
+					ListByGroupGUI listGroup = new ListByGroupGUI(newRoot, groupFilter, contentLvlFilter, articleContentsFilter);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

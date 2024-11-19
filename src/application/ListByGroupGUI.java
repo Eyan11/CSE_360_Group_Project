@@ -38,9 +38,12 @@ public class ListByGroupGUI
 	
 	// Stores Group(s)
 	private String group = "";
+	//
+	private String contentLevel = "";
+	private String articleContents = "";
 	
 	// Displays interface information
-	private Label groupLabel = new Label("ID, Header, Title, Group(s)");
+	//private Label groupLabel = new Label("ID, Header, Title, Group(s)");
 	
 	// Button to return to previous interface
 	private Button backButton = new Button("<-");
@@ -53,13 +56,14 @@ public class ListByGroupGUI
 	 * @param theRoot
 	 */
 	
-	public ListByGroupGUI(Pane theRoot, String group) throws SQLException
+	public ListByGroupGUI(Pane theRoot, String group, String contentLevel, String articleContents) throws SQLException
 	{	
 		// Initialize group with inputed parameter
 		this.group = group;
-		// Grab all articles with shared group
-		// TODO - include group filter, content level filter, and search contents. Eyan updated this line to remove errors
-		String formattedInput = ArticleDatabase.searchByContents(this.group, "", "");
+		this.contentLevel = contentLevel;
+		this.articleContents = articleContents;
+		// Grab...
+		String formattedInput = ArticleDatabase.searchByContents(this.group, this.contentLevel, this.articleContents);
 		// Create a label with group information to display
 		Label displayArticles = new Label(formattedInput);
 		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
@@ -70,8 +74,8 @@ public class ListByGroupGUI
 		 */
 		
 		// Label that displays what is being shown
-		setupUI.SetupLabelUI(groupLabel, "Arial", 36, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+		//setupUI.SetupLabelUI(groupLabel, "Arial", 36, WINDOW_WIDTH-10, 
+				//Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 		// Label that shows all articles with the shared group
 		setupUI.SetupLabelUI(displayArticles, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
@@ -85,7 +89,7 @@ public class ListByGroupGUI
         		Pos.CENTER, 10, 10, false, Color.BLACK);
 		
 		// Sends all previously established settings for the pane to the scene for setup
-		theRoot.getChildren().addAll(groupLabel, displayArticles, backButton);
+		theRoot.getChildren().addAll(displayArticles, backButton);
 		
 		/*
 		 * Button Functionality

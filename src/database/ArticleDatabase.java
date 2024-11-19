@@ -325,10 +325,10 @@ public class ArticleDatabase {
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
 				// Get current article info
-				returnString += i + ","; 	// sequence number
-				returnString += resultSet.getString("title") + "+";
-				returnString += resultSet.getString("author") + "+";
-				returnString += resultSet.getString("description") + "|";
+				returnString += "ID:" + i + "\n"; 	// sequence number
+				returnString += "Title: " + resultSet.getString("title") + "\n";
+				returnString += "Author: " + resultSet.getString("author") + "\n";
+				returnString += "Description: " + resultSet.getString("description") + "\n";
 				returnString += "\n"; // adds new line for each article
 				
 				
@@ -368,7 +368,9 @@ public class ArticleDatabase {
 			
 			// If non-empty, remove the last ", " in groups string
 			if (returnGroups.length() > 0)
-				returnGroups = returnGroups.substring(0, returnGroups.length() - 1);
+				returnGroups = returnGroups.substring(0, returnGroups.length() - 2);
+				returnGroups += "\n";
+
 			
 			// Build content levels string
 			if(numBeg > 0)
@@ -378,7 +380,7 @@ public class ArticleDatabase {
 			if(numAdv > 0)
 				returnLevels += ", " + numAdv + " advanced";
 			if(numExp > 0)
-				returnLevels += ", " + numExp + " expert";
+				returnLevels += ", " + numExp + " expert" + "\n";
 			
 			// If non-empty, remove the last "|\n" in return string
 			if (returnString.length() > 0)
