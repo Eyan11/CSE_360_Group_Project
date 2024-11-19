@@ -7,7 +7,7 @@ package database;
  * 
  * @author Eyan Martucci
  * 
- * @version 1.00		TODO
+ * @version 1.00		11/18/2024 Phase 3 implementation and documentation
  *  
  */
 
@@ -35,9 +35,24 @@ public class LoginTracker {
 		if(!AccountDatabase.doesUsernameExist(user))
 			return false;
 		
+		// Logout if already logged in
+		if(isLoggedIn)
+			logout();
+		
 		// Store all user info and return true
 		isLoggedIn = true;
 		username = user;
+		
+		// If user ONLY has admin role, select that role
+		if(isAdmin() && !isStudent() && !isInstructor())
+			selectAdminRole();
+		// If user ONLY has instructor role, select that role
+		if(isInstructor() && !isAdmin() && !isStudent())
+			selectInstructorRole();
+		// If user ONLY has student role, select that role
+		if(isStudent() && !isAdmin() && !isInstructor())
+			selectStudentRole();
+		
 		return true;
 	}
 	

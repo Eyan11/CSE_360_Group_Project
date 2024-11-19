@@ -12,7 +12,7 @@ import java.sql.*; // For SQL related objects
  * 
  * @author Eyan Martucci
  * 
- * @version 1.00		TODO
+ * @version 1.00		11/18/2024 Phase 3 implementation and documentation
  *  
  */
 
@@ -121,9 +121,8 @@ public class GroupDatabase {
 	 * Returns true if the given group name already exists in the groups table.
 	 */
 	public static boolean doesGroupNameExist(String groupName) {
-		
-		groupName = groupName.toLowerCase();	// Group names are all lowercase
-		groupName = groupName.trim();	// Group names don't have excess whitespace
+		groupName = groupName.toLowerCase();	// Convert to all lowercase
+		groupName = groupName.trim();			// Remove excess whitespace
 		
 	    try {
 			// Select all rows from database where name = placeholder variable ?
@@ -192,9 +191,15 @@ public class GroupDatabase {
 	 * Returns true if the user belongs to the group admins or viewers list of the specified group.
 	 */
 	public static boolean isUserInGroup(String groupName, String user, boolean isViewer) {
-		// Adjust group name to avoid error's
-		groupName = groupName.toLowerCase();
-		groupName = groupName.trim();
+		
+		// Prevent checking group if empty table
+		if(isTableEmpty()) {
+			System.err.println("Cannot check group because groups table is empty!");
+			return false;
+		}
+		
+		groupName = groupName.toLowerCase();	// Convert to all lowercase
+		groupName = groupName.trim();			// Remove excess whitespace
 		
 		try {
 			// Select all rows from database where name = placeholder variable ?
@@ -204,12 +209,15 @@ public class GroupDatabase {
 	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
 	        resultSet = pstmt.executeQuery();
 	        
-	        // If user is in group viewers list, return true
-	        if(isViewer && resultSet.getString("viewers").contains(user))
-	        	return true;
-	        // If user is in group admins list, return true
-	        else if(!isViewer && resultSet.getString("admins").contains(user))
-	        	return true;
+	        // If there is a result
+	        if(resultSet.next()) {
+		        // If user is in group viewers list, return true
+		        if(isViewer && resultSet.getString("viewers").contains(user))
+		        	return true;
+		        // If user is in group admins list, return true
+		        else if(!isViewer && resultSet.getString("admins").contains(user))
+		        	return true;
+	        }
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in GroupDatabase.isUserInGroup \n\n");
@@ -220,9 +228,17 @@ public class GroupDatabase {
 	
 	
 	/**********
-	 * Returns true if the user belongs to the group admins/viewers lists for all groups in group list
+	 * Returns true if the user has admin or viewing rights for all groups in article
 	 */
-	public static boolean isUserInAllGroupsInList(String groupList, String user, boolean isViewer) {
+	public static boolean hasRightsForAllGroups(String groupList, String user, boolean hasViewerRights) {
+		
+		// Prevent checking rights if empty table
+		if(isTableEmpty()) {
+			System.err.println("Cannot check rights because groups table is empty!");
+			return false;
+		}
+
+		groupList.toLowerCase();	// // Groups are always lowercase
 		
 		// Separate groups into an array
 		String[] groupsArr = groupList.split(", ");
@@ -231,13 +247,24 @@ public class GroupDatabase {
 		for(String group : groupsArr) {
 			group = group.trim();	// Trim whitespace
 			
-			// If the user is not in the group admin/viewers list
-			if(!isUserInGroup(group, user, isViewer)) {
-				System.out.println("User: " + user + " is not in group: " + group + " \n\n");
-				return false;
+			// If checking for viewing rights
+			if(hasViewerRights) {
+				// If the user is not in the group admin and viewers list
+				if(!isUserInGroup(group, user, false) && !isUserInGroup(group, user, true)) {
+					System.out.println("User: " + user + " is neither an admin nor viewer in group: " + group + " \n\n");
+					return false;
+				}
+			}
+			// If checking for admin rights
+			else {
+				// If the user is not in the group admins list
+				if(!isUserInGroup(group, user, false)) {
+					System.out.println("User: " + user + " is not an admin in group: " + group + " \n\n");
+					return false;
+				}
 			}
 		}
-		return true;	// User is in all groups in group list
+		return true;	// User has admin/viewing rights for all groups in article
 	}
 	
 	
@@ -246,24 +273,36 @@ public class GroupDatabase {
 	 */
 	public static String getGroupAdminsOrViewers(String groupName, boolean getViewers) {
 		
+		// Prevent getting admins/viewers if table is empty
+		if(isTableEmpty()) {
+			System.err.println("Cannot get group admins or viewers because groups table is empty!");
+			return "";
+		}
+		
+		groupName = groupName.toLowerCase();	// Convert to all lowercase
+		groupName = groupName.trim();			// Remove excess whitespace
+		
 		// Prevent getting admins if group name doesn't exist
-		if(doesGroupNameExist(groupName)) {
+		if(!doesGroupNameExist(groupName)) {
 			System.err.println("Cannot get group admins because group name: " + groupName + " doesn't exist!");
 			return "";
 		}
 		
 		try {
 			// Select all rows from database where name = placeholder variable ?
-		    query = "SELECT COUNT(*) FROM groups WHERE name = ?";
+		    query = "SELECT * FROM groups WHERE name = ?";
 		    PreparedStatement pstmt = connection.prepareStatement(query);
 		    
 	        pstmt.setString(1, groupName);	// Set placeholder variable ? as groupName
 	        resultSet = pstmt.executeQuery();
 	        
-	        if(getViewers)
-	        	return resultSet.getString("viewers");
-	        else
-	        	return resultSet.getString("admins");
+	        // Return the viewers or admins list
+	        if(resultSet.next()) {
+		        if(getViewers)
+		        	return resultSet.getString("viewers");
+		        else
+		        	return resultSet.getString("admins");
+	        }
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in GroupDatabase.getGroupAdminsOrViewers \n\n");
@@ -276,12 +315,20 @@ public class GroupDatabase {
 	/**********
 	 * Returns a list of all the group names where the currently logged in user is a group admin/viewer of.
 	 * Format of "group1+group2+group3".
+	 * Note: admin rights include viewer rights
 	 */
-	public static String getAllGroupNames(boolean isViewer) {
+	public static String getAllAuthorizedGroupNames(boolean isViewer) {
 		
-		// Prevent getting articles if empty
+		// Prevent getting group names if table is empty
 		if(isTableEmpty()) {
 			System.err.println("Cannot get all group names because groups table is empty!");
+			return "";
+		}
+		// Prevent getting group names if nobody is logged in
+		if(!LoginTracker.isLoggedIn()) {
+			System.err.println("Cannot get all group names because nobody is logged in! \n"
+					+ "See LoginTracker class and make sure someone is "
+					+ "logged in before calling GroupDatabase.getAllAuthorizedGroupNames");
 			return "";
 		}
 		
@@ -289,20 +336,26 @@ public class GroupDatabase {
 		try {
 			// Search for groups where current user is in viewers/admins list
 			if(isViewer)
-				query = "SELECT * FROM groups WHERE viewers LIKE ?";	// Viewers list
+				query = "SELECT * FROM groups WHERE viewers LIKE ? OR admins Like ?";	// Viewers (and admins) list
 			else
 				query = "SELECT * FROM groups WHERE admins LIKE ?";		// Admins list
 			PreparedStatement pstmt = connection.prepareStatement(query);
-	
-			pstmt.setString(1, "%" + LoginTracker.getUsername() + "%");	// Set the placeholder ? variable
+			
+			// Set the placeholder ? variable
+			pstmt.setString(1, "%" + LoginTracker.getUsername() + "%");
+			
+			if(isViewer)
+				pstmt.setString(2, "%" + LoginTracker.getUsername() + "%");
+			
 			resultSet = pstmt.executeQuery();	// Return result set of query
 		
 			// Get name of all groups
 			while(resultSet.next())
 				returnString += resultSet.getString("name") + "+";
 			
-			// Remove the last "+"
-			returnString = returnString.substring(0, returnString.length() - 1);
+			// If returned something, remove the last "+"
+			if(returnString.length() > 1)
+				returnString = returnString.substring(0, returnString.length() - 1);
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in GroupDatabase.getAllGroupInfo \n\n");
@@ -324,6 +377,13 @@ public class GroupDatabase {
 			System.err.println("Cannot get all groups because groups table is empty!");
 			return "";
 		}
+		// Prevent getting group info if nobody is logged in
+		if(!LoginTracker.isLoggedIn()) {
+			System.err.println("Cannot get all group names because nobody is logged in! \n"
+					+ "See LoginTracker class and make sure someone is "
+					+ "logged in before calling GroupDatabase.getAllAuthorizedGroupNames");
+			return "";
+		}
 		
 		try {
 			// Search for groups where current user is in admins list
@@ -332,7 +392,7 @@ public class GroupDatabase {
 	
 			pstmt.setString(1, "%" + LoginTracker.getUsername() + "%");	// Set the placeholder ? variable
 			resultSet = pstmt.executeQuery();	// Return result set of query
-		
+			
 			// Build and return string for an admin
 			if(LoginTracker.usingAdminRole())
 				return buildGroupsStringForAdmin(resultSet);
@@ -358,11 +418,9 @@ public class GroupDatabase {
 	/**********
 	 * Creates a new group in groups table with the given info and returns true if successful.
 	 */
-	public static boolean createGroup(String groupName, String firstAdmin, String groupType) {
-		
-		// Convert to lowercase to avoid case sensitive issues
-		groupName = groupName.toLowerCase();
-		groupType = groupType.toLowerCase();
+	public static boolean createGroup(String groupName, String firstAdmin, boolean isSpecial) {
+		groupName = groupName.toLowerCase();	// Convert to all lowercase
+		groupName = groupName.trim();			// Remove excess whitespace
 		
 		// Prevent group name from being empty or over 50 characters
 		if(groupName.length() <= 0 || groupName.length() > 50) {
@@ -384,11 +442,6 @@ public class GroupDatabase {
 			System.err.println("Cannot create group because username: " + firstAdmin + " cannot be a student!");
 			return false;
 		}
-		// Prevent a group type that isn't "general access" or "special access"
-		if(!groupType.equals("general access") && !groupType.equals("special access")) {
-			System.err.println("Cannot create group because group type: " + groupType + " is not 'general access' or 'special acces'!");
-			return false;
-		}
 		
 	
 		try {
@@ -399,9 +452,14 @@ public class GroupDatabase {
 				
 			// Set the placeholder ? variables
 			pstmt.setString(1, groupName);
-			pstmt.setString(2, groupType);
+			
+			if(isSpecial)	// Type = special access
+				pstmt.setString(2, "special access");
+			else			// Type = general access
+				pstmt.setString(2, "general access");
+			
 			pstmt.setString(3, firstAdmin);
-			pstmt.setString(4, "");
+			pstmt.setString(4, "");		// Initialize viewers list as empty
 			pstmt.executeUpdate();		// Execute query
 		}
 		catch(SQLException e) {
@@ -427,10 +485,8 @@ public class GroupDatabase {
 	 * 	cannot be in both the group admins and viewers list.
 	 */
 	public static boolean addUserToGroup(String user, String groupName, boolean isViewer) {
-		
 		groupName = groupName.toLowerCase();	// Convert to all lowercase
 		groupName = groupName.trim();			// Remove excess whitespace
-		
 		
 		// Prevent adding a user that doesn't exist
 		if(!AccountDatabase.doesUsernameExist(user)) {
@@ -456,7 +512,7 @@ public class GroupDatabase {
 		// Prevent duplicate users in list (covers both admin and viewers list)
 		if(isUserInGroup(groupName, user, isViewer)) {
     		System.err.println("Cannot add user: " + user + " to group: " + groupName +
-    				"because they are already in that group list!");
+    				" because they are already in that group list!");
     		return false;
 		}
 		
@@ -464,15 +520,22 @@ public class GroupDatabase {
     	String groupAdmins = getGroupAdminsOrViewers(groupName, false);
     	String groupViewers = getGroupAdminsOrViewers(groupName, true);
     	
+    	// If adding an instructor as viewer and there are no other instructors in group admins list
+    	if(isViewer && AccountDatabase.isInstructorRole(user) && !atLeastOneInstructorInList(groupAdmins))
+    		isViewer = !isViewer;	// Add instructor as admin instead
+    	
     	// If adding as group viewer
     	if(isViewer) {
     		
     		// If user is admin, remove from admin list and return false if removal failed, otherwise continue
-    		if(!removeUserFromGroup(user, groupName, false)) {
+    		if(groupAdmins.contains(user) && !removeUserFromGroup(user, groupName, false)) {
         		System.err.println("Cannot add user: " + user + " to group: " + groupName + " as group viewer "
         				+ "because it failed to be removed from group admins list!");
         		return false;
     		}
+    		
+    		// Get group admins again in case it was updated in previous if statement
+    		groupAdmins = getGroupAdminsOrViewers(groupName, false);
     		
     		// Add user to empty group viewers list
     		if(groupViewers.equals(""))
@@ -503,7 +566,6 @@ public class GroupDatabase {
 			pstmt.setString(2, groupViewers);
 			pstmt.setString(3, groupName);
 			pstmt.executeUpdate();	// execute query
-			return true;
 	    }
 		catch(SQLException e) {
 			System.err.println("SQLException in GroupDatabase.addUserToGroup \n\n");
@@ -529,6 +591,7 @@ public class GroupDatabase {
 		
 		// Convert to lowercase to avoid case sensitive issues
 		groupName = groupName.toLowerCase();
+		groupName = groupName.trim();
 		
 		// Prevent removing a user that doesn't exist
 		if(!AccountDatabase.doesUsernameExist(user)) {
@@ -543,7 +606,7 @@ public class GroupDatabase {
 		// Prevent removing users from a list they are not already in
 		if(!isUserInGroup(groupName, user, isViewer)) {
     		System.err.println("Cannot remove user: " + user + " from group: " + groupName +
-    				"because they are not in that group list!");
+    				" because they are not in that group list!");
     		return false;
 		}
 		// Prevent instructor from removing admins or instructors
@@ -558,7 +621,7 @@ public class GroupDatabase {
     	String groupViewers = getGroupAdminsOrViewers(groupName, true);
     	
     	// Prevent removing the only admin from admins list
-    	if(!isViewer && atLeastOneAdminAfterRemoval(groupAdmins, user)) {
+    	if(!isViewer && AccountDatabase.isAdminRole(user) && !atLeastOneAdminAfterRemoval(groupAdmins, user)) {
 			System.err.println("Cannot remove from admins list since user: " + user + " is the only user "
 					+ "with account admin role in the list! There must be at least one admin in group admins list.");
 			return false;
@@ -582,7 +645,6 @@ public class GroupDatabase {
 			pstmt.setString(2, groupViewers);
 			pstmt.setString(3, groupName);
 			pstmt.executeUpdate();	// execute query
-			return true;
 	    }
 		catch(SQLException e) {
 			System.err.println("SQLException in GroupDatabase.removeUserFromGroup \n\n");
@@ -626,6 +688,23 @@ public class GroupDatabase {
 	
 	
 	/**********
+	 * Returns true if there is at least one instructor in admins list
+	 */
+	private static boolean atLeastOneInstructorInList(String adminsList) {
+		String[] adminsArr = adminsList.split(", ");
+		
+		// Check all users in admins group
+		for(String adminUser : adminsArr) {
+
+			// if an instructor is in list, return true
+			if(AccountDatabase.isInstructorRole(adminUser))
+				return true;
+		}
+		return false;
+	}
+	
+	
+	/**********
 	 * Removes a name from a string list of names while keeping the order and format of the list correct.
 	 * Returns strings in format of "Name1" or "Name1, Name2, Name3".
 	 */
@@ -651,8 +730,8 @@ public class GroupDatabase {
 	/**********
 	 * Returns a String containing the group name, type, admins, and viewers for every 
 	 * 	row in groups table where the user is an admin of that group. 
-	 * String is in format of "Group: group_name1\nType: Special Access Group\nAdmins: 
-	 * 	admin1, admin2\nViewers: viewer1, viewer2\n\nGroup: group_name2\nType: General Access Group\n...".
+	 * String is in format of "Group: group_name1\nType: special access\nAdmins: 
+	 * 	admin1, admin2\nViewers: viewer1, viewer2\n\nGroup: group_name2\nType: general access\n...".
 	 */
 	private static String buildGroupsStringForAdmin(ResultSet rs) {
 		String returnString = "";
@@ -708,7 +787,7 @@ public class GroupDatabase {
 				
 				// If at least 1 viewer in viewers string, remove the last ", " in viewers string
 				if (viewersString.length() > 9)
-					viewersString = viewersString.substring(0, viewersString.length() - 1);
+					viewersString = viewersString.substring(0, viewersString.length() - 2);
 				
 				// Assemble string
 				returnString += viewersString + "\n\n";

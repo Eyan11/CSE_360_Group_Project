@@ -446,7 +446,7 @@ public class ArticleDatabase {
 			return false;
 		}
 		// Prevent logged in user from assigning a group to an article that they are not a group admin of
-		if(!GroupDatabase.isUserInAllGroupsInList(groups, LoginTracker.getUsername(), false)) {
+		if(!GroupDatabase.hasRightsForAllGroups(groups, LoginTracker.getUsername(), false)) {
 			System.err.println("Can't create article because user is not a group admin of all groups: " + groups);
 			return false;
 		}
@@ -512,7 +512,7 @@ public class ArticleDatabase {
 			return false;
 		}
 		// Prevent logged in user from deleting an article where they are not a group admin of all groups
-		if(!GroupDatabase.isUserInAllGroupsInList(getArticleGroups(id), LoginTracker.getUsername(), false)) {
+		if(!GroupDatabase.hasRightsForAllGroups(getArticleGroups(id), LoginTracker.getUsername(), false)) {
 			System.err.println("Can't delete article because user is not a group admin of all groups in article id: " + id);
 			return false;
 		}
@@ -565,12 +565,12 @@ public class ArticleDatabase {
 			return false;
 		}
 		// Prevent logged in user from editing an article where they are not a group admin of all groups (use old groups)
-		if(!GroupDatabase.isUserInAllGroupsInList(getArticleGroups(id), LoginTracker.getUsername(), false)) {
+		if(!GroupDatabase.hasRightsForAllGroups(getArticleGroups(id), LoginTracker.getUsername(), false)) {
 			System.err.println("Can't edit article because user is not a group admin of all previous groups in article id: " + id);
 			return false;
 		}
 		// Prevent logged in user from editing an article where they are not a group admin of all groups (use new groups)
-		if(!GroupDatabase.isUserInAllGroupsInList(groups, LoginTracker.getUsername(), false)) {
+		if(!GroupDatabase.hasRightsForAllGroups(groups, LoginTracker.getUsername(), false)) {
 			System.err.println("Can't delete article because user is not a group admin of all new groups in article id: " + id);
 			return false;
 		}
@@ -984,7 +984,7 @@ public class ArticleDatabase {
 		while(rs.next()) {
 			
 			// If logged in user is not a group admin of ALL groups in this article
-			if(!GroupDatabase.isUserInAllGroupsInList(resultSet.getString("groups"), LoginTracker.getUsername(), false)) {
+			if(!GroupDatabase.hasRightsForAllGroups(resultSet.getString("groups"), LoginTracker.getUsername(), false)) {
 				System.out.println("Filtering out article id: " + resultSet.getInt("id") + 
 						" since user is not in group admins list for all groups in article.");
 				
