@@ -67,7 +67,7 @@ public class HelpMessagesGUI
 		
 		// Labels that display...
 		setupUI.SetupLabelUI(helpMessages, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 30, Color.BLACK);
 		
 		/*
 		 * Button Creation

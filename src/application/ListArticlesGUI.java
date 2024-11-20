@@ -55,7 +55,7 @@ public class ListArticlesGUI
 	
 	// Buttons used for navigating interface and listing articles
 	private Button backButton = new Button("<-");
-	private Button listIdButton = new Button("Search ID/Sequence Number");
+	private Button listIdButton = new Button("Search By ID");
 	private Button listContentsButton = new Button("Search Contents");
 	
 	// Declaration of SetupUIElements Object
@@ -76,14 +76,14 @@ public class ListArticlesGUI
 		 */
 		
 		// Label that...
-		setupUI.SetupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+		setupUI.SetupLabelUI(groupLabel, "Arial", 18, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 40, Color.BLACK);
 		// Label that...
-		setupUI.SetupLabelUI(contentLvlLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 120, Color.BLACK);
+		setupUI.SetupLabelUI(contentLvlLabel, "Arial", 18, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 110, Color.BLACK);
 		// Label that...
-		setupUI.SetupLabelUI(articleLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 190, Color.BLACK);
+		setupUI.SetupLabelUI(articleLabel, "Arial", 18, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 180, Color.BLACK);
 		
 		/*
 		 * TextField Creations 
@@ -91,15 +91,15 @@ public class ListArticlesGUI
 		
 		// Text Field that..
 		setupUI.SetupTextFieldUI(groupText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 10, 80, true);
+				Pos.BASELINE_LEFT, 10, 65, true);
 		
 		// Text Field that...
 		setupUI.SetupTextFieldUI(contentLvlText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 10, 80, true);
+				Pos.BASELINE_LEFT, 10, 135, true);
 				
 		// Text Field that...
 		setupUI.SetupTextFieldUI(articleText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 10, 80, true);
+				Pos.BASELINE_LEFT, 10, 205, true);
 		
 		/*
 		 * Button Creations

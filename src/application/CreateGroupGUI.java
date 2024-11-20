@@ -73,15 +73,15 @@ public class CreateGroupGUI
 		
 		// Label that...
 		setupUI.SetupLabelUI(groupLabel, "Arial", 36, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 40, Color.BLACK);
 		
 		// Label that...
 		setupUI.SetupLabelUI(adminLabel, "Arial", 36, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 125, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 135, Color.BLACK);
 		
 		// Label that...
 		setupUI.SetupLabelUI(typeLabel, "Arial", 36, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 200, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 260, Color.BLACK);
 		
 		/*
 		 * TextField Creations 
@@ -89,11 +89,11 @@ public class CreateGroupGUI
 		
 		// Text Field that...
 		setupUI.SetupTextFieldUI(adminText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 250, 50, true);
+				Pos.BASELINE_LEFT, 10, 85, true);
 		
 		// Text Field that...
 		setupUI.SetupTextFieldUI(groupText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 250, 125, true);
+				Pos.BASELINE_LEFT, 10, 180, true);
 		
 		/*
 		 * Button Creations
@@ -138,18 +138,18 @@ public class CreateGroupGUI
 		});
 		
 		/*****
-		 * ...
+		 * General Button
 		 */
 		
 		generalButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{	
-				// ...
+				// General Button
 				firstAdmin = adminText.getText();
 				groupName = groupText.getText();
 				
-				GroupDatabase.createGroup(groupName, firstAdmin, "general access");
+				GroupDatabase.createGroup(groupName, firstAdmin, false);
 				
 				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
@@ -163,7 +163,7 @@ public class CreateGroupGUI
 		});
 		
 		/*****
-		 * ...
+		 * Special Button
 		 */
 		
 		specialButton.setOnAction(new EventHandler<>()
@@ -174,7 +174,7 @@ public class CreateGroupGUI
 				firstAdmin = adminText.getText();
 				groupName = groupText.getText();
 				
-				GroupDatabase.createGroup(groupName, firstAdmin, "special access");
+				GroupDatabase.createGroup(groupName, firstAdmin, true);
 				
 				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root

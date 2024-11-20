@@ -1,7 +1,7 @@
 package application;
 
 import database.AccountDatabase;
-
+import database.LoginTracker;
 import javafx.scene.control.Label; // For Label object
 import javafx.scene.control.TextField; // For TextField object
 import javafx.scene.control.Button; // For Button object
@@ -171,19 +171,25 @@ public class ModifyAccountsGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				// Collect user name input from user for modification
-				userInput = userText.getText();
-				// Make sure inputed user name from user exists in database
-				if(AccountDatabase.doesUsernameExist(userInput))
+				if(!LoginTracker.isAdmin())
 				{
-					theRoot.getChildren().clear();  // clear the current root
-					
-					// Send user to reset password interface
-					Pane newRoot = new Pane();
-					ResetAccountGUI resetAccount = new ResetAccountGUI(newRoot, userInput);
-					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // create new scene
-				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-				    currentStage.setScene(newScene); // set scene
+					// Collect user name input from user for modification
+					userInput = userText.getText();
+					// Make sure inputed user name from user exists in database
+					if(AccountDatabase.doesUsernameExist(userInput))
+					{
+						theRoot.getChildren().clear();  // clear the current root
+						
+						// Send user to reset password interface
+						Pane newRoot = new Pane();
+						ResetAccountGUI resetAccount = new ResetAccountGUI(newRoot, userInput);
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // create new scene
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+					    currentStage.setScene(newScene); // set scene
+					}
+				} else
+				{
+					System.out.println("Admins cannot reset");
 				}
 			}
 		});
@@ -303,14 +309,19 @@ public class ModifyAccountsGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				// Collect user name from user for input
-				userInput = userText.getText();
-				
-				// Make sure inputed user name from user exists in database
-				if(AccountDatabase.doesUsernameExist(userInput))
+				if(!LoginTracker.isAdmin())
 				{
-					// Updates role changes for user name inputed from user
-					AccountDatabase.updateUserRoles(userInput, addStudentRole, addInstructorRole, addAdminRole);
+					// Collect user name from user for input
+					userInput = userText.getText();
+					
+					// Make sure inputed user name from user exists in database
+					if(AccountDatabase.doesUsernameExist(userInput))
+					{
+						// Updates role changes for user name inputed from user
+						AccountDatabase.updateUserRoles(userInput, addStudentRole, addInstructorRole, addAdminRole);
+					}
+				} else {
+					System.out.println("Admins cannot edit");
 				}
 			}
 		});
