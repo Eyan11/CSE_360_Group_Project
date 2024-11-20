@@ -36,10 +36,10 @@ public class ManageArticlesGUI {
         title.setFont(new Font("Arial", 24));
         title.setFill(Color.BLACK);
         title.setLayoutX((WINDOW_WIDTH - title.getLayoutBounds().getWidth()) / 2);
-        title.setLayoutY(20);
+        title.setLayoutY(40);
 
         // Create buttons for article management actions
-        Button backButton = new Button("Back");
+        Button backButton = new Button("<-");
         Button articleSearchButton = new Button("Article Search");
         Button modifyArticlesButton = new Button("Modify Articles");
         Button createArticleButton = new Button("Create Article");
@@ -49,8 +49,9 @@ public class ManageArticlesGUI {
         Button createGroupButton = new Button("Create Group");
 
         // Set up the buttons using SetupUIElements
-        setupUI.SetupButtonUI(backButton, "Arial", 12, 80, Pos.TOP_LEFT, 10, 10, false, Color.BLACK);
-        setupUI.SetupButtonUI(articleSearchButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
+        // Button that returns user to previous interface
+  		setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20, Pos.CENTER, 10, 10, false, Color.BLACK);
+  		setupUI.SetupButtonUI(articleSearchButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(modifyArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(createArticleButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(backupArticlesButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
@@ -94,9 +95,13 @@ public class ManageArticlesGUI {
     private void articleSearch(Button articleSearchButton, Pane theRoot) {
         articleSearchButton.setOnAction(event -> {
             theRoot.getChildren().clear();
-
             Pane newRoot = new Pane();
- //           ArticleSearchGUI articleSearch = new ArticleSearchGUI(newRoot);
+            try {
+				ListArticlesGUI articleSearch = new ListArticlesGUI(newRoot);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
             Stage currentStage = (Stage) theRoot.getScene().getWindow();
             currentStage.setScene(newScene);
@@ -106,7 +111,6 @@ public class ManageArticlesGUI {
     private void modifyArticle(Button modifyArticlesButton, Pane theRoot) {
         modifyArticlesButton.setOnAction(event -> {
             theRoot.getChildren().clear();
-
             Pane newRoot = new Pane();
             ModifyArticlesGUI modArt = new ModifyArticlesGUI(newRoot);
             Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
@@ -164,7 +168,7 @@ public class ManageArticlesGUI {
             theRoot.getChildren().clear();
 
             Pane newRoot = new Pane();
-   //         ModifyGroupAccessGUI modGroupAccess = new ModifyGroupAccessGUI(newRoot);
+            ModifyGroupAccess modGroupAccess = new ModifyGroupAccess(newRoot);
             Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
             Stage currentStage = (Stage) theRoot.getScene().getWindow();
             currentStage.setScene(newScene);
@@ -176,7 +180,12 @@ public class ManageArticlesGUI {
             theRoot.getChildren().clear();
 
             Pane newRoot = new Pane();
- //           CreateGroupGUI createGroup = new CreateGroupGUI(newRoot);
+            try {
+				CreateGroupGUI createGroup = new CreateGroupGUI(newRoot);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
             Stage currentStage = (Stage) theRoot.getScene().getWindow();
             currentStage.setScene(newScene);

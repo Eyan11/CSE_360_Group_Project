@@ -19,7 +19,7 @@ import java.sql.*;
 /*******
  * <p> HelpMessagesGUI Class </p>
  * 
- * <p> Description:  </p>
+ * <p> Description: Allows administrators and instructors to view student special or general help request </p>
  * 
  * @author Julio Salazar
  * 

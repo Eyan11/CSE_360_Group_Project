@@ -21,6 +21,7 @@ import javafx.stage.Stage;
  * @version 1.00		10/29/2024 Phase 2 implementation and documentation
  *  
  */
+
 public class ManageAccountsGUI {
 
     public final static double WINDOW_WIDTH = 500;
@@ -36,18 +37,16 @@ public class ManageAccountsGUI {
         title.setLayoutX((WINDOW_WIDTH - title.getLayoutBounds().getWidth()) / 2);
         title.setLayoutY(50);
 
-        Button backButton = new Button("Back");
+        Button backButton = new Button("<-");
         Button modifyAccountsButton = new Button("Modify Accounts");
         Button inviteUserButton = new Button("Invite User");
 
-        setupUI.SetupButtonUI(backButton, "Arial", 12, 80, Pos.TOP_LEFT, 10, 10, false, Color.BLACK);
+        // Button that returns user to previous interface
+ 		setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
+         		Pos.CENTER, 10, 10, false, Color.BLACK);
         setupUI.SetupButtonUI(modifyAccountsButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(inviteUserButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
-
-        backButton.setPrefWidth(80);  // Set smaller width
-        backButton.setPrefHeight(30); // Set smaller height
-        backButton.setLayoutX(10);    // Set x position close to the left edge
-        backButton.setLayoutY(10);
+        
         modifyAccountsButton.setLayoutX(150);
         modifyAccountsButton.setLayoutY(100);
         inviteUserButton.setLayoutX(150);

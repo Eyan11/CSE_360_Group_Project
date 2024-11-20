@@ -1,5 +1,7 @@
 package application;
 
+import database.AccountDatabase;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -12,14 +14,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
-
-import database.AccountDatabase;
 //ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
 //However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 //(especially before changing anything!)
 
-//DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1.
+//DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of Phase 1
+
 /**
 * <p> SetUpUIElements. </p>
 * 
@@ -33,23 +33,24 @@ import database.AccountDatabase;
 * @version 1.00		10/28/2024 Phase 1 implementation and documentation
 *  
 */
+
 public class InviteUserGUI {
     public final static double WINDOW_WIDTH = 500;
     public final static double WINDOW_HEIGHT = 430;
 
     private Label sceneLabel = new Label("Invite User");
     private Label errorLabel = new Label("");
-    private CheckBox studentCheckBox = new CheckBox("Student: ");
-    private CheckBox instructorCheckBox = new CheckBox("Instructor: ");
-    private CheckBox adminCheckBox = new CheckBox("Admin: ");
-    private Button homeButton = new Button("Home");
+    private CheckBox studentCheckBox = new CheckBox("Student");
+    private CheckBox instructorCheckBox = new CheckBox("Instructor");
+    private CheckBox adminCheckBox = new CheckBox("Admin");
+    private Button homeButton = new Button("<-");
     private Button inviteButton = new Button("Invite");
 
     public InviteUserGUI(Pane invitePane) {
-        setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, Pos.CENTER, 0, 10, Color.BLACK);
+        setupLabelUI(sceneLabel, "Arial", 36, WINDOW_WIDTH, Pos.CENTER, 0, 10, Color.BLACK);
         
         // creating home button in the top left and making it green
-        setupButtonUI(homeButton, "Arial", 14, 80, Pos.BASELINE_LEFT, 10, 50, Color.GREEN);
+        setupButtonUI(homeButton, "Arial", 14, 80, Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
         
         // creating the student instructor and admin check boxes, and gr
         setupCheckBoxUI(studentCheckBox, "Arial", 14, 100, Pos.BASELINE_LEFT, 10, 100, Color.PURPLE);
@@ -57,7 +58,7 @@ public class InviteUserGUI {
         setupCheckBoxUI(adminCheckBox, "Arial", 14, 100, Pos.BASELINE_LEFT, 10, 160, Color.PURPLE);
         
         // Invite Button
-        setupButtonUI(inviteButton, "Arial", 14, 120, Pos.CENTER, WINDOW_WIDTH / 2 - 60, 200, Color.GREEN);
+        setupButtonUI(inviteButton, "Arial", 14, 120, Pos.CENTER, WINDOW_WIDTH / 2 - 60, 200, Color.BLACK);
         
         // Error Label or Success Message
         setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH - 20, Pos.CENTER, 10, 250, Color.RED);

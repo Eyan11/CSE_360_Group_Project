@@ -6,11 +6,10 @@ import database.LoginTracker;
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane; // Change from StackPane to Pane
 import javafx.scene.layout.VBox; // For layout that arranges UI elements vertically
 import javafx.scene.paint.Color; // For setting color of UI elements
-import javafx.scene.text.Font; // For setting font of text elements
-import javafx.scene.text.Text; // For displaying text in the UI
 import javafx.stage.Stage;
 
 /**
@@ -43,11 +42,9 @@ public class AdminHome {
         setupUI = new SetupUIElements();
 
         // Create "Admin Home" title
-        Text title = new Text("Admin Home");
-        title.setFont(new Font("Arial", 32));  // Set font
-        title.setFill(Color.BLACK);  // Set the text color
-        title.setLayoutX((WINDOW_WIDTH - title.getLayoutBounds().getWidth()) / 2);
-        title.setLayoutY(30);  // Set vertical position for title
+        Label title = new Label("Admin Home");
+        setupUI.SetupLabelUI(title, "Arial", 36, WINDOW_WIDTH, 
+				Pos.CENTER, 0, 15, Color.BLACK);
 
         // Buttons for Admin actions
         Button manageAccountsButton = new Button("Manage Accounts");
@@ -134,3 +131,4 @@ public class AdminHome {
         });
     }
 }
+

@@ -19,7 +19,7 @@ import java.sql.*;
 /*******
  * <p> CreateGroupGUI Class </p>
  * 
- * <p> Description: ... </p>
+ * <p> Description: Allows administrators and instructors to create access groups </p>
  * 
  * @author Julio Salazar
  * 
