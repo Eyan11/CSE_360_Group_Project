@@ -12,7 +12,7 @@ import java.sql.*; // For SQL related objects
  * 
  * @author Eyan Martucci
  * 
- * @version 1.00		TODO
+ * @version 1.00		11/19/2024 Phase 3 implementation and documentation
  *  
  */
 
@@ -40,7 +40,7 @@ public class HelpMessageDatabase {
 	public static void createTable() {
 		query = "CREATE TABLE IF NOT EXISTS help_messages ("
 				+ "id INT AUTO_INCREMENT PRIMARY KEY,"
-				+ "timestamp TIMESTAMP,"	// TIMESTAMP is when message was placed (Format: YYYY-MM-DD HH:MI:SS)
+				+ "date DATE,"	// DATE is in format yyyy-mm-dd
 				+ "message VARCHAR(300))";
 		try {
 			statement.execute(query);
@@ -118,7 +118,7 @@ public class HelpMessageDatabase {
 	
 	/**********
 	 * Returns the message and timestamp for every row in help_messages table as a String
-	 * in format of "timestamp1,message1|timestamp2,message2|..."
+	 * in format of "date1\nmessage1\n\ndate2\nmessage2\n\n..."
 	 */
 	public static String getAllHelpMessages() {
 		
@@ -139,7 +139,7 @@ public class HelpMessageDatabase {
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
 				// Get current article info
-				returnString += resultSet.getTimestamp("timestamp").toString() + "\n";
+				returnString += resultSet.getDate("date").toString() + "\n";
 				returnString += resultSet.getString("message") + "\n\n";
 			}
 		}
@@ -161,33 +161,55 @@ public class HelpMessageDatabase {
 	/**********
 	 * Creates a generic message and stores in help_messages table, returns if successful or not.
 	 */
-	public static boolean createGenericMessage(String group) {
+	public static boolean createGenericMessage(String groupName) {
+		
+		groupName.toLowerCase();	// All groups are lowercase
+		groupName.trim();			// Remove excess whitespace
 		
 		// Prevent sending message if group doesn't exist
-		/*	TODO once group database is created
-		if(doesGroupExist(group)) {
-			System.err.println("Cannot send generic message because group: " + group + " doesn't exist!");
+		if(!GroupDatabase.doesGroupNameExist(groupName)) {
+			System.err.println("Cannot create generic message because group: " + groupName + " doesn't exist!");
 			return false;
 		}
-		*/
+		// Prevent creating messages if nobody is logged in
+		if(!LoginTracker.isLoggedIn()) {
+			System.err.println("Cannot create generic message because nobody is logged in! Please login with LoginTracker class.");
+			return false;
+		}
+		// Prevent sending message if user is not a viewer of group
+		if(!GroupDatabase.isUserInGroup(groupName, LoginTracker.getUsername(), true)) {
+			System.err.println("Cannot create generic message because logged in user "
+					+ "does not exist in group name: " + groupName + "!");
+			return false;
+		}
 		
-		// Insert a new row into database and fill in the following column values
-		query = "INSERT INTO help_messages (timestamp, message) "
-				+ "VALUES (?, ?)";
+		Date date = new java.sql.Date(System.currentTimeMillis());	// Get date in format "yyyy-mm-dd"
+
 		try {
+			// Insert a new row into database and fill in the following column values
+			query = "INSERT INTO help_messages (date, message) "
+					+ "VALUES (?, ?)";
 			PreparedStatement pstmt = connection.prepareStatement(query);
 			
 			// Set the placeholder ? variables
-			pstmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-			pstmt.setString(2, "More help articles regarding the " + group + " group are requested.");
+			pstmt.setDate(1,  date);
+			pstmt.setString(2, "More help articles regarding the " + groupName + " group are requested.");
 			pstmt.executeUpdate();		// Execute query
-			return true;
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in HelpMessages.createGenericMessage \n\n");
 			e.printStackTrace();
 		}
-		return false;
+		
+		// Check and print results
+		if(getAllHelpMessages().contains(date.toString()) && getAllHelpMessages().contains(groupName)) {
+			System.out.println("Successfully created generic message!");
+			return true;
+		}
+		else {
+			System.err.println("Failed to created generic message!");
+			return false;
+		}
 	}
 	
 	
@@ -195,23 +217,45 @@ public class HelpMessageDatabase {
 	 * Creates a specific message and stores in help_messages table, returns if successful or not.
 	 */
 	public static boolean createSpecificMessage(String message) {
+		// Prevent creating messages if nobody is logged in
+		if(!LoginTracker.isLoggedIn()) {
+			System.err.println("Cannot create specific message because nobody is logged in! "
+					+ "Please login with LoginTracker class.");
+			return false;
+		}
+		// Prevent a message that is empty or too long
+		if(message.equals("") || message.length() > 300) {
+			System.err.println("Cannot create specific message because message is empty or over 300 characters!");
+			return false;
+		}
 		
-		// Insert a new row into database and fill in the following column values
-		query = "INSERT INTO help_messages (timestamp, message) "
-				+ "VALUES (?, ?)";
+		Date date = new java.sql.Date(System.currentTimeMillis());	// Get date in format "yyyy-mm-dd"
+		
 		try {
+			// Insert a new row into database and fill in the following column values
+			query = "INSERT INTO help_messages (date, message) "
+					+ "VALUES (?, ?)";
 			PreparedStatement pstmt = connection.prepareStatement(query);
 			
 			// Set the placeholder ? variables
-			pstmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+			pstmt.setDate(1, date);
 			pstmt.setString(2, message);
 			pstmt.executeUpdate();		// Execute query
 			return true;
 		}
 		catch(SQLException e) {
-			System.err.println("SQLException in HelpMessages.createGenericMessage \n\n");
+			System.err.println("SQLException in HelpMessages.createSpecificMessage \n\n");
 			e.printStackTrace();
 		}
-		return false;
+
+		// Check and print results
+		if(getAllHelpMessages().contains(date.toString()) && getAllHelpMessages().contains(message)) {
+			System.out.println("Successfully created specific message!");
+			return true;
+		}
+		else {
+			System.err.println("Failed to created specific message!");
+			return false;
+		}
 	}
 }
