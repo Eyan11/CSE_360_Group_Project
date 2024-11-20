@@ -1,5 +1,7 @@
 package application;
 
+import java.sql.SQLException;
+
 import database.LoginTracker;
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.Scene;
@@ -113,7 +115,12 @@ public class StudentHomeGUI {
             Pane newRoot = new Pane();
 
             // Try to navigate to ListArticlesGUI
-            ListArticlesGUI listArticles = new ListArticlesGUI(newRoot); // Navigate to ListArticlesGUI
+            try {
+				ListArticlesGUI listArticles = new ListArticlesGUI(newRoot);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // Navigate to ListArticlesGUI
 
             // Set up the new scene
             Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
