@@ -1,5 +1,8 @@
 package application;
 
+import java.sql.SQLException;
+
+import database.LoginTracker;
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
@@ -77,6 +80,9 @@ public class AdminHome {
     private void handleLogout(Button logoutButton, Pane theRoot) {
         // Event handler for the logout button
         logoutButton.setOnAction(event -> {
+        	
+            LoginTracker.logout();
+            
             theRoot.getChildren().clear();  // Clear the current root
             
             Pane newRoot = new Pane();
@@ -116,7 +122,12 @@ public class AdminHome {
             theRoot.getChildren().clear();
             
             Pane newRoot = new Pane();
-//            ManageHelpMessagesGUI manageHelpMessages = new ManageHelpMessagesGUI(newRoot);  // Create a new instance of ManageHelpMessagesGUI
+            try {
+				HelpMessagesGUI manageHelpMessages = new HelpMessagesGUI(newRoot);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}  // Create a new instance of ManageHelpMessagesGUI
             Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
             Stage currentStage = (Stage) theRoot.getScene().getWindow();
             currentStage.setScene(newScene);

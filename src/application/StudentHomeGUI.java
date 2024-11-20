@@ -1,5 +1,6 @@
 package application;
 
+import database.LoginTracker;
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
@@ -80,28 +81,54 @@ public class StudentHomeGUI {
 
     private void handleGenericMessage(Button genericMessageButton, Pane theRoot) {
         genericMessageButton.setOnAction(event -> {
-            // Add functionality for Generic Message
-  //          System.out.println("Generic Message button clicked.");
+            theRoot.getChildren().clear();  // Clear the current root
+
+            Pane newRoot = new Pane();
+            SendGenericMessageGUI generic = new SendGenericMessageGUI(newRoot);  // Create a new instance of LoginGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+          Stage currentStage = (Stage) theRoot.getScene().getWindow();
+            currentStage.setScene(newScene);
         });
     }
 
     private void handleSpecificMessage(Button specificMessageButton, Pane theRoot) {
         specificMessageButton.setOnAction(event -> {
-            // Add functionality for Specific Message
- //           System.out.println("Specific Message button clicked.");
+            theRoot.getChildren().clear();  // Clear the current root
+
+            Pane newRoot = new Pane();
+            SendSpecificMessageGUI specific= new SendSpecificMessageGUI(newRoot);  // Create a new instance of LoginGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+            Stage currentStage = (Stage) theRoot.getScene().getWindow();
+            currentStage.setScene(newScene);
         });
     }
+
 
     private void handleArticleSearch(Button articleSearchButton, Pane theRoot) {
         articleSearchButton.setOnAction(event -> {
-            // Add functionality for Article Search
- //           System.out.println("Article Search button clicked.");
+            // Clear the current root
+            theRoot.getChildren().clear();
+
+            // Create a new pane for the next interface
+            Pane newRoot = new Pane();
+
+            // Try to navigate to ListArticlesGUI
+            ListArticlesGUI listArticles = new ListArticlesGUI(newRoot); // Navigate to ListArticlesGUI
+
+            // Set up the new scene
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+            Stage currentStage = (Stage) theRoot.getScene().getWindow();
+            currentStage.setScene(newScene); // Switch to the new scene
         });
     }
 
+
     private void handleLogout(Button logoutButton, Pane theRoot) {
         logoutButton.setOnAction(event -> {
+            LoginTracker.logout();
+            
             theRoot.getChildren().clear();  // Clear the current root
+            
             
             Pane newRoot = new Pane();
             LoginGUI loginPage = new LoginGUI(newRoot);  // Create a new instance of LoginGUI
