@@ -136,9 +136,9 @@ public class ArticleDatabase {
 	 */
 	public static boolean doesArticleIDExist(int id) {
 		
-		// Select all rows from database where id = placeholder variable ?
-	    query = "SELECT COUNT(*) FROM articles WHERE id = ?";
 	    try {
+			// Select all rows from database where id = placeholder variable ?
+		    query = "SELECT COUNT(*) FROM articles WHERE id = ?";
 		    PreparedStatement pstmt = connection.prepareStatement(query);
 		        
 	        pstmt.setInt(1, id);	// id = id
@@ -159,13 +159,13 @@ public class ArticleDatabase {
 	
 	
 	/**********
-	 * Checks if an article has the given title
+	 * Checks if an article has the given header
 	 */
 	public static boolean doesArticleHeaderExist(String header) {
 		
-		// Select all rows from database where header = placeholder variable ?
-	    String query = "SELECT COUNT(*) FROM articles WHERE header = ?";
 	    try {
+			// Select all rows from database where header = placeholder variable ?
+		    query = "SELECT COUNT(*) FROM articles WHERE header = ?";
 		    PreparedStatement pstmt = connection.prepareStatement(query);
 		    
 		    // Set placeholder ? variable to header
@@ -182,7 +182,40 @@ public class ArticleDatabase {
 			System.err.println("SQLException in ArticleDatabase.doesArticleHeaderExist \n\n");
 			e.printStackTrace();
 		}
-	    return false; // If an error occurs, assume title doesn't exist
+	    return false; // If an error occurs, assume header doesn't exist
+	}
+	
+	
+	/**********
+	 * Returns the id of the article with the matching header.
+	 * Returns -1 if an error occurs.
+	 */
+	public static int getArticleID(String header) {
+		
+		// Prevent getting articles if empty
+		if(isTableEmpty()) {
+			System.err.println("Cannot get article id because database is empty!");
+			return -1;
+		}
+		
+		try {
+			// Select all rows from database where header = placeholder variable ?
+		    query = "SELECT * FROM articles WHERE header = ?";
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+		    // Set placeholder ? variable to header
+	        pstmt.setString(1, header);
+	        resultSet = pstmt.executeQuery();
+	        
+	        // If the next row exists, return it's id
+	        if (resultSet.next())
+	            return resultSet.getInt("id");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.getAllArticles \n\n");
+			e.printStackTrace();
+		}
+		return -1;		// For error
 	}
 	
 	
@@ -197,17 +230,24 @@ public class ArticleDatabase {
 			System.err.println("Cannot get all articles because database is empty!");
 			return "";
 		}
+		// Prevent getting an article that does not exist
+		if(!LoginTracker.isLoggedIn()) {
+			System.err.println("Cannot get all articles because nobody is logged in on LoginTracker!");
+			return "";
+		}
 		
 		// Select all rows from database
 		query = "SELECT * FROM articles"; 
 		String returnString = "";
 		
 		try {
-			statement = connection.createStatement();
+			// Allow statement to be scrollable so result set pointer can be reset to beginning
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			resultSet = statement.executeQuery(query); 	// Execute query
 			
 			// Filters out articles where logged in user is not a group admin of all groups in that article
 			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 	
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
@@ -238,23 +278,25 @@ public class ArticleDatabase {
 			return "";
 		}
 		
-		// Select the row from database where id = placeholder variable ?
-	    query = "SELECT * FROM articles WHERE id = ?";
 	    String returnString = "";
 	    
 	    try {
-		    PreparedStatement pstmt = connection.prepareStatement(query);
-		        
+			// Select the row from database where id = placeholder variable ?
+		    query = "SELECT * FROM articles WHERE id = ?";
+	    	// Allow statement to be scrollable so result set pointer can be reset to beginning
+		    PreparedStatement pstmt = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		    
 	        pstmt.setInt(1, id);				// id = id
 	        resultSet = pstmt.executeQuery();	// Execute query
 	        
 			// Filters out articles where logged in user is not a group admin of all groups in that article
 			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 	        
 	        // While next row exists, check next row
 	        if (resultSet.next()) {
 	        	// Get article info
-	        	returnString += id + ",";
+	        	returnString += id + "+";
 	        	returnString += resultSet.getString("header") + "+"; 
 	        	returnString += resultSet.getString("title") + "+";
 	        	returnString += resultSet.getString("author") + "+";
@@ -305,9 +347,11 @@ public class ArticleDatabase {
 		try {
 			// Get a result set of all matching articles
 			resultSet = craftResultSetToSearchArticles(groupFilter, levelFilter, searchContents);
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			
 			// Filters out articles where logged in user is not a group admin of all groups in that article
 			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			
 			// Temporary variables for collecting data
 			String returnGroups = "Groups: ";
@@ -451,11 +495,10 @@ public class ArticleDatabase {
 			return false;
 		}
 	
-		
-		// Insert a new row into database and fill in the following column values
-		query = "INSERT INTO articles (header, title, author, description, keywords, level, groups, body, references) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
+			// Insert a new row into database and fill in the following column values
+			query = "INSERT INTO articles (header, title, author, description, keywords, level, groups, body, references) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement pstmt = connection.prepareStatement(query);
 			
 			// If at least one group is of special access type, article must be encrypted
@@ -517,10 +560,9 @@ public class ArticleDatabase {
 			return false;
 		}
 		
-		// Deletes the row from database where id = placeholder variable ?
-		query = "DELETE FROM articles WHERE id = ?";
-		
 		try {
+			// Deletes the row from database where id = placeholder variable ?
+			query = "DELETE FROM articles WHERE id = ?";
 			PreparedStatement pstmt = connection.prepareStatement(query);
 			
 			pstmt.setInt(1, id);		// id = id
@@ -673,9 +715,11 @@ public class ArticleDatabase {
 
 			// Returns result set of all articles with matching groups
 			resultSet = craftResultSetToGetArticlesByGroups(groups);
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			
 			// Filters out articles where logged in user is not a group admin of all groups in that article
 			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 	
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
@@ -926,6 +970,7 @@ public class ArticleDatabase {
 					resultSet.deleteRow();	// Filter out article
 			}
 		}
+		resultSet.beforeFirst(); 	// Move result set pointer back to start
 		return resultSet;
 	}
 	
@@ -954,6 +999,7 @@ public class ArticleDatabase {
 			}
 		}
 		
+		resultSet.beforeFirst(); 	// Move result set pointer back to start
 		
 		// if filtering by search contents (not empty)
 		if(!searchContents.trim().isEmpty()) {
@@ -970,6 +1016,7 @@ public class ArticleDatabase {
 				}
 			}
 		}
+		resultSet.beforeFirst(); 	// Move result set pointer back to start
 		return resultSet;	// Returned filtered search as result set
 	}
 	
@@ -991,6 +1038,7 @@ public class ArticleDatabase {
 				rs.deleteRow();		// Filter this article out of result set
 			}
 		}
+		rs.beforeFirst(); 	// Move result set pointer back to start
 		return rs;
 	}
 	
