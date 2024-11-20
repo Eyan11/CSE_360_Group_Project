@@ -45,12 +45,19 @@ public class InviteUserGUI {
     private CheckBox adminCheckBox = new CheckBox("Admin");
     private Button homeButton = new Button("<-");
     private Button inviteButton = new Button("Invite");
+    
+    // Declaration of SetupUIElements Object
+ 	public SetupUIElements setupUI;
 
     public InviteUserGUI(Pane invitePane) {
+    	// Utilizes the SetUpElements class for the Label and Button
+    	setupUI = new SetupUIElements();
+    	
         setupLabelUI(sceneLabel, "Arial", 36, WINDOW_WIDTH, Pos.CENTER, 0, 10, Color.BLACK);
         
-        // creating home button in the top left and making it green
-        setupButtonUI(homeButton, "Arial", 14, 80, Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+        // Button that returns user to previous interface
+ 		setupUI.SetupButtonUI(homeButton, "Arial", 11, 50, 20,
+         		Pos.CENTER, 10, 10, false, Color.BLACK);
         
         // creating the student instructor and admin check boxes, and gr
         setupCheckBoxUI(studentCheckBox, "Arial", 14, 100, Pos.BASELINE_LEFT, 10, 100, Color.PURPLE);
@@ -131,3 +138,4 @@ public class InviteUserGUI {
     }
 
 }
+

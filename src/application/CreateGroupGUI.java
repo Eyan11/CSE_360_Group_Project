@@ -19,11 +19,13 @@ import java.sql.*;
 /*******
  * <p> CreateGroupGUI Class </p>
  * 
- * <p> Description: Allows administrators and instructors to create access groups </p>
+ * <p> Description: Class that allows administrators and instructors to create specified access groups </p>
  * 
  * @author Julio Salazar
  * 
  * @version 1.00 11/18/2024 Phase 3 Implementation and Documentation
+ * 			1.50 11/20/2024 Documentation + Finalization
+ * 
  */
 
 public class CreateGroupGUI
@@ -36,20 +38,20 @@ public class CreateGroupGUI
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	// Stores...
+	// Stores user input
 	private String groupName = "";
 	private String firstAdmin = "";
 	
-	// Labels for ...
+	// Labels for user instructions
 	private Label groupLabel = new Label("Group Name: ");
 	private Label adminLabel = new Label("First Admin: ");
 	private Label typeLabel = new Label("Group Type: ");
 	
-	// Text Field for ...
+	// Text Field that stores user input
 	private TextField groupText = new TextField();
 	private TextField adminText = new TextField();
 	
-	// Buttons for navigating interface and ...
+	// Buttons for navigating interface and creating a group
 	private Button backButton = new Button("<-");
 	private Button generalButton = new Button("General Access");
 	private Button specialButton = new Button("Special Access");
@@ -71,15 +73,15 @@ public class CreateGroupGUI
 		 * Label Creations
 		 */
 		
-		// Label that...
+		// Label that asks for group name
 		setupUI.SetupLabelUI(groupLabel, "Arial", 36, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 40, Color.BLACK);
 		
-		// Label that...
+		// Label that administrator
 		setupUI.SetupLabelUI(adminLabel, "Arial", 36, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 135, Color.BLACK);
 		
-		// Label that...
+		// Label that asks for group type
 		setupUI.SetupLabelUI(typeLabel, "Arial", 36, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 260, Color.BLACK);
 		
@@ -87,11 +89,11 @@ public class CreateGroupGUI
 		 * TextField Creations 
 		 */
 		
-		// Text Field that...
+		// Text Field that collects user info for group administrator
 		setupUI.SetupTextFieldUI(adminText, "Arial", 18, 400, 40,
 				Pos.BASELINE_LEFT, 10, 85, true);
 		
-		// Text Field that...
+		// Text Field that collects user info for group name
 		setupUI.SetupTextFieldUI(groupText, "Arial", 18, 400, 40,
 				Pos.BASELINE_LEFT, 10, 180, true);
 		
@@ -102,10 +104,12 @@ public class CreateGroupGUI
 		// Button that returns user to previous interface
 		setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
-		// Button that ...
+		
+		// Button that creates general group type
 		setupUI.SetupButtonUI(generalButton, "Arial", 18, 175, 50,
         		Pos.CENTER, 35, 325, false, Color.BLACK);
-		// Button that ...
+		
+		// Button that creates special group type
 		setupUI.SetupButtonUI(specialButton, "Arial", 18, 175, 50,
         		Pos.CENTER, 250, 325, false, Color.BLACK);
 		
@@ -129,6 +133,7 @@ public class CreateGroupGUI
 				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
 				// Create new pane for next interface
+				
 				Pane newRoot = new Pane();
 				ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
 				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
@@ -148,11 +153,12 @@ public class CreateGroupGUI
 				// General Button
 				firstAdmin = adminText.getText();
 				groupName = groupText.getText();
-				
+				// Creates group with general access in database
 				GroupDatabase.createGroup(groupName, firstAdmin, false);
 				
 				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
+				
 				// Create new pane for next interface
 				Pane newRoot = new Pane();
 				ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
@@ -170,10 +176,10 @@ public class CreateGroupGUI
 		{
 			public void handle(ActionEvent event) 
 			{	
-				// ...
+				// Special Button
 				firstAdmin = adminText.getText();
 				groupName = groupText.getText();
-				
+				// Creates group with special access in database
 				GroupDatabase.createGroup(groupName, firstAdmin, true);
 				
 				// Returns user back to previous page
@@ -188,3 +194,4 @@ public class CreateGroupGUI
 		});
 	}
 }
+

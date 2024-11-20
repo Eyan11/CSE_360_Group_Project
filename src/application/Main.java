@@ -56,3 +56,4 @@ public class Main extends Application {
 		DatabaseManager.closeConnection();
 	}
 }
+

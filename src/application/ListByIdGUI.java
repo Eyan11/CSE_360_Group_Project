@@ -24,6 +24,8 @@ import java.sql.*;
  * 
  * @version 1.00 10/28/2024 Phase 2 Implementation and Documentation
  * 			1.50 10/29/2024 Added Interface Dimensions
+ * 			2.00 11/18/2024 Phase 3 Implementation and Documentation
+ * 			2.25 11/20/2024 Finalization + Documentation
  */
 
 public class ListByIdGUI
@@ -67,11 +69,14 @@ public class ListByIdGUI
 	
 	public ListByIdGUI(Pane theRoot, int userID) throws SQLException
 	{	
+		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
+		setupUI = new SetupUIElements();
+		
 		// Initialize user ID with inputed parameter
 		this.userID = userID;
+		
 		// Grab article with the specified ID
 		String unformattedInput = ArticleDatabase.getArticleByID(this.userID);
-		
 	    // Split the input by commas
 	    String[] formattedInput = unformattedInput.split(",+");
 
@@ -102,9 +107,6 @@ public class ListByIdGUI
 		Label bodyLabel = new Label("Body: " + body);
 		Label referencesLabel = new Label("References: " + references);
 		
-		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
-		setupUI = new SetupUIElements();
-		
 		/*
 		 * Label Creations
 		 */
@@ -113,7 +115,7 @@ public class ListByIdGUI
 		setupUI.SetupLabelUI(articleLabel, "Arial", 36, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 		
-		// Labels that display Article ID
+		// Labels that display Article ID Information
 		setupUI.SetupLabelUI(idLabel, "Arial", 11, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
 		setupUI.SetupLabelUI(headerLabel, "Arial", 11, WINDOW_WIDTH-10, 
@@ -161,13 +163,12 @@ public class ListByIdGUI
 			{
 				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
+				
 				// Create new pane for next interface
 				Pane newRoot = new Pane();
 				try {
 					ListArticlesGUI listArticle = new ListArticlesGUI(newRoot); // ListArticlesGUI class
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} // Returns user to previous interface
 				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 			    Stage currentStage = (Stage) theRoot.getScene().getWindow();

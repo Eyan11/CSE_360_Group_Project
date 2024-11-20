@@ -27,6 +27,8 @@ import java.sql.*;
  * @version 1.00 10/24/2024 Phase 1 Implementation and Documentation
  * 			1.50 10/25/2024 Finalized GUI Display
  * 			1.75 10/28/2024 Documentation and added Full Button Functionality
+ * 			2.00 11/18/2024 Phase 3 Implementation and Documentation
+ * 			2.25 11/20/2024 Finalization + Documentation
  */
 
 public class ModifyAccountsGUI
@@ -61,9 +63,9 @@ public class ModifyAccountsGUI
 	private Button applyRoleButton = new Button("Apply Role Changes?");
 	
 	// Check Boxes used specifically for role changes
-	private CheckBox studentButton = new CheckBox("Student");
-	private CheckBox instructorButton = new CheckBox("Instructor");
-	private CheckBox adminButton = new CheckBox("Admin");
+	private CheckBox studentCheckBox = new CheckBox("Student");
+	private CheckBox instructorCheckBox = new CheckBox("Instructor");
+	private CheckBox adminCheckBox = new CheckBox("Admin");
 	
 	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI;
@@ -75,10 +77,11 @@ public class ModifyAccountsGUI
 	
 	public ModifyAccountsGUI(Pane theRoot) throws SQLException
 	{	
+		// Utilizes the SetUpElements class for Labels, TextFields, Buttons, and Check Boxes
+		setupUI = new SetupUIElements();
+		
 		// Non-Interactive text that will appear on interface
 		Label accounInfoLabel = new Label(AccountDatabase.getAllAccounts());
-		// Utilizes the SetUpElements class for Labels, TextFields, Buttons, and Check Boxe
-		setupUI = new SetupUIElements();
 		
 		/*
 		 * Label Creations
@@ -111,12 +114,15 @@ public class ModifyAccountsGUI
 		// Button that returns user to previous interface
 		setupUI.SetupButtonUI(homeButton, "Arial", 11, 100, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
+		
 		// Button that rests inputed username's password
 		setupUI.SetupButtonUI(resetButton, "Arial", 11, 100, 20, 
         		Pos.CENTER, 150, 325, false, Color.BLACK);
+		
 		// Button that deletes inputed username's account
 		setupUI.SetupButtonUI(deleteButton, "Arial", 11, 100, 20,
         		Pos.CENTER, 260, 325, false, Color.BLACK);
+		
 		// Button that saves role changes from check boxes
 		setupUI.SetupButtonUI(applyRoleButton, "Arial", 11, 130, 20,
         		Pos.CENTER, 365, 325, false, Color.BLACK);
@@ -126,19 +132,21 @@ public class ModifyAccountsGUI
 		 */
 		
 		// Check Box that manages student role for user name inputed by user
-		setupUI.SetupCheckBoxUI(studentButton, "Arial", 11, 100, 20,
+		setupUI.SetupCheckBoxUI(studentCheckBox, "Arial", 11, 100, 20,
         		Pos.CENTER, 375, 350, false, Color.BLACK);
+		
 		// Check Box that manages instructor role for user name inputed by user
-		setupUI.SetupCheckBoxUI(instructorButton, "Arial", 11, 100, 20,
+		setupUI.SetupCheckBoxUI(instructorCheckBox, "Arial", 11, 100, 20,
         		Pos.CENTER, 375, 375, false, Color.BLACK);
+		
 		// Check Box that manages administrator role for user name inputed by user
-		setupUI.SetupCheckBoxUI(adminButton, "Arial", 11, 100, 20,
+		setupUI.SetupCheckBoxUI(adminCheckBox, "Arial", 11, 100, 20,
         		Pos.CENTER, 375, 400, false, Color.BLACK);
 		
 		
 		// Sends all previously established settings for the pane to the scene for setup
 		theRoot.getChildren().addAll(allAccountsLabel, usernameLabel, accounInfoLabel, userText, homeButton,
-				resetButton, deleteButton, studentButton, instructorButton, adminButton, applyRoleButton);
+				resetButton, deleteButton, studentCheckBox, instructorCheckBox, adminCheckBox, applyRoleButton);
 		
 		/*
 		 * Button + CheckBox Functionality
@@ -223,7 +231,7 @@ public class ModifyAccountsGUI
 		 * Student CheckBox
 		 */
 		
-		studentButton.setOnAction(new EventHandler<>()
+		studentCheckBox.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{	
@@ -250,7 +258,7 @@ public class ModifyAccountsGUI
 		 * Instructor CheckBox
 		 */
 		
-		instructorButton.setOnAction(new EventHandler<>()
+		instructorCheckBox.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{				
@@ -277,7 +285,7 @@ public class ModifyAccountsGUI
 		 * Administrator CheckBox
 		 */
 		
-		adminButton.setOnAction(new EventHandler<>()
+		adminCheckBox.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
 			{
@@ -328,3 +336,4 @@ public class ModifyAccountsGUI
 
 	}
 }
+

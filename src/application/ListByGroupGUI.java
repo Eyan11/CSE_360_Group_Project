@@ -24,6 +24,9 @@ import java.sql.*;
  * 
  * @version 1.00 10/28/2024 Phase 2 Implementation and Documentation
  * 			1.50 10/29/2024 Added Interface Dimensions
+ * 			2.00 11/18/2024 Phase 3 Implementation and Documentation
+ * 			2.25 11/20/2024 Finalization + Documentation
+ * 
  */
 
 public class ListByGroupGUI
@@ -36,14 +39,10 @@ public class ListByGroupGUI
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	// Stores Group(s)
+	// Stores inputed parameter from user
 	private String group = "";
-	//
 	private String contentLevel = "";
 	private String articleContents = "";
-	
-	// Displays interface information
-	//private Label groupLabel = new Label("ID, Header, Title, Group(s)");
 	
 	// Button to return to previous interface
 	private Button backButton = new Button("<-");
@@ -52,31 +51,30 @@ public class ListByGroupGUI
 	public SetupUIElements setupUI;
 	
 	/**
-	 * Constructor w/ Parameter for GUI + User String
+	 * Constructor w/ Parameter for GUI + User Group + Content Level + Article Contents
 	 * @param theRoot
 	 */
 	
 	public ListByGroupGUI(Pane theRoot, String group, String contentLevel, String articleContents) throws SQLException
 	{	
-		// Initialize group with inputed parameter
+		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
+		setupUI = new SetupUIElements();		
+		
+		// Initialize Strings with inputed parameter
 		this.group = group;
 		this.contentLevel = contentLevel;
 		this.articleContents = articleContents;
-		// Grab...
+		
+		// Grab articles from database that are related to user parameters
 		String formattedInput = ArticleDatabase.searchByContents(this.group, this.contentLevel, this.articleContents);
-		// Create a label with group information to display
+		// Create a label with limited article(s) information
 		Label displayArticles = new Label(formattedInput);
-		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
-		setupUI = new SetupUIElements();
 		
 		/*
 		 * Label Creations
 		 */
 		
-		// Label that displays what is being shown
-		//setupUI.SetupLabelUI(groupLabel, "Arial", 36, WINDOW_WIDTH-10, 
-				//Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
-		// Label that shows all articles with the shared group
+		// Label that displays article(s) related to user parameters
 		setupUI.SetupLabelUI(displayArticles, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
 		
@@ -105,14 +103,13 @@ public class ListByGroupGUI
 			{						
 				// Returns user back to previous page
 				theRoot.getChildren().clear();  // Clear the current root
+				
 				// Create new pane for next interface
 				Pane newRoot = new Pane();
 				// Try and Catch Block for exception handling
 				try {
-					ListArticlesGUI listArticle = new ListArticlesGUI(newRoot); // ListArticlesGUI class
+					ListArticlesGUI listArticles = new ListArticlesGUI(newRoot); // ListArticlesGUI class
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} // Returns user to previous interface
 				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 			    Stage currentStage = (Stage) theRoot.getScene().getWindow();

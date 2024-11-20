@@ -19,11 +19,12 @@ import java.sql.*;
 /*******
  * <p> HelpMessagesGUI Class </p>
  * 
- * <p> Description: Allows administrators and instructors to view student special or general help request </p>
+ * <p> Description: Allows administrators and instructors to view student special or general help requests </p>
  * 
  * @author Julio Salazar
  * 
  * @version 1.00 11/18/2024 Phase 3 Design and Implementation
+ * 			1.50 11/20/2024 Documentation + Finalization
  */
 
 public class HelpMessagesGUI
@@ -36,19 +37,22 @@ public class HelpMessagesGUI
 	public final static double WINDOW_WIDTH = 500;
 	public final static double WINDOW_HEIGHT = 430;
 	
-	// Buttons used for navigating interface and listing articles
+	// Button used for returning to previous interface
 	private Button backButton = new Button("<-");
 	
 	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI;
 	
 	/**
-	 * Constructor w/ Parameter for GUI + User ID
+	 * Constructor w/ Parameter for GUI
 	 * @param theRoot
 	 */
 	
 	public HelpMessagesGUI(Pane theRoot) throws SQLException
 	{	
+		// Utilizes the SetUpElements class for the Label and Button
+		setupUI = new SetupUIElements();
+		
 		// Grab article with the specified ID
 		String allHelpMessages = HelpMessageDatabase.getAllHelpMessages();
 	    
@@ -56,16 +60,14 @@ public class HelpMessagesGUI
 	     * Label Declaration
 	     */
         
+		// Label that displays student help requests
 		Label helpMessages = new Label(allHelpMessages);
 		
-		// Utilizes the SetUpElements class for Labels, TextFields, and Buttons
-		setupUI = new SetupUIElements();
-		
 		/*
-		 * Label Creations
+		 * Label Creation
 		 */
 		
-		// Labels that display...
+		// Label that displays student help requests
 		setupUI.SetupLabelUI(helpMessages, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 30, Color.BLACK);
 		
@@ -92,18 +94,21 @@ public class HelpMessagesGUI
 		{
 			public void handle(ActionEvent event) 
 			{
+				// Checks if logged in user is an instructor or not
 				if(LoginTracker.isInstructor()) {
 					// Returns user back to previous page
 					theRoot.getChildren().clear();  // Clear the current root
+					
 					// Create new pane for next interface
 					Pane newRoot = new Pane();
-					InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot); // ListArticlesGUI class
+					InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot); // InstructorHomeGUI class
 					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
 				    currentStage.setScene(newScene); // sets new scene
-				} else {
+				} else { // user logged in is an administrator
 					// Returns user back to previous page
 					theRoot.getChildren().clear();  // Clear the current root
+					
 					// Create new pane for next interface
 					Pane newRoot = new Pane();
 					AdminHome aHome = new AdminHome(newRoot); // AdminHomeGUI class
