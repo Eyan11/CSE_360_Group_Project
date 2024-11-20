@@ -10,6 +10,7 @@ import javafx.scene.text.Font; // For setting font of text elements
 import javafx.scene.text.Text; // For displaying text in the UI
 import javafx.stage.Stage;
 import database.AccountDatabase;	// To use account database in different package
+import database.LoginTracker;
 
 
 /**
@@ -38,7 +39,15 @@ public class SelectRole {
     private SetupUIElements setupUI = new SetupUIElements();
 
     // Constructor that takes in the username to determine user roles
-    public SelectRole(Pane theRoot, String username) {  // Changed StackPane to Pane
+ // Constructor that takes in the username to determine user roles
+    public SelectRole(Pane theRoot, String username) {
+        // Log in the user using LoginTracker
+        if (!LoginTracker.login(username)) {
+            // If login fails (e.g., username doesn't exist), show an error or exit
+            System.out.println("Error: Invalid username. Unable to proceed.");
+            return; // Exit the constructor if login fails
+        }
+
         // Create "Select Role" text
         Text title = new Text("Select Role");
         title.setFont(new Font("Arial", 32));  // Set font
@@ -54,8 +63,8 @@ public class SelectRole {
         setupUI.SetupButtonUI(instructorButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
         setupUI.SetupButtonUI(adminButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
 
-        // Disable buttons based on the user's role by calling the role-checking methods
-        setButtonAccess(studentButton, instructorButton, adminButton, username);
+        // Disable buttons based on the user's role
+        setButtonAccess(studentButton, instructorButton, adminButton);
 
         // VBox Layout
         VBox vbox = new VBox(10); // Spacing of 10
@@ -63,10 +72,12 @@ public class SelectRole {
         vbox.getChildren().addAll(title, studentButton, instructorButton, adminButton);
 
         // Add all elements to the root Pane
-        theRoot.getChildren().add(vbox);  // Pane now instead of StackPane
-        
-        handleRoleSelection(studentButton, instructorButton, adminButton, username, theRoot);  // Update method call
+        theRoot.getChildren().add(vbox);
+
+        // Handle role selection
+        handleRoleSelection(studentButton, instructorButton, adminButton, username, theRoot);
     }
+
 
     private void handleRoleSelection(Button studentButton, Button instructorButton, Button adminButton, String username, Pane theRoot) {  // Changed StackPane to Pane
         // Event handler for the student button
@@ -107,11 +118,12 @@ public class SelectRole {
     }
 
     // Logic to enable/disable buttons based on the user role
-    private void setButtonAccess(Button studentBtn, Button instructorBtn, Button adminBtn, String username) {
-        // Check the user's roles using the AccountDatabase methods
-        boolean isStudent = AccountDatabase.isStudentRole(username);
-        boolean isInstructor = AccountDatabase.isInstructorRole(username);
-        boolean isAdmin = AccountDatabase.isAdminRole(username);
+ // Logic to enable/disable buttons based on the logged-in user's role
+    private void setButtonAccess(Button studentBtn, Button instructorBtn, Button adminBtn) {
+        // Use LoginTracker to check roles
+        boolean isStudent = LoginTracker.isStudent();
+        boolean isInstructor = LoginTracker.isInstructor();
+        boolean isAdmin = LoginTracker.isAdmin();
 
         // Enable or disable buttons based on the user's role
         if (!isStudent) {
@@ -123,5 +135,7 @@ public class SelectRole {
         if (!isAdmin) {
             adminBtn.setDisable(true);
         }
+    
+
     }
 }
