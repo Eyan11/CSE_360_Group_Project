@@ -1,5 +1,9 @@
 package application;
 
+import java.sql.SQLException;
+
+import database.AccountDatabase;
+import database.ArticleDatabase;
 import database.GroupDatabase;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,6 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;     
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -31,7 +36,7 @@ import javafx.stage.Stage;
 
 public class CreateArticle {
 	
-	/**
+	 /**
 	 * Variable declaration
 	 */
 	
@@ -57,6 +62,7 @@ public class CreateArticle {
 	private String bodyString;
 	private String referencesString;
 	String allGroup = GroupDatabase.getAllGroupInfo();
+	String returnGroups = "";
 
 	/** Text to appear as a part of the window (text field indicators, etc. */
 	//private Label sceneLabel = new Label("Create Article");
@@ -67,10 +73,14 @@ public class CreateArticle {
 	private Label keywordsLabel = new Label("Keywords:");
 	private Label groupsLabel = new Label("Groups:");
 	private Label groupLabel = new Label(allGroup);
-	private Label contentLabel = new Label("Conent level:");
+	private Label contentLabel = new Label("Content level:");
 	private Label bodyLabel = new Label("Body:");
 	private Label referencesLabel = new Label("References:");
 	private Label errorLabel = new Label("Please fill in the required entries (see red)");
+	private Label errorLabel2 = new Label("Please select a group (see red)");
+	private Label errorLabel3 = new Label("Please select a difficulty (see red)");
+
+
 
 	
 	/** Text fields for user input */
@@ -95,9 +105,9 @@ public class CreateArticle {
 	
 	
 	CreateArticle(Pane userPane) { // user passed in from previous step
+
 		// Utilizes the SetUpElements class for the Label and Button
     	setupUI = new SetupUIElements();
-    	
     	
     	if(groupString.contains("+")) {
     		String[] GroupsArr = groupString.split("+");
@@ -113,6 +123,14 @@ public class CreateArticle {
 		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 500, Color.RED);
 		
+		// Label the email input field with a title just above it, left aligned
+				setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
+						Pos.BASELINE_LEFT, 10, 500, Color.RED);
+		
+		// Label the email input field with a title just above it, left aligned
+				setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
+						Pos.BASELINE_LEFT, 10, 500, Color.RED);
+				
 		// Label the first name input field with a title just above it, left aligned
 		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
@@ -223,6 +241,124 @@ public class CreateArticle {
         // Establishes the button logic for each press
         // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
         //                 he will add functionality for repeated valid input.
+        
+        
+        addButton.setOnAction(new EventHandler<>() {
+            public void handle(ActionEvent event) {
+            	
+	            	// Retrieve TextField input
+	            	headerString = headerText.getText();
+	            	titleString = titleText.getText();
+	            	authorString = authorText.getText();
+	            	descriptionString = descriptionText.getText();
+	            	keywordsString = keywordsText.getText();
+	            	//groupsString = groupsText.getText();      // NOTE: I don't think you guys need this anymore (on account of the 
+	            												//       method I used in the addButton method to gather the selected groups),
+	            												//       but just in case I'm keeping this here. Delete if you end up not needing it.
+	            	bodyString = bodyText.getText();
+	            	referencesString = referencesText.getText();
+	            	
+	            	// Retrieve selected role (admin, user) from the role combobox, turn it into string
+					String difficultyString = (String) difficultyBox.getSelectionModel().getSelectedItem();
+				    
+					// Retrieve selected group (any amount of any strings) from the group combobox, turn it into string 
+					String selectedGroup = (String) groupBox.getSelectionModel().getSelectedItem();
+	            	
+				// Check for group selection 
+	            if(selectedGroup == null ) {
+	            	// Select a group dummy
+	            	userPane.getChildren().remove(errorLabel);
+	            	userPane.getChildren().remove(errorLabel3);
+	            	userPane.getChildren().add(errorLabel2);
+
+	            	// Change stuff to red
+            		
+            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
+
+	            	
+	            }
+	            else {
+	            	
+	            	// Remove error indicators
+	            	userPane.getChildren().remove(errorLabel2);
+	            	
+	            	setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+            				Pos.BASELINE_LEFT, 10, 275, Color.GREEN);
+	            	
+	            	// Check for difficulty selection
+
+	            	if(difficultyString == null) {
+	            		// Select a difficulty dummy
+		            	userPane.getChildren().add(errorLabel3);
+
+		            	// Change stuff to red
+	            		
+	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
+	            	}
+	            	
+	            	else {
+	            		
+	            		// Remove error indicators
+	            		userPane.getChildren().remove(errorLabel);
+	            		userPane.getChildren().add(errorLabel2);
+	            		userPane.getChildren().add(errorLabel3);
+	            		
+	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
+	            		
+	            		if(returnGroups == "") {
+	            			returnGroups = returnGroups + selectedGroup;
+	            		}
+	            		else {
+	            			returnGroups = returnGroups + selectedGroup + " & ";
+	            		}
+	            	}
+	            	
+	            	
+	            }
+	            	
+	            // LEFT FOR JULIO, use if needed, delete if not
+	            /*
+	            	// Remove "& " at the end of returnGroups list
+	            	 if (returnGroups.length() > 0) {
+	                     returnGroups = returnGroups.substring(0, returnGroups.length() - 2);
+	
+	            	 }  
+	            */
+            }
+        });
+        
+        // Julio, remember what I said about this method (those who knows :skull:)
+        removeButton.setOnAction(new EventHandler<>() {
+            public void handle(ActionEvent event) {
+            	
+	            	// Retrieve TextField input
+	            	headerString = headerText.getText();
+	            	titleString = titleText.getText();
+	            	authorString = authorText.getText();
+	            	descriptionString = descriptionText.getText();
+	            	keywordsString = keywordsText.getText();
+	            	//groupsString = groupsText.getText();
+	            	bodyString = bodyText.getText();
+	            	referencesString = referencesText.getText();
+	            	
+	            	// Retrieve selected group (any amount of any strings) from the group combobox, turn it into string 
+					String selectedGroup = (String) groupBox.getSelectionModel().getSelectedItem();
+	            	
+	            	
+	            	if(returnGroups == "") {
+            			returnGroups = returnGroups + selectedGroup;
+            		}
+            		else {
+            			returnGroups = returnGroups + selectedGroup + " & ";
+            		}
+	
+            }  
+        });
+        
+        
         createButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
             	
@@ -238,13 +374,15 @@ public class CreateArticle {
 	
 	                // Do error check, if no errors, update info. If errors, output error message above update button and below info input.
 	            	// Repeat process for each button push
-	            	boolean pass = ErrorMessage(headerString, titleString, descriptionString, keywordsString, 
-	            			groupsString, bodyString, referencesString);
+	            	boolean pass = ErrorMessage(headerString, titleString, authorString, descriptionString, keywordsString, 
+	            			bodyString, referencesString);
 	            	
 	            	// If there are any unfilled entries, alter text box and output message indicating that entries are incomplete
 	            	// and highlight all necessary entry boxes
 	            	if(pass == false) {
-
+	            		
+	            		userPane.getChildren().remove(errorLabel2);
+	            		userPane.getChildren().remove(errorLabel3);
 	            		userPane.getChildren().add(errorLabel);
 
 	            		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -252,7 +390,7 @@ public class CreateArticle {
 	            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 90, Color.RED);
 	            		setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
+	            				Pos.BASELINE_LEFT, 10, 130, Color.RED);
 	            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 170, Color.RED);
 	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -289,12 +427,20 @@ public class CreateArticle {
 	            		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 360, Color.BLACK);
 	            		
+	            		// Retrieve selected role (admin, user) from the role combobox, turn it into string
+						String difficultyString = (String) difficultyBox.getSelectionModel().getSelectedItem();
+	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
-	            		/*	TODO - add author and content level arguments
+	            		/*	TODO - add author and content level arguments (see below)
             			ArticleDatabase.createArticle(headerString, titleString, descriptionString, keywordsString, 
             					groupsString, bodyString, referencesString);
             			*/
+						
+						// Julio and Eyan, slight error here. Thanks again for the decoding help
+	            		ArticleDatabase.createArticle(headerString, titleString, authorString, descriptionString, 
+	            					keywordsString, difficultyString, groupsString, bodyString, referencesString);
+            			
             				
             			/**
             			 * Transitions to different home pages
@@ -338,8 +484,8 @@ public class CreateArticle {
 	// Checks all necessary entries for not being empty. If any are empty, returns false to button function for error display.
 	// Otherwise, if all necessary entries are filled, returns true and sends to button function for pushing info to the next step!
 	// (Also resets scene if previous entry was an error)
-	private boolean ErrorMessage(String headerString, String titleString, String descriptionString, String keywordsString, 
-			String groupsString, String bodyString, String referencesString) {
+	private boolean ErrorMessage(String headerString, String titleString, String authorString, String descriptionString, String keywordsString, 
+			String bodyString, String referencesString) {
 		
 		boolean filled = true; // Checks of all necessary entries are filled. Starts as false (by default). If any parameters are not filled, stays false.
 						// Otherwise, returns as true!
@@ -355,13 +501,13 @@ public class CreateArticle {
 		if(titleString == "") {
 			filled = false;
 		}
+		if(authorString == "") {
+			filled = false;
+		}
 		if(descriptionString == "") {
 			filled = false;
 		}
 		if(keywordsString == "") {
-			filled = false;
-		}
-		if(groupsString == "") {
 			filled = false;
 		}
 		if(bodyString == "") {
