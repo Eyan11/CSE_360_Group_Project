@@ -75,9 +75,11 @@ public class EncryptionHelper {
 		return toByteArray(iv);
 	}
 	
-	public static void printCharArray(char[] chars) {
+	public static String convertToString(char[] chars) {
+		String returnString = "";
 		for(char c : chars) {
-			System.out.print(c);
+			returnString += c;
 		}
+		return returnString;
 	}
 }

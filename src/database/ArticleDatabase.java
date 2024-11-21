@@ -33,6 +33,7 @@ public class ArticleDatabase {
 	private static Connection connection = null;
 	private static Statement statement = null; 
 	private static ResultSet resultSet = null;
+	private static EncryptionHelper encryptionClass = null;
 	
 	
 	/**********
@@ -41,6 +42,13 @@ public class ArticleDatabase {
 	public static void setConnection(Connection _connection, Statement _statement) {
 		connection = _connection;
 		statement = _statement;
+		try {
+			encryptionClass = new EncryptionHelper();
+		}
+		catch(Exception e) {
+			System.err.println("Exception in ArticleDatabase.setConnection \n\n");
+			e.printStackTrace();
+		}
 	}
 	
 
@@ -311,10 +319,10 @@ public class ArticleDatabase {
 	        		// If article body is encrypted
 		        	if(GroupDatabase.shouldArticleBeEncrypted(resultSet.getString("groups"))) {
 			        	// Decrypt body using title as IV and add it to return string
-						returnString += EncryptionHelper.toCharArray(EncryptionHelper.decrypt(
+						char[] decryptedBody = encryptionClass.toCharArray(encryptionClass.decrypt(
 								Base64.getDecoder().decode(resultSet.getString("body")), 
-								EncryptionHelper.getInitializationVector(resultSet.getString("title").toCharArray())));
-						returnString += "+";
+								encryptionClass.getInitializationVector(resultSet.getString("title").toCharArray())));
+						returnString += encryptionClass.convertToString(decryptedBody) + "+";
 		        	}
 		        	// If article body is not encrypted, return as it is stored in database
 		        	else
@@ -336,12 +344,17 @@ public class ArticleDatabase {
 	}
 	
 	
-	/**********
+	/**********		TODO - update return string
 	 * Returns the sequence number, title, author, and description as String for all matching articles
 	 * 	in format of "Groups: group1, group2|Content Levels: 1 beginner, 3 advanced|
 	 * 	1+title1+author1+description1|\n2+title2+author2+description2|\n...".
 	 */
 	public static String searchByContents(String groupFilter, String levelFilter, String searchContents) {
+		// Prevent searching if no articles exist
+		if(ArticleDatabase.isTableEmpty()) {
+			System.err.println("Can't search by contents becase table is empty!");
+			return "";
+		}
 		
 		String returnString = "";
 		try {
@@ -349,9 +362,22 @@ public class ArticleDatabase {
 			resultSet = craftResultSetToSearchArticles(groupFilter, levelFilter, searchContents);
 			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			
+			// Exit method if no articles were found
+			if(!resultSet.next()) {
+				System.err.println("No articles with given filters are found!");
+				return "";
+			}
+			
 			// Filters out articles where logged in user is not a group admin of all groups in that article
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
 			resultSet.beforeFirst(); 	// Move result set pointer back to start
+			
+			// Exit method if no authorized articles were found
+			if(!resultSet.next()) {
+				System.err.println("No articles with given filters AND authorization are found!");
+				return "";
+			}
 			
 			// Temporary variables for collecting data
 			String returnGroups = "Groups: ";
@@ -365,6 +391,7 @@ public class ArticleDatabase {
 
 			
 			int i = 1;	// stores sequence number
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
@@ -428,7 +455,7 @@ public class ArticleDatabase {
 			
 			// If non-empty, remove the last "|\n" in return string
 			if (returnString.length() > 0)
-				returnString = returnString.substring(0, returnString.length() - 2);
+				returnString = returnString.substring(0, returnString.length() - 3);
 			
 			// Combine all return strings into one
 			returnString = returnGroups + "|" + returnLevels + "|" + returnString;
@@ -505,12 +532,12 @@ public class ArticleDatabase {
 			if(GroupDatabase.shouldArticleBeEncrypted(groups)) {
 				// Encrypt body using title as IV
 				body = Base64.getEncoder().encodeToString(
-						EncryptionHelper.encrypt(body.getBytes(), 
-						EncryptionHelper.getInitializationVector(title.toCharArray())));
+						encryptionClass.encrypt(body.getBytes(), 
+						encryptionClass.getInitializationVector(title.toCharArray())));
 				System.out.println("Encrypted the body of new article");
 			}
-
-				
+			
+			
 			// Set the placeholder ? variables
 			pstmt.setString(1, header);
 			pstmt.setString(2, title);
@@ -596,9 +623,14 @@ public class ArticleDatabase {
 			System.err.println("Cannot edit article id: " + id + " because it is not found in database!");
 			return false;
 		}
-		// Prevent editing an article that does not exist
-		if(doesArticleHeaderExist(header)) {
+		// Prevent editing an article if header is updated and it already exists
+		if(!getArticleHeader(id).equals(header) && doesArticleHeaderExist(header)) {
 			System.err.println("Cannot edit article because header: " + header + " already exists in database!");
+			return false;
+		}
+		// Prevent editing article if you are not logged in as either an instructor or admin
+		if(!LoginTracker.usingInstructorRole() && !LoginTracker.usingAdminRole()) {
+			System.err.println("Cannot edit article because user is not logged in as instructor or admin in LoginTracker!");
 			return false;
 		}
 		// Prevent "+" or "|" symbol in any field since it is used to separate article info
@@ -640,24 +672,25 @@ public class ArticleDatabase {
 			return false;
 		}
 		
-		
-		
-		// Update all columns in articles column where id matches placeholder variable ?
-		query = "UPDATE articles "
-				+ "SET header = ?, title = ?, author = ?, description = ?, keywords = ?, "
-				+ "level = ?, groups = ?, body = ?, references = ? WHERE id = ?";
+
 		try {
+			
+			// If logged in as instructor
+			if(LoginTracker.usingInstructorRole()) {
+				// Update all columns in articles column where id matches placeholder variable ? (including body)
+				query = "UPDATE articles "
+						+ "SET header = ?, title = ?, author = ?, description = ?, keywords = ?, "
+						+ "level = ?, groups = ?, body = ?, references = ? WHERE id = ?";
+			}
+			// If logged in as admin
+			else {
+				// Update all columns in articles column where id matches placeholder variable ? (not including body)
+				query = "UPDATE articles "
+						+ "SET header = ?, title = ?, author = ?, description = ?, keywords = ?, "
+						+ "level = ?, groups = ?, references = ? WHERE id = ?";
+			}
 			// Prepare the previous query to be executed
 			PreparedStatement pstmt = connection.prepareStatement(query);
-			
-			// If at least one group is of special access type, article must be encrypted
-			if(GroupDatabase.shouldArticleBeEncrypted(groups)) {
-				// Encrypt body using title as IV
-				body = Base64.getEncoder().encodeToString(
-						EncryptionHelper.encrypt(body.getBytes(), 
-						EncryptionHelper.getInitializationVector(title.toCharArray())));
-				System.out.println("Encrypted the body of the edited article");
-			}
 				
 			// Set the placeholder ? variables
 			pstmt.setString(1, header);
@@ -667,11 +700,38 @@ public class ArticleDatabase {
 			pstmt.setString(5, keywords);
 			pstmt.setString(6, level);
 			pstmt.setString(7, groups);
-			pstmt.setString(8, body);
-			pstmt.setString(9, references);
-			pstmt.setInt(8, id);
 			
-			pstmt.executeUpdate();	// execute query
+			// If logged in as instructor, edit body and the rest of article
+			if(LoginTracker.usingInstructorRole()) {
+				// If at least one group is of special access type, article must be encrypted
+				if(GroupDatabase.shouldArticleBeEncrypted(groups)) {
+					
+					// Encrypt body using title as IV
+					String encryptedBody = Base64.getEncoder().encodeToString(
+							encryptionClass.encrypt(body.getBytes(), 
+							encryptionClass.getInitializationVector(title.toCharArray())));
+					
+					// Use encrypted body as article body
+					pstmt.setString(8, encryptedBody);
+					System.out.println("Encrypted the body of the edited article");
+				}
+				// Don't encrypt body
+				else
+					pstmt.setString(8, body);
+				
+				pstmt.setString(9, references);
+				pstmt.setInt(10, id);
+				
+				pstmt.executeUpdate();	// execute query
+			}
+			
+			// If logged in as admin, skip body and edit the rest of article
+			else {
+				pstmt.setString(8, references);
+				pstmt.setInt(9, id);
+				
+				pstmt.executeUpdate();	// execute query
+			}
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in ArticleDatabase.editArticle \n\n");
@@ -681,16 +741,28 @@ public class ArticleDatabase {
 			System.err.println("Exception in ArticleDatabase.editArticle \n\n");
 			e.printStackTrace();
 		}
+		
+		String articleContents = getArticleByID(id);
 
-		// Print and return result TODO: might always return false because encrypted body
-		if(getArticleByID(id).equals(id + "+" + header + "+" + title + "+" + author + "+" + description + 
+		// Print and return result
+		// Instructors can see full article
+		if(LoginTracker.usingInstructorRole() && 
+				articleContents.equals(id + "+" + header + "+" + title + "+" + author + "+" + description + 
 				"+" + keywords + "+" + level + "+" + groups + "+" + body + "+" + references)) {
 			
 			System.out.println("Successfully edited article id: " + id);
 			return true;
 		}
+		// Admins don't see article body
+		else if(LoginTracker.usingAdminRole() && 
+				articleContents.equals(id + "+" + header + "+" + title + "+" + author + "+" + description + 
+				"+" + keywords + "+" + level + "+" + groups + "+" + references)) {
+			
+			System.out.println("Successfully edited article id: " + id);
+			return true;
+		}
 		else {
-			System.out.println("Failed to edit article id: " + id);
+			System.err.println("Failed to edit article id: " + id);
 			return false;
 		}
 	}
@@ -717,8 +789,22 @@ public class ArticleDatabase {
 			resultSet = craftResultSetToGetArticlesByGroups(groups);
 			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			
+			// Exit method if no articles with the given group filter were found
+			if(!resultSet.next()) {
+				System.err.println("No articles with group filter found! Not backing up articles");
+				return false;
+			}
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
+			
 			// Filters out articles where logged in user is not a group admin of all groups in that article
 			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
+			resultSet.beforeFirst(); 	// Move result set pointer back to start
+			
+			// Exit method if no authorized articles were found
+			if(!resultSet.next()) {
+				System.err.println("No articles with group filter AND authorization found! Not backing up articles");
+				return false;
+			}
 			resultSet.beforeFirst(); 	// Move result set pointer back to start
 	
 			// While the next row exists, check next row
@@ -933,7 +1019,12 @@ public class ArticleDatabase {
 		
 		// Get all articles, then filter through them later
 		query = "SELECT * FROM articles"; 
-		statement = connection.createStatement();
+		// Allow statement to be scrollable so result set pointer can be reset to beginning
+		Statement statement = connection.createStatement(
+			    ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			    ResultSet.CONCUR_READ_ONLY
+			);
+		statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		
 		// Separate groups into an array
 		String[] groupsArr = groups.split(",");
@@ -947,11 +1038,12 @@ public class ArticleDatabase {
 		// If filtering by groups (not empty or "all")
 		if(!groups.trim().isEmpty() || !groups.toLowerCase().equals("all")) {
 			
-			// Get list of groups in article
-			String articleGroups = resultSet.getString("groups");
-			
 			// Check all articles
 			while(resultSet.next()) { 
+				
+				// Get list of groups in article
+				String articleGroups = resultSet.getString("groups");
+			
 				keepArticle = false;
 				
 				// For every group that is requested from user
@@ -1082,6 +1174,33 @@ public class ArticleDatabase {
 			System.err.println("SQLException in ArticleDatabase.doesArticleIDExist \n\n");
 			e.printStackTrace();
 		}
-	    return "";	// For error
+	    return "";	// No id or error
+	}
+	
+	
+	/**********
+	 * Returns the header of the article with the matching id.
+	 * Returns empty string if no header exists.
+	 */
+	public static String getArticleHeader(int id) {
+		
+		try {
+			// Select all rows from database where id = placeholder variable ?
+		    query = "SELECT * FROM articles WHERE id = ?";
+		    PreparedStatement pstmt = connection.prepareStatement(query);
+		    
+		    // Set placeholder ? variable to header
+	        pstmt.setInt(1, id);
+	        resultSet = pstmt.executeQuery();
+	        
+	        // If the next row exists, return it's header
+	        if (resultSet.next())
+	            return resultSet.getString("header");
+		}
+		catch(SQLException e) {
+			System.err.println("SQLException in ArticleDatabase.getAllArticles \n\n");
+			e.printStackTrace();
+		}
+		return "";		// No id or error
 	}
 }
