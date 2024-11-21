@@ -249,23 +249,28 @@ public class ArticleDatabase {
 		// Select all rows from database
 		query = "SELECT * FROM articles"; 
 		String returnString = "";
+		String groups = "";
 		
 		try {
-			// Allow statement to be scrollable so result set pointer can be reset to beginning
-			statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query); 	// Execute query
-			
-			// Filters out articles where logged in user is not a group admin of all groups in that article
-			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
 	
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
+				
+				groups = resultSet.getString("groups");
+				
+				// If logged in user doesn't have viewing rights for all groups in article, skip it
+				if(!GroupDatabase.hasRightsForAllGroups(groups, LoginTracker.getUsername(), true)) {
+					System.out.println("Not getting article because logged in user does not have viewing rights for all groups: " + groups);
+					continue;
+				}
+				
 				// Get current article info
 				returnString += resultSet.getInt("id") + "+"; 
 				returnString += resultSet.getString("header") + "+";
 				returnString += resultSet.getString("title") + "+";
-				returnString += resultSet.getString("groups") + "|";
+				returnString += groups + "|";
 			}
 		}
 		catch(SQLException e) {
@@ -289,22 +294,27 @@ public class ArticleDatabase {
 		}
 		
 	    String returnString = "";
+	    String groups = "";
 	    
 	    try {
 			// Select the row from database where id = placeholder variable ?
 		    query = "SELECT * FROM articles WHERE id = ?";
-	    	// Allow statement to be scrollable so result set pointer can be reset to beginning
-		    PreparedStatement pstmt = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		    PreparedStatement pstmt = connection.prepareStatement(query);
 		    
 	        pstmt.setInt(1, id);				// id = id
 	        resultSet = pstmt.executeQuery();	// Execute query
 	        
-			// Filters out articles where logged in user is not a group admin of all groups in that article
-			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
-	        
 	        // While next row exists, check next row
 	        if (resultSet.next()) {
+	        	
+				groups = resultSet.getString("groups");
+				
+				// If logged in user doesn't have viewing rights for all groups in article, don't return article
+				if(!GroupDatabase.hasRightsForAllGroups(groups, LoginTracker.getUsername(), true)) {
+					System.out.println("Not getting article because logged in user does not have viewing rights for all groups: " + groups);
+					return "";
+				}
+				
 	        	// Get article info
 	        	returnString += id + "+";
 	        	returnString += resultSet.getString("header") + "+"; 
@@ -313,7 +323,7 @@ public class ArticleDatabase {
 	        	returnString += resultSet.getString("description") + "+"; 
 	        	returnString += resultSet.getString("keywords") + "+";
 	        	returnString += resultSet.getString("level") + "+";
-	        	returnString += resultSet.getString("groups") + "+";
+	        	returnString += groups + "+";
 	        	        		
 	        	
 	        	// Only print body if user is not an admin
@@ -346,10 +356,10 @@ public class ArticleDatabase {
 	}
 	
 	
-	/**********		TODO - update return string
+	/**********
 	 * Returns the sequence number, title, author, and description as String for all matching articles
-	 * 	in format of "Groups: group1, group2|Content Levels: 1 beginner, 3 advanced|
-	 * 	1+title1+author1+description1|\n2+title2+author2+description2|\n...".
+	 * 	in format of "Groups: text1, text2|Content Levels: 1 beginner, 3 advanced|
+	 * 	Sequence Number: 1\nTitle: text\nAuthor: text\nDescription: text\n\n..."
 	 */
 	public static String searchByContents(String groupFilter, String levelFilter, String searchContents) {
 		// Prevent searching if no articles exist
@@ -357,29 +367,16 @@ public class ArticleDatabase {
 			System.err.println("Can't search by contents becase table is empty!");
 			return "";
 		}
+		// Prevent filters from being too long
+		if(groupFilter.length() > 50 || levelFilter.length() > 50 || searchContents.length() > 100) {
+			System.err.println("Can't search by contents because the search parameters too long!");
+			return "";
+		}
 		
 		String returnString = "";
 		try {
 			// Get a result set of all matching articles
 			resultSet = craftResultSetToSearchArticles(groupFilter, levelFilter, searchContents);
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
-			
-			// Exit method if no articles were found
-			if(!resultSet.next()) {
-				System.err.println("No articles with given filters are found!");
-				return "";
-			}
-			
-			// Filters out articles where logged in user is not a group admin of all groups in that article
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
-			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
-			
-			// Exit method if no authorized articles were found
-			if(!resultSet.next()) {
-				System.err.println("No articles with given filters AND authorization are found!");
-				return "";
-			}
 			
 			// Temporary variables for collecting data
 			String returnGroups = "Groups: ";
@@ -390,20 +387,26 @@ public class ArticleDatabase {
 			int numInt = 0;
 			int numAdv = 0;
 			int numExp = 0;
-
+			int seq = 1;	// stores sequence number
 			
-			int i = 1;	// stores sequence number
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
 			
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
+				
+				tempGroups = resultSet.getString("groups");		// Get all article groups
+				groupsArr = tempGroups.split(" & ");			// Separate all groups into array
+				
+				// If user does NOT have authorization for all groups in article
+				if(!GroupDatabase.hasRightsForAllGroups(tempGroups, LoginTracker.getUsername(), true)) {
+					System.out.println("Not getting article because logged in user does not have viewing rights for all groups: " + tempGroups);
+					continue;		// Skip article
+				}
+				
 				// Get current article info
-				returnString += "Sequence Number: " + i + "\n"; 	// sequence number
+				returnString += "Sequence Number: " + seq + "\n";
 				returnString += "Title: " + resultSet.getString("title") + "\n";
 				returnString += "Author: " + resultSet.getString("author") + "\n";
-				returnString += "Description: " + resultSet.getString("description") + "\n";
-				returnString += "\n"; // adds new line for each article
-				
+				returnString += "Description: " + resultSet.getString("description") + "\n\n";
 				
 				// Get content level of article
 				switch(resultSet.getString("level").toLowerCase()) {
@@ -420,47 +423,40 @@ public class ArticleDatabase {
 						numExp++;
 						break;
 					default:
-						System.err.println("Content level not returned in ArticleDatabase.searchByContents sequence number: " + i);
+						System.err.println("Content level not returned in ArticleDatabase.searchByContents sequence number: " + seq);
 						break;
 				}
 				
-				
-				// Get groups in article
-				tempGroups = resultSet.getString("groups");
-				groupsArr = tempGroups.split(" & ");
-				
 				// Loop through each group
-				for(int j = 0; i < groupsArr.length; j++) {
-					
-					// If group is not already in list, add it to list
-					if(!returnGroups.contains(groupsArr[j]))
-						returnGroups += groupsArr[j] + ", ";
-				}
+				for(String group : groupsArr) 
+					if(!returnGroups.contains(group))	// If group isn't already in list
+						returnGroups += group + ", ";	// Add group to list
+				
+				seq++;	// Increment sequence number
 			}
 	
 			
-			// If non-empty, remove the last ", " in groups string
-			if (returnGroups.length() > 0)
+			// If at least one group added, remove the last ", " in groups string
+			if (returnGroups.length() > 8)
 				returnGroups = returnGroups.substring(0, returnGroups.length() - 2);
-			returnGroups += "\n";
 
 			
 			// Build content levels string
 			if(numBeg > 0)
-				returnLevels += numBeg + " beginner";
+				returnLevels += numBeg + " beginner, ";
 			if(numInt > 0)
-				returnLevels += ", " + numInt + " intermediate";
+				returnLevels += numInt + " intermediate, ";
 			if(numAdv > 0)
-				returnLevels += ", " + numAdv + " advanced";
+				returnLevels += numAdv + " advanced, ";
 			if(numExp > 0)
-				returnLevels += ", " + numExp + " expert" + "\n";
+				returnLevels += numExp + " expert, ";
 			
-			// If non-empty, remove the last "|\n" in return string
-			if (returnString.length() > 0)
-				returnString = returnString.substring(0, returnString.length() - 3);
+			// If at least 1 article is returned, remove the last ", " from returnLevels
+			if(numBeg + numInt + numAdv + numExp > 0)
+				returnLevels = returnLevels.substring(0, returnLevels.length() - 2);	
 			
 			// Combine all return strings into one
-			returnString = returnGroups + "|" + returnLevels + "|" + returnString;
+			returnString = returnGroups + "\n" + returnLevels + "\n\n" + returnString;
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in ArticleDatabase.searchByContents \n\n");
@@ -789,28 +785,18 @@ public class ArticleDatabase {
 
 			// Returns result set of all articles with matching groups
 			resultSet = craftResultSetToGetArticlesByGroups(groups);
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
-			
-			// Exit method if no articles with the given group filter were found
-			if(!resultSet.next()) {
-				System.err.println("No articles with group filter found! Not backing up articles");
-				return false;
-			}
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
-			
-			// Filters out articles where logged in user is not a group admin of all groups in that article
-			resultSet = removeUnauthorizedArticlesFromResultSet(resultSet);
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
-			
-			// Exit method if no authorized articles were found
-			if(!resultSet.next()) {
-				System.err.println("No articles with group filter AND authorization found! Not backing up articles");
-				return false;
-			}
-			resultSet.beforeFirst(); 	// Move result set pointer back to start
+			String resultGroups;
 	
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
+				
+				resultGroups = resultSet.getString("groups");
+				
+				// If logged in user doesn't have viewing rights for all groups in article, skip it
+				if(!GroupDatabase.hasRightsForAllGroups(resultGroups, LoginTracker.getUsername(), true)) {
+					System.out.println("Skipping backup for article because logged in user does not have viewing rights for all groups: " + resultGroups);
+					continue;
+				}
 				
 	        	// Write all article info into file
 				writer.write("\n" + resultSet.getInt("id") + "\n");
@@ -820,7 +806,7 @@ public class ArticleDatabase {
 				writer.write(resultSet.getString("description") + "\n"); 
 				writer.write(resultSet.getString("keywords") + "\n"); 
 				writer.write(resultSet.getString("level") + "\n"); 
-				writer.write(resultSet.getString("groups") + "\n"); 
+				writer.write(resultGroups + "\n"); 
 				writer.write(resultSet.getString("body") + "\n"); 
 				writer.write(resultSet.getString("references") + "\n"); 
 				
@@ -1019,126 +1005,125 @@ public class ArticleDatabase {
 	 */
 	private static ResultSet craftResultSetToGetArticlesByGroups(String groups) throws SQLException {
 		
-		// Get all articles, then filter through them later
-		query = "SELECT * FROM articles"; 		
-		// Allow statement to be scrollable so result set pointer can be reset to beginning
-		statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		resultSet = statement.executeQuery(query); 	// Execute query
+		groups.toLowerCase();	// All groups are lowercase
+		groups.trim();			// Remove excess whitespace
 		
-		// Separate groups into an array
-		String[] groupsArr = groups.split(",");
-		boolean keepArticle;
-		
-		// Trim all groups
-		for(String group : groupsArr)
-			group = group.trim();
-		
-		
-		// If filtering by groups (not empty or "all")
-		if(!groups.trim().isEmpty() || !groups.toLowerCase().equals("all")) {
-			
-	        // Create a temporary result set to hold the filtered articles
-	        //List<Row> filteredRows = new ArrayList<>();  // List to store filtered rows
-			
-			// Check all articles
-			while(resultSet.next()) { 
-				
-				// Get list of groups in article
-				String articleGroups = resultSet.getString("groups");
-			
-				keepArticle = false;
-				
-				// For every group that is requested from user
-				for(String group : groupsArr) {
-					
-					// If the requested group is in the article
-					if(articleGroups.contains(group)) {
-						// Keep article in the result set and leave loop
-						keepArticle = true;
-						break;
-					}
-				}
-				
-				// If none of the requested groups are in the article
-				if(!keepArticle) {
-					System.out.println("BEFORE 'deleteRow'");
-					resultSet.deleteRow();	// Filter out article
-					System.out.println("AFTER 'deleteRow'");
-				}
-			}
+		// If searching for all queries
+		if(groups.equals("all") || groups.equals("")) {
+			query = "SELECT * FROM articles";			// Get all articles
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			return statement.executeQuery(query); 		// Return result set
 		}
-		System.out.println("Before 'beforeFirst'");
-		resultSet.beforeFirst(); 	// Move result set pointer back to start
-		System.out.println("After 'beforeFirst'");
-		return resultSet;
+		// Else filter the search for the requested groups
+		
+		String[] groupsArr = groups.split(",");		// Separate all groups into an array
+		query = "SELECT * FROM articles WHERE";		// Craft beginning of query
+		
+		// For all groups in array
+		for(int i = 0; i < groupsArr.length; i++) {
+			groupsArr[i] = groupsArr[i].trim();		// Remove excess whitespace
+			query += " groups LIKE ? OR";			// Add a filter to the query
+		}
+		
+		query = query.substring(0, query.length() - 3);		// Remove the last " OR" of query
+    	// Allow statement to be scrollable so result set pointer can be reset to beginning
+	    PreparedStatement pstmt = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+	    
+	    // For all groups, set the placeholder ? to the group
+	    for(int i = 0; i < groupsArr.length; i++) {
+	        pstmt.setString(i + 1, "%" + groupsArr[i] + "%");
+	    }
+	    
+        return pstmt.executeQuery();	// Return result set
 	}
 	
 	
 	/**********
-	 * Returns the result set with matching groups, content level, and search contents
-	 * 	for all articles that the user has permission to view
+	 * Returns the result set with matching groups, content level, and search contents.
+	 * It does NOT take into account the logged in user's group access
 	 * Note: groups should be separated by a comma for OR operation and an ampersand for AND operation
-	 * Note: if groups, level filter, or search contents = empty string or whitespace then ignore that filter
+	 * Note: if groups, level filter, or search contents = "" or "all" then ignore that filter and return all
 	 */
 	private static ResultSet craftResultSetToSearchArticles(String groupFilter, String levelFilter, 
 			String searchContents) throws SQLException {
 		
-		resultSet = craftResultSetToGetArticlesByGroups(groupFilter);
-		levelFilter = levelFilter.toLowerCase();
+		// All groups are lowercase
+		groupFilter.toLowerCase();
+		levelFilter.toLowerCase();
+		// Remove excess whitespace
+		groupFilter.trim();
+		levelFilter.trim();
+		searchContents.trim();
 		
-		// If filtering by level (not empty or "all")
-		if(!levelFilter.trim().isEmpty() || !levelFilter.equals("all")) {
+		
+		// *** Sort Groups ************************************************************************
+		String[] groupsArr = groupFilter.split(",");	// Separate all groups into an array
+		
+		if(groupFilter.equals("all") || groupFilter.equals(""))
+			query = "SELECT * FROM articles WHERE ( TRUE )";	// initialize query and move onto level filter
+		// Else filter by groups
+		else {
+			query = "SELECT * FROM articles WHERE (";		// Craft beginning of query
 			
-			// Check all matching groups
-			while(resultSet.next()) { 
-				
-				// If the level filter does NOT match the article level
-				if(!resultSet.getString("level").equals(levelFilter))
-					resultSet.deleteRow();	// Filter out article
+			// For all groups in array
+			for(int i = 0; i < groupsArr.length; i++) {
+				groupsArr[i] = groupsArr[i].trim();			// Remove excess whitespace
+				query += " groups LIKE ? OR";				// Add a filter to the query
+			}
+			
+			query = query.substring(0, query.length() - 3);		// Remove the last " OR" of query
+			query += " )";	// Add closing parenthesis around group query filter
+		}
+		// ****************************************************************************************
+		
+		
+		// *** Sort Level *****************************************************************
+		if(levelFilter.equals("all") || levelFilter.equals(""))
+			query += " AND";						// Ignore levels filter
+		else
+			query += " AND ( level = ? ) AND";		// Filter by levels
+		// ****************************************************************************************
+		
+		
+		// *** Sort By Contents *******************************************************************
+		if(searchContents.equals("all") || searchContents.equals(""))
+			query += " ( TRUE )";					// Ignore filter by contents
+		else										// Search for content in title, author, or description
+			query += " ( title LIKE ? OR author LIKE ? OR description LIKE ? )";
+		// ****************************************************************************************
+		
+		
+		// *** Enter Values Into Query ************************************************************
+		System.out.println("\n\n\nTESTING: ArticleDatabase.craftResultSetToSearchArticles \nQuery = " + query);	// TODO - remove
+		PreparedStatement pstmt = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		int index = 1;	// Used for pstmt index when setting strings
+		
+		// If filtering by group
+		if(!groupFilter.equals("all") && !groupFilter.equals("")) {
+			
+			// Set placeholder ? for all groups in groupsArr
+			for(String group : groupsArr) {
+				pstmt.setString(index, "%" + group + "%");
+				index++;
 			}
 		}
-		
-		resultSet.beforeFirst(); 	// Move result set pointer back to start
-		
-		// if filtering by search contents (not empty)
-		if(!searchContents.trim().isEmpty()) {
-			
-			// Check all matching groups
-			while(resultSet.next()) { 
-				
-				// If search contents are NOT in title, author, AND description
-				if(!resultSet.getString("title").contains(searchContents) && 
-					!resultSet.getString("author").contains(searchContents) &&
-					!resultSet.getString("description").contains(searchContents)) {
-							
-					resultSet.deleteRow();	// Filter out article
-				}
-			}
+
+		// If filtering by level
+		if(!levelFilter.equals("all") && !levelFilter.equals("")) {
+			pstmt.setString(index, levelFilter);
+			index++;
 		}
-		resultSet.beforeFirst(); 	// Move result set pointer back to start
-		return resultSet;	// Returned filtered search as result set
-	}
-	
-	
-	/**********
-	 * Filters out articles where the logged in user is not a group admin of all groups 
-	 * 	in the article for all articles in result set.
-	 */
-	private static ResultSet removeUnauthorizedArticlesFromResultSet(ResultSet rs) throws SQLException {
 		
-		// Loop through all articles in result set
-		while(rs.next()) {
-			
-			// If logged in user is not a group admin of ALL groups in this article
-			if(!GroupDatabase.hasRightsForAllGroups(resultSet.getString("groups"), LoginTracker.getUsername(), false)) {
-				System.out.println("Filtering out article id: " + resultSet.getInt("id") + 
-						" since user is not in group admins list for all groups in article.");
-				
-				rs.deleteRow();		// Filter this article out of result set
-			}
+		// If filtering by contents
+		if(!searchContents.equals("all") && !searchContents.equals("")) {
+			// Set last 3 filters for title, author, and description
+			pstmt.setString(index, "%" + searchContents + "%");
+			pstmt.setString(index + 1, "%" + searchContents + "%");
+			pstmt.setString(index + 2, "%" + searchContents + "%");
 		}
-		rs.beforeFirst(); 	// Move result set pointer back to start
-		return rs;
+		// ****************************************************************************************
+		
+		return pstmt.executeQuery();	// Return result set
 	}
 	
 	
