@@ -9,9 +9,7 @@ import javafx.scene.paint.Color; // For setting color of UI elements
 import javafx.scene.text.Font; // For setting font of text elements
 import javafx.scene.text.Text; // For displaying text in the UI
 import javafx.stage.Stage;
-import database.AccountDatabase;	// To use account database in different package
 import database.LoginTracker;
-
 
 /**
  * <p> SelectRole. </p>
@@ -24,7 +22,6 @@ import database.LoginTracker;
  * @version 1.00		10/9/2024 Phase 1 implementation and documentation
  *  
  */
-
 
 public class SelectRole {
 
@@ -39,19 +36,27 @@ public class SelectRole {
     private SetupUIElements setupUI = new SetupUIElements();
 
     // Constructor that takes in the username to determine user roles
- // Constructor that takes in the username to determine user roles
+    // Constructor that takes in the username to determine user roles
     public SelectRole(Pane theRoot, String username) {
         // Log in the user using LoginTracker
         if (!LoginTracker.login(username)) {
             // If login fails (e.g., username doesn't exist), show an error or exit
             System.out.println("Error: Invalid username. Unable to proceed.");
-            return; // Exit the constructor if login fails
+            
+            theRoot.getChildren().clear();  // Clear the current root
+            Pane newRoot = new Pane();
+            LoginGUI loginPage = new LoginGUI(newRoot);  // Create a new instance of LoginGUI
+            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+            Stage currentStage = (Stage) theRoot.getScene().getWindow();
+            currentStage.setScene(newScene);
         }
 
         // Create "Select Role" text
         Text title = new Text("Select Role");
-        title.setFont(new Font("Arial", 32));  // Set font
-        title.setFill(Color.BLACK);  // Set the text color
+        title.setFont(new Font("Arial", 32));  
+        title.setFill(Color.BLACK);  
+        title.setLayoutX((WINDOW_WIDTH - title.getLayoutBounds().getWidth()) / 2); // Center horizontally
+        title.setLayoutY(50);  // Set a fixed vertical position
 
         // Create Role Buttons
         Button studentButton = new Button("Student");
@@ -67,17 +72,19 @@ public class SelectRole {
         setButtonAccess(studentButton, instructorButton, adminButton);
 
         // VBox Layout
-        VBox vbox = new VBox(10); // Spacing of 10
+        VBox vbox = new VBox(20, studentButton, instructorButton, adminButton); // Spacing of 10
         vbox.setAlignment(Pos.CENTER); // Center layout
-        vbox.getChildren().addAll(title, studentButton, instructorButton, adminButton);
+        vbox.setLayoutX((WINDOW_WIDTH - 200) / 2); // Center align based on button width
+        vbox.setLayoutY(80); // Set a suitable vertical position
+        
+        //vbox.getChildren().addAll(title, studentButton, instructorButton, adminButton);
 
         // Add all elements to the root Pane
-        theRoot.getChildren().add(vbox);
+        theRoot.getChildren().addAll(title, vbox);
 
         // Handle role selection
         handleRoleSelection(studentButton, instructorButton, adminButton, username, theRoot);
     }
-
 
     private void handleRoleSelection(Button studentButton, Button instructorButton, Button adminButton, String username, Pane theRoot) {  // Changed StackPane to Pane
         // Event handler for the student button
@@ -118,7 +125,7 @@ public class SelectRole {
     }
 
     // Logic to enable/disable buttons based on the user role
- // Logic to enable/disable buttons based on the logged-in user's role
+    // Logic to enable/disable buttons based on the logged-in user's role
     private void setButtonAccess(Button studentBtn, Button instructorBtn, Button adminBtn) {
         // Use LoginTracker to check roles
         boolean isStudent = LoginTracker.isStudent();
@@ -135,7 +142,6 @@ public class SelectRole {
         if (!isAdmin) {
             adminBtn.setDisable(true);
         }
-    
-
     }
 }
+

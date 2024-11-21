@@ -33,8 +33,6 @@ import javafx.stage.Stage;
 // DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
 //public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
 public class UpdateAccountInformationGUI {
-	
-	
 	/**
 	 * Variable declaration
 	 */
@@ -174,7 +172,7 @@ public class UpdateAccountInformationGUI {
             	// If all necessary entries are filled, reset scene formatting and send info to next step!
             	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
             	// 				   onto then next part. Thank you.
-            	else {
+            	else if (!AccountDatabase.doesEmailExist(user)) {
             		// Reset color values to green
             		setupButtonUI(updateButton, "Arial", 14, WINDOW_WIDTH-20, 
             				Pos.CENTER, 10, 400, Color.BLACK);
@@ -201,38 +199,24 @@ public class UpdateAccountInformationGUI {
         			 * Transitions to different home pages
         			 */
         			
-        			if(LoginEvaluator.adminLogin(user)) // check if user is an admin
-        			{
-        				theRoot.getChildren().clear();  // Clear the current root
-        				Pane newRoot = new Pane();
-        				
-						AdminHome adminHome = new AdminHome(newRoot);
-						
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-					    currentStage.setScene(newScene); // 
-        			}
-        			else if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
+        			if(LoginEvaluator.multipleRoles(user)) // check is user is admin + (Student or Instructor)
         			{
         				theRoot.getChildren().clear();  // Clear the current root
         				Pane newRoot = new Pane();
         				
         				//Method used for setting up for next part
 						SelectRole selectRole = new SelectRole(newRoot, user);
-						
-						// Load next part
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 					    currentStage.setScene(newScene); // 
         			}
-        			else if(LoginEvaluator.studentRole(user)) // user is student or instructor
+        			else if(!LoginEvaluator.studentRole(emailString)) // user is student or instructor
         			{
         				theRoot.getChildren().clear();  // Clear the current root
         				Pane newRoot = new Pane();
         				
         				//Method used for setting up next part
 						StudentHomeGUI sHome = new StudentHomeGUI(newRoot);
-						// Load next part
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 					    currentStage.setScene(newScene); // 
@@ -244,12 +228,34 @@ public class UpdateAccountInformationGUI {
         				
         				//Method used for setting up for next part
 						InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot);
-						
-						// Load next part
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 					    currentStage.setScene(newScene); // 
         			}
+        			else if(LoginEvaluator.adminLogin(user)) // check if user is an admin
+        			{
+        				theRoot.getChildren().clear();  // Clear the current root
+        				Pane newRoot = new Pane();
+        				
+						AdminHome adminHome = new AdminHome(newRoot);
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
+        			}
+        		} else {
+            		setupLabelUI(emailLabel, "Arial", 14, WINDOW_WIDTH-10, 
+            				Pos.BASELINE_LEFT, 10, 25, Color.RED);
+            		
+            		setupLabelUI(firstName, "Arial", 14, WINDOW_WIDTH-10, 
+            				Pos.BASELINE_LEFT, 10, 100, Color.RED);
+            		
+            		setupLabelUI(middleName, "Arial", 14, WINDOW_WIDTH-10, 
+            				Pos.BASELINE_LEFT, 10, 175, Color.RED);
+            		
+            		setupLabelUI(lastName, "Arial", 14, WINDOW_WIDTH-10, 
+            				Pos.BASELINE_LEFT, 10, 250, Color.RED);
+            		
+            		System.out.println("Email already exists!");
         		}
         	}
     	});

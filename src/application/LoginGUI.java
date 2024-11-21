@@ -172,20 +172,6 @@ public class LoginGUI
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 					    currentStage.setScene(newScene); // 
 					}
-					//IF administrator logins AND has updated account info, send user to AdminHomeGUI
-					else if(LoginEvaluator.adminLogin(userInput))
-					{
-						LoginTracker.login(userInput); // Keeps track of user logged in
-						
-						theRoot.getChildren().clear();  // Clear the current root
-						
-						Pane newRoot = new Pane();
-						AdminHome adminHome = new AdminHome(newRoot);
-						
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-					    currentStage.setScene(newScene); // 
-					}
 					//IF user has two roles (administrator and Student/Instructor), send user to SelectRoleGUI
 					else if(LoginEvaluator.multipleRoles(userInput))
 					{
@@ -223,6 +209,20 @@ public class LoginGUI
 						
 						Pane newRoot = new Pane();
 						InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot);
+						
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+					    currentStage.setScene(newScene); // 
+					}
+					//IF administrator logins AND has updated account info, send user to AdminHomeGUI
+					else if(LoginEvaluator.adminLogin(userInput))
+					{
+						LoginTracker.login(userInput); // Keeps track of user logged in
+						
+						theRoot.getChildren().clear();  // Clear the current root
+						
+						Pane newRoot = new Pane();
+						AdminHome adminHome = new AdminHome(newRoot);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
