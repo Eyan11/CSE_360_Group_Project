@@ -1,10 +1,12 @@
 package application;
 
+import database.GroupDatabase;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -36,34 +38,47 @@ public class CreateArticle {
 	/** The width of the pop-up window for the user interface */
 	public final static double WINDOW_WIDTH = 500;
 	/** The height of the pop-up window for the user interface */
-	public final static double WINDOW_HEIGHT = 430;
+	public final static double WINDOW_HEIGHT = 800;
+	
+	boolean isViewer;
+	
+	String groupString = GroupDatabase.getAllAuthorizedGroupNames(isViewer); // !!!!!!!!!!!! Error !!!!!!!!!!!!
+	String GroupsArr;
+
+	
 	
 	/** String inputs */
 	private String headerString;
 	private String titleString;
+	private String authorString;
 	private String descriptionString;
 	private String keywordsString;
 	private String groupsString;
 	private String bodyString;
 	private String referencesString;
+	String allGroup = GroupDatabase.getAllGroupInfo();
 
 	/** Text to appear as a part of the window (text field indicators, etc. */
 	//private Label sceneLabel = new Label("Create Article");
 	private Label headerLabel = new Label("Header:");
 	private Label titleLabel = new Label("Title:");
+	private Label authorLabel = new Label("Author:");
 	private Label descriptionLabel = new Label("Description:");
 	private Label keywordsLabel = new Label("Keywords:");
 	private Label groupsLabel = new Label("Groups:");
+	private Label groupLabel = new Label(allGroup);
+	private Label contentLabel = new Label("Conent level:");
 	private Label bodyLabel = new Label("Body:");
 	private Label referencesLabel = new Label("References:");
 	private Label errorLabel = new Label("Please fill in the required entries (see red)");
+
 	
 	/** Text fields for user input */
 	private TextField headerText = new TextField();
 	private TextField titleText = new TextField();
 	private TextField descriptionText = new TextField();
 	private TextField keywordsText = new TextField();
-	private TextField groupsText = new TextField();
+	private TextField authorText = new TextField();
 	private TextField bodyText = new TextField();
 	private TextField referencesText = new TextField();
 	//private TextField errorText = new TextField();
@@ -82,6 +97,13 @@ public class CreateArticle {
 	CreateArticle(Pane userPane) { // user passed in from previous step
 		// Utilizes the SetUpElements class for the Label and Button
     	setupUI = new SetupUIElements();
+    	
+    	
+    	if(groupString.contains("+")) {
+    		String[] GroupsArr = groupString.split("+");
+
+    	}
+    	// Else, display nothing for groups
 		
         // Label the Scene with the name of the testbed, centered at the top of the pane
 		//setupLabelUI(sceneLabel, "Arial", 18, WINDOW_WIDTH, 
@@ -99,22 +121,33 @@ public class CreateArticle {
 		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 90, Color.BLACK);
 		
+		// Label the middle name input field with a title just above it, left aligned
+		setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
+		
 		// Label the last name input field with a title just above it, left aligned
 		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
 		
 		// Label the preferred name input field with a title just above it, left aligned
 		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 210, Color.BLACK);
+		
+		setupLabelUI(contentLabel, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 230, Color.BLACK);
 		
 		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 280, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 275, Color.BLACK);
+		
+		setupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 350, Color.BLACK);
+
 		
 		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 320, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 335, Color.BLACK);
 		
 		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 360, Color.BLACK);
+				Pos.BASELINE_LEFT, 10, 375, Color.BLACK);
 		
 		// Establish the text input operand field and when anything changes in the user inputs,
 		// the code will process the entire input to ensure that it is valid or an error.
@@ -124,39 +157,62 @@ public class CreateArticle {
 		setupUI.SetupTextFieldUI(titleText, "Arial", 18, 400, 10,
 				Pos.BASELINE_LEFT, 55, 75, true);
 		
+		setupUI.SetupTextFieldUI(authorText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 65, 115, true);
+		
 		setupUI.SetupTextFieldUI(descriptionText, "Arial", 18, 400, 10,
-				Pos.BASELINE_LEFT, 85, 115, true);
+				Pos.BASELINE_LEFT, 85, 155, true);
 		
 		setupUI.SetupTextFieldUI(keywordsText, "Arial", 18, 400, 10,
-				Pos.BASELINE_LEFT, 80, 155, true);
-		
-		setupUI.SetupTextFieldUI(groupsText, "Arial", 18, 400, 10,
-				Pos.BASELINE_LEFT, 65, 265, true);
+				Pos.BASELINE_LEFT, 80, 195, true);
 		
 		setupUI.SetupTextFieldUI(bodyText, "Arial", 18, 400, 10,
-				Pos.BASELINE_LEFT, 55, 305, true);
+				Pos.BASELINE_LEFT, 55, 335, true);
 		
 		setupUI.SetupTextFieldUI(referencesText, "Arial", 18, 400, 10,
-				Pos.BASELINE_LEFT, 90, 345, true);
+				Pos.BASELINE_LEFT, 90, 375, true);
 		
 		//setupUI.SetupTextFieldUI(errorText, "Arial", 18, 400, 10,
 				//Pos.BASELINE_LEFT, 65, 390, true);
+		
+		ComboBox difficultyBox = new ComboBox();
+	        difficultyBox.getItems().addAll("Beginner", "Intermediate", "Advanced", "Expert");
+	        
+	        difficultyBox.setLayoutX(20);
+	        difficultyBox.setLayoutY(250);
+	        
+	        
+		ComboBox groupBox = new ComboBox<>();
+        	groupBox.getItems().addAll(GroupsArr);
+        
+        	groupBox.setLayoutX(20);
+        	groupBox.setLayoutY(295);
+
 		
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
         Button createButton = new Button("Create");
         setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 400, Color.BLACK);
+        		Pos.CENTER, 10, 420, Color.BLACK);
         
-        Button backButton = new Button("<-");
+        Button backButton = new Button("Back");
         setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
+        Button addButton = new Button("Add");
+        setupUI.SetupButtonUI(addButton, "Arial", 11, 50, 20,
+        		Pos.CENTER, 80, 295, false, Color.BLACK);
+        
+        Button removeButton = new Button("Remove");
+        setupUI.SetupButtonUI(removeButton, "Arial", 11, 80, 20,
+        		Pos.CENTER, 140, 295, false, Color.BLACK);
+        
+
         
         // Sends all previously established parameters for the pane to the scene for setup
-        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, 
-        		descriptionLabel, descriptionText, keywordsLabel, keywordsText,
-        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, 
-        		referencesText, createButton, backButton); 
+        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, authorLabel, authorText,
+        		descriptionLabel, descriptionText, keywordsLabel, keywordsText, groupLabel,
+        		groupsLabel, contentLabel, bodyLabel, bodyText, referencesLabel, 
+        		referencesText, groupBox, difficultyBox, createButton, addButton, removeButton, backButton); 
         
         // Don't need this -- error (Only need scene when you're going to a different page)
         //Scene userScene = new Scene(userPane, 800, 500);
@@ -173,9 +229,10 @@ public class CreateArticle {
 	            	// Retrieve TextField input
 	            	headerString = headerText.getText();
 	            	titleString = titleText.getText();
+	            	authorString = authorText.getText();
 	            	descriptionString = descriptionText.getText();
 	            	keywordsString = keywordsText.getText();
-	            	groupsString = groupsText.getText();
+	            	//groupsString = groupsText.getText();
 	            	bodyString = bodyText.getText();
 	            	referencesString = referencesText.getText();
 	
@@ -194,16 +251,18 @@ public class CreateArticle {
 	            				Pos.BASELINE_LEFT, 10, 50, Color.RED);
 	            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 90, Color.RED);
+	            		setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
 	            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 130, Color.RED);
-	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 170, Color.RED);
+	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 210, Color.RED);
 	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 280, Color.RED);
+	            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
 	            		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 320, Color.RED);
+	            				Pos.BASELINE_LEFT, 10, 335, Color.RED);
 	            		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 360, Color.RED);
+	            				Pos.BASELINE_LEFT, 10, 375, Color.RED);
 	            	}
 	            	
 	            	// If all necessary entries are filled, reset scene formatting and send info to next step!
@@ -217,10 +276,12 @@ public class CreateArticle {
 	            				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 	            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 90, Color.BLACK);
-	            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            		setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
-	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
+	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 210, Color.BLACK);
 	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 280, Color.BLACK);
 	            		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 

@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 //String[] GroupsArr = groupString.split("+");
 public class ModifyGroupAccess {
 	
+	
 	/**
 	 * Variable declaration
 	 */
@@ -33,12 +34,12 @@ public class ModifyGroupAccess {
 	/** The width of the pop-up window for the user interface */
 	public final static double WINDOW_WIDTH = 500;
 	/** The height of the pop-up window for the user interface */
-	public final static double WINDOW_HEIGHT = 1200;
+	public final static double WINDOW_HEIGHT = 260;
 	
 	boolean isViewer;
 	
-	//String groupString = GroupDatabase.getAllAuthorizedGroupNames(isViewer); // !!!!!!!!!!!! Error !!!!!!!!!!!!
-	//String[] GroupsArr = groupString.split("+");
+	String groupString = GroupDatabase.getAllAuthorizedGroupNames(isViewer); // !!!!!!!!!!!! Error !!!!!!!!!!!!
+	String[] GroupsArr;
 	
 	// Calls GroupDatabase method which parses all groups and returns their info in one string that is in the needed format for this GUI
 	String allGroups = GroupDatabase.getAllGroupInfo();
@@ -51,6 +52,7 @@ public class ModifyGroupAccess {
 	/** Text to appear as a part of the window (text field indicators, etc. */
 	private Label sceneLabel = new Label("Modify Groups Access");
 	private Label errorLabel = new Label("Please fill in the required entries (see red)");
+	private Label errorLabel2 = new Label("Please select a user role (see red)");
 	private Label groupLabel = new Label("Group: ");
 	private Label roleLabel = new Label("Role: ");
 	private Label userLabel = new Label("User: ");
@@ -64,18 +66,32 @@ public class ModifyGroupAccess {
 
 	
 	ModifyGroupAccess(Pane userPane) { // user passed in from previous step
+		
+		//utilizes the SetUpElements class for Labels, TextFields, and Buttons
+				setupUI = new SetupUIElements();
+				
 		Stage updateStage = new Stage();
 		updateStage.setTitle("Modify Groups Access");
 		
+		if(groupString.contains("+")) {
+			String[] GroupsArr = groupString.split("+");
+
+		}
+		
+		// Else, display nothing for groups
+		
 		// Label the email input field with a title just above it, left aligned
 				setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
-						Pos.BASELINE_LEFT, 10, 30, Color.RED);
+						Pos.BASELINE_LEFT, 120, 220, Color.RED);
+		// Label the email input field with a title just above it, left aligned
+				setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
+						Pos.BASELINE_LEFT, 120, 220, Color.RED);
 		// Label the email input field with a title just above it, left aligned
 				setupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
-						Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
+						Pos.BASELINE_LEFT, 10, 150, Color.BLACK);
 				// Label the email input field with a title just above it, left aligned
 				setupLabelUI(roleLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 100, 50, Color.BLACK);
+				Pos.BASELINE_LEFT, 100, 150, Color.BLACK);
 				// Label the email input field with a title just above it, left aligned
 				setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 						Pos.BASELINE_LEFT, 10, 200, Color.BLACK);
@@ -91,34 +107,34 @@ public class ModifyGroupAccess {
 		// Establish the buttons which will be used to check and send new user info
 				// to the respective methods required to update the user info currently in the database.
 				// as well as the button that sends the user to the previous page
-				Button addButton = new Button("Add");
-		        setupButtonUI(addButton, "Arial", 14, WINDOW_WIDTH-20, 
-		        		Pos.CENTER, 10, 150, Color.GREEN);
-		        
-		        Button removeButton = new Button("Remove");
-		        setupButtonUI(removeButton, "Arial", 14, WINDOW_WIDTH-20, 
-		        		Pos.CENTER, 10, 180, Color.GREEN);
-		        
-		        Button backButton = new Button("Back");
+				Button backButton = new Button("Back");
 		        setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
 		        		Pos.CENTER, 10, 20, false, Color.BLACK);
 		        
+				Button addButton = new Button("Add");
+		        setupUI.SetupButtonUI(addButton, "Arial", 14, 50, 20, 
+		        		Pos.CENTER, 160, 220, false, Color.BLACK);
+		        
+		        Button removeButton = new Button("Remove");
+		        setupUI.SetupButtonUI(removeButton, "Arial", 14, 80, 20, 
+		        		Pos.CENTER, 260, 220, false, Color.BLACK);
+		        
+		        
 		// Establishes combo boxes for groups and roles, which the input user will be added to and classified under
 		        ComboBox groupBox = new ComboBox<>();
-		        //groupBox.getItems().addAll(GroupsArr);
+		        //groupBox.getItems().addAll(GroupsArr); !!!!!!!!!!!!!!!!! error !!!!!!!!!!!!!!!!!!!!
 		        
-		        groupBox.setLayoutX(100);
-		        groupBox.setLayoutX(100);
+		        groupBox.setLayoutX(10);
+		        groupBox.setLayoutY(170);
 
 		        
 		        ComboBox roleBox = new ComboBox();
 		        roleBox.getItems().addAll("Admin", "User");
 		        
-		        roleBox.setLayoutX(165);
-		        roleBox.setLayoutX(165);
+		        roleBox.setLayoutX(100);
+		        roleBox.setLayoutY(170);
 		        
-		     // Retrieve TextField input
-            	String userString = userText.getText();
+		    
 
 		        
 		        
@@ -134,7 +150,8 @@ public class ModifyGroupAccess {
 		        
 
 		        // Sends all previously established parameters (other than error label) for the pane to the scene for setup
-		        userPane.getChildren().addAll(sceneLabel, groupLabel, roleLabel,  groupsLabel, userLabel,userText, removeButton, addButton, backButton); 
+		        userPane.getChildren().addAll(sceneLabel, groupLabel, roleLabel,  groupsLabel, groupBox, roleBox, userLabel, 
+		        		userText, removeButton, addButton, backButton); 
 		        
 		     // Establishes the button logic for each press
 		        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
@@ -143,7 +160,8 @@ public class ModifyGroupAccess {
 		            public void handle(ActionEvent event) {
 		            	
 
-			
+		            		// Retrieve TextField input
+		            		String userString = userText.getText();
 			                // Do error check, if no errors, update info. If errors, output error message above update button and below info input.
 			            	// Repeat process for each button push
 			            	boolean pass = ErrorMessage(userString);
@@ -155,12 +173,15 @@ public class ModifyGroupAccess {
 			            		userPane.getChildren().add(errorLabel);
 			            		
 			            		setupLabelUI(userLabel, "Arial", 14, WINDOW_WIDTH-10, 
-			            				Pos.BASELINE_LEFT, 10, 20, Color.RED);
-			            		
-			            		setupButtonUI(addButton, "Arial", 14, WINDOW_WIDTH-20, 
-			                    		Pos.CENTER, 10, 510, Color.RED);
-			            		setupButtonUI(removeButton, "Arial", 14, WINDOW_WIDTH-20, 
-			                    		Pos.CENTER, 10, 530, Color.RED);
+			            				Pos.BASELINE_LEFT, 10, 90, Color.RED);
+			    		        
+			    				//Button addButton = new Button("Add");
+			    		        setupUI.SetupButtonUI(addButton, "Arial", 14, 50, 20, 
+			    		        		Pos.CENTER, 160, 245, false, Color.RED);
+			    		        
+			    		        //Button removeButton = new Button("Remove");
+			    		        setupUI.SetupButtonUI(removeButton, "Arial", 14, 80, 20, 
+			    		        		Pos.CENTER, 260, 245, false, Color.RED);
 			
 			            	}
 			            	
@@ -173,12 +194,12 @@ public class ModifyGroupAccess {
 			            		userPane.getChildren().remove(errorLabel);
 			            					            		
 			            		setupLabelUI(userLabel, "Arial", 14, WINDOW_WIDTH-10, 
-			            				Pos.BASELINE_LEFT, 10, 20, Color.GREEN);
+			            				Pos.BASELINE_LEFT, 10, 90, Color.GREEN);
 			            		
 			            		setupButtonUI(addButton, "Arial", 14, WINDOW_WIDTH-20, 
-			                    		Pos.CENTER, 10, 510, Color.GREEN);
+			                    		Pos.CENTER, 160, 220, Color.GREEN);
 			            		setupButtonUI(removeButton, "Arial", 14, WINDOW_WIDTH-20, 
-			                    		Pos.CENTER, 10, 530, Color.GREEN);
+			                    		Pos.CENTER, 260, 220, Color.GREEN);
 			            		
 			            		// Retrieve selected role (admin, user) from the role combobox, turn it into string
 								String selectedRole = (String) roleBox.getSelectionModel().getSelectedItem();
@@ -188,14 +209,43 @@ public class ModifyGroupAccess {
 
 								// If selected role is "Admin", remove Admin of name userString from the group
 								if(selectedRole == "Admin") {
+									
+									userPane.getChildren().remove(errorLabel2);
+									
+									// Label the email input field with a title just above it, left aligned
+									setupLabelUI(roleLabel, "Arial", 14, WINDOW_WIDTH-10, 
+									Pos.BASELINE_LEFT, 100, 150, Color.GREEN);
 									GroupDatabase.addUserToGroup(userString, selectedGroup, false);
 
 								}
 								// Else, if selected role is "User", remove User of name userString from the group
 
-								else {
+								if(selectedRole == "User"){
+														
+									userPane.getChildren().remove(errorLabel2);
+									
+									//Button addButton = new Button("Add");
+				    		        setupUI.SetupButtonUI(addButton, "Arial", 14, 50, 20, 
+				    		        		Pos.CENTER, 160, 245, false, Color.GREEN);
+									
 										GroupDatabase.addUserToGroup(userString, selectedGroup, true);
 									}
+								
+								else { // NOTE: Add button gets all wide if this happens, so make sure to select an admin or user role!
+									userPane.getChildren().add(errorLabel2);
+									
+									// Label the email input field with a title just above it, left aligned
+									setupLabelUI(roleLabel, "Arial", 14, WINDOW_WIDTH-10, 
+									Pos.BASELINE_LEFT, 100, 150, Color.RED);
+									
+				    				//Button addButton = new Button("Add");
+				    		        setupUI.SetupButtonUI(addButton, "Arial", 14, 50, 20, 
+				    		        		Pos.CENTER, 160, 245, false, Color.RED);
+				    		        System.out.print("No role!");
+				    		        //Button removeButton = new Button("Remove");
+				    		        setupUI.SetupButtonUI(removeButton, "Arial", 14, 80, 20, 
+				    		        		Pos.CENTER, 260, 245, false, Color.RED);
+								}
 								}
 								
 			            	
@@ -226,6 +276,8 @@ public class ModifyGroupAccess {
 				{
 					public void handle(ActionEvent event) 
 					{	
+						 // Retrieve TextField input
+		            	String userString = userText.getText();
 						
 						// Retrieve selected role (admin, user) from the role combobox, turn it into string
 						String selectedRole = (String) roleBox.getSelectionModel().getSelectedItem();
