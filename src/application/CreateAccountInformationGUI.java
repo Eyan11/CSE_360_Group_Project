@@ -32,6 +32,7 @@ import javafx.geometry.Pos;
  * @version 1.00 10/9/2024 Phase 1 implementation and documentation
  *  
  */
+
 public class CreateAccountInformationGUI {
 	
 	
@@ -44,10 +45,13 @@ public class CreateAccountInformationGUI {
 	/** The height of the pop-up window for the user interface */
 	public final static double WINDOW_HEIGHT = 430;
 	
+	// Parameter
+	private String keyParameter;
+	
 	/** String inputs */
 	private String usernameInput;
 	private String passwordInput;
-	//private String confirmInput;
+	private String confirmInput;
 	
 	
 	/** Text to appear as a part of the window (text field indicators, etc. */
@@ -65,9 +69,11 @@ public class CreateAccountInformationGUI {
 	/** Constructors
 	 */
 	
-	CreateAccountInformationGUI(Pane theRoot) {
+	CreateAccountInformationGUI(Pane theRoot, String key) {
+		
+		this.keyParameter = key;
 		                
-       // NOTE: Not needed, see updateStage.setTitle() ^
+		// NOTE: Not needed, see updateStage.setTitle() ^
         // Label the Scene with the name of the testbed, centered at the top of the pane
 		setupLabelUI(sceneLabel, "Arial", 36, WINDOW_WIDTH, 
 				Pos.CENTER, 0, 10, Color.BLACK);
@@ -105,14 +111,14 @@ public class CreateAccountInformationGUI {
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
 	            // Retrieve TextField input
-            	String usernameString = usernameText.getText();
-            	String passwordString = passwordText.getText();
-            	String confirmString = confirmText.getText();
+            	usernameInput = usernameText.getText();
+            	passwordInput = passwordText.getText();
+            	confirmInput = confirmText.getText();
 
                 // Do error check, if no errors, update info. If errors, output error message above update button and below info input.
             	// Repeat process for each button push
             	// boolean pass = ErrorMessage(emailString, firstString, middleString, lastString);
-            	boolean pass = ErrorMessage(usernameString, passwordString, confirmString);
+            	boolean pass = ErrorMessage(usernameInput, passwordInput, confirmInput);
             	// If there are any unfilled entries, alter text box and output message indicating that entries are incomplete
             	// and highlight all necessary entry boxes
             	if(pass == false) {
@@ -137,9 +143,11 @@ public class CreateAccountInformationGUI {
     	                    Pos.BASELINE_LEFT, 10, 200, Color.BLACK);
     	            		
     	            setupLabelUI(confirmLabel, "Arial", 14, WINDOW_WIDTH-20, 
-    	                    Pos.BASELINE_LEFT, 10, 300, Color.RED);
+    	                    Pos.BASELINE_LEFT, 10, 300, Color.BLACK);
+    	            
     	            setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
     	                    Pos.CENTER, 10, 400, Color.BLACK);
+    	            
     	            theRoot.getChildren().remove(errorLabel);
             		
             		// DEVELOPER NOTE: Critical step
@@ -147,10 +155,8 @@ public class CreateAccountInformationGUI {
             		
             		//DEVELOPER NOTE: Critical step
             		// If preferred name box is filled in (i.e. not empty)
-            		if(passwordString.equals(confirmString)) {
-            			usernameInput = usernameText.getText();
-            			passwordInput = passwordText.getText();
-            			
+            		if(passwordInput.equals(confirmInput) && AccountDatabase.isTableEmpty())
+            		{	
         				AccountDatabase.createFirstAccount(usernameInput, passwordInput);
             			
             			theRoot.getChildren().clear();  // Clear the current root
@@ -160,7 +166,25 @@ public class CreateAccountInformationGUI {
             			Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
             			Stage currentStage = (Stage) theRoot.getScene().getWindow(); 
             			currentStage.setScene(newScene);
-            			
+            		} 
+            		else if(passwordInput.equals(confirmInput) && !AccountDatabase.isTableEmpty())
+            		{
+            			if(!AccountDatabase.isKeyExpired(keyParameter))
+            			{
+            				AccountDatabase.createAccountWithKey(usernameInput, passwordInput, keyParameter);
+                			
+                			theRoot.getChildren().clear();  // Clear the current root
+                			//
+                			Pane newRoot = new Pane();
+                			LoginGUI login = new LoginGUI(newRoot);
+                			Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT);
+                			Stage currentStage = (Stage) theRoot.getScene().getWindow(); 
+                			currentStage.setScene(newScene);
+            			}
+            			else
+            			{
+            				System.out.println("Key Expired! " + AccountDatabase.getKeyExpiration(key));
+            			}
             		} else {	
         	            setupLabelUI(passwordLabel, "Arial", 14, WINDOW_WIDTH-20, 
         	                    Pos.BASELINE_LEFT, 10, 200, Color.RED);

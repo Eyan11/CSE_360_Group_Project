@@ -36,7 +36,7 @@ public class Main extends Application {
 		theStage.show(); // Show the stage to the user
 		
         if (AccountDatabase.isTableEmpty()) {
-        	CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot);
+        	CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(theRoot, "");
         } else {
         	LoginGUI login = new LoginGUI(theRoot); 
         }

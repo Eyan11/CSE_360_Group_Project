@@ -166,7 +166,7 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						UpdateAccountInformationGUI createAccount = new UpdateAccountInformationGUI(newRoot, userInput);
+						UpdateAccountInformationGUI updateAccountInfo = new UpdateAccountInformationGUI(newRoot, userInput);
 						//
 					    Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
@@ -265,7 +265,7 @@ public class LoginGUI
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
-						CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(newRoot);
+						CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(newRoot, keyInput);
 						
 						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 

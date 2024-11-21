@@ -1,9 +1,5 @@
 package application;
 
-import java.sql.SQLException;
-
-import database.AccountDatabase;
-import database.ArticleDatabase;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -27,15 +23,11 @@ import javafx.stage.Stage;
  * 
  * @author Evan Espinosa
  * 
- * @version 1.00		2024-09-10 The JavaFX-based GUI for the implementation of the user's update account information page
+ * @version 1.00 2024-09-10 The JavaFX-based GUI for the implementation of the user's update account information page
  *  
  */
 
-
-
-//TODO: Fix Pane error, add constructor call for next step, make sure constructor call for returning to home page works, set up UI
 public class CreateArticle {
-	
 	
 	/**
 	 * Variable declaration
@@ -44,20 +36,19 @@ public class CreateArticle {
 	/** The width of the pop-up window for the user interface */
 	public final static double WINDOW_WIDTH = 500;
 	/** The height of the pop-up window for the user interface */
-	public final static double WINDOW_HEIGHT = 600;
+	public final static double WINDOW_HEIGHT = 430;
 	
 	/** String inputs */
-	private String user; // Passed in from previous step
-	private String headerInput;
-	private String titleInput;
-	private String descriptionInput;
-	private String keywordsInput;
-	private String groupsInput;
-	private String bodyInput;
-	private String referencesInput;
+	private String headerString;
+	private String titleString;
+	private String descriptionString;
+	private String keywordsString;
+	private String groupsString;
+	private String bodyString;
+	private String referencesString;
 
 	/** Text to appear as a part of the window (text field indicators, etc. */
-	private Label sceneLabel = new Label("Create Articles");
+	//private Label sceneLabel = new Label("Create Article");
 	private Label headerLabel = new Label("Header:");
 	private Label titleLabel = new Label("Title:");
 	private Label descriptionLabel = new Label("Description:");
@@ -75,11 +66,7 @@ public class CreateArticle {
 	private TextField groupsText = new TextField();
 	private TextField bodyText = new TextField();
 	private TextField referencesText = new TextField();
-	private TextField errorText = new TextField();
-
-	
-	//private Button updateButton = new Button("Button test");	
-	//updateButton.setText("Update");
+	//private TextField errorText = new TextField();
 	
 	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI = new SetupUIElements();
@@ -93,82 +80,83 @@ public class CreateArticle {
 	
 	
 	CreateArticle(Pane userPane) { // user passed in from previous step
-		Stage updateStage = new Stage();
-		updateStage.setTitle("Create Articles");
+		// Utilizes the SetUpElements class for the Label and Button
+    	setupUI = new SetupUIElements();
 		
-        
         // Label the Scene with the name of the testbed, centered at the top of the pane
-		//setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
-				//Pos.CENTER, 0, 10, Color.GREEN);
+		//setupLabelUI(sceneLabel, "Arial", 18, WINDOW_WIDTH, 
+				//Pos.CENTER, 0, 10, Color.BLACK);
 		
 		// Label the email input field with a title just above it, left aligned
 		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 505, Color.RED);
+				Pos.BASELINE_LEFT, 10, 500, Color.RED);
 		
 		// Label the first name input field with a title just above it, left aligned
 		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 35, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 		
 		// Label the middle name input field with a title just above it, left aligned
 		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 105, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 90, Color.BLACK);
 		
 		// Label the last name input field with a title just above it, left aligned
 		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 175, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
 		
 		// Label the preferred name input field with a title just above it, left aligned
 		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 245, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
 		
 		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 315, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 280, Color.BLACK);
 		
 		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 385, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 320, Color.BLACK);
 		
 		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 455, Color.GREEN);
+				Pos.BASELINE_LEFT, 10, 360, Color.BLACK);
 		
 		// Establish the text input operand field and when anything changes in the user inputs,
 		// the code will process the entire input to ensure that it is valid or an error.
-		setupTextUI(headerText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 60, true);
+		setupUI.SetupTextFieldUI(headerText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 65, 35, true);
 		
-		setupTextUI(titleText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 130, true);
+		setupUI.SetupTextFieldUI(titleText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 55, 75, true);
 		
-		setupTextUI(descriptionText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 200, true);
+		setupUI.SetupTextFieldUI(descriptionText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 85, 115, true);
 		
-		setupTextUI(keywordsText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 270, true);
+		setupUI.SetupTextFieldUI(keywordsText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 80, 155, true);
 		
-		setupTextUI(groupsText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 340, true);
+		setupUI.SetupTextFieldUI(groupsText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 65, 265, true);
 		
-		setupTextUI(bodyText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 410, true);
+		setupUI.SetupTextFieldUI(bodyText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 55, 305, true);
 		
-		setupTextUI(referencesText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 480, true);
+		setupUI.SetupTextFieldUI(referencesText, "Arial", 18, 400, 10,
+				Pos.BASELINE_LEFT, 90, 345, true);
 		
-		setupTextUI(errorText, "Arial", 18, WINDOW_WIDTH-20,
-				Pos.BASELINE_LEFT, 10, 505, true);
+		//setupUI.SetupTextFieldUI(errorText, "Arial", 18, 400, 10,
+				//Pos.BASELINE_LEFT, 65, 390, true);
 		
 		// Establish the button which will be used to check and send new user info
 		// to the respective methods required to update the user info currently in the database
         Button createButton = new Button("Create");
         setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-        		Pos.CENTER, 10, 545, Color.GREEN);
+        		Pos.CENTER, 10, 400, Color.BLACK);
         
         Button backButton = new Button("<-");
         setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
         
         // Sends all previously established parameters for the pane to the scene for setup
-        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
-        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, referencesText, createButton, backButton); 
+        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, 
+        		descriptionLabel, descriptionText, keywordsLabel, keywordsText,
+        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, 
+        		referencesText, createButton, backButton); 
         
         // Don't need this -- error (Only need scene when you're going to a different page)
         //Scene userScene = new Scene(userPane, 800, 500);
@@ -183,14 +171,13 @@ public class CreateArticle {
             public void handle(ActionEvent event) {
             	
 	            	// Retrieve TextField input
-	            	String headerString = headerText.getText();
-	            	String titleString = titleText.getText();
-	            	String descriptionString = descriptionText.getText();
-	            	String keywordsString = keywordsText.getText();
-	            	String groupsString = groupsText.getText();
-	            	String bodyString = bodyText.getText();
-	            	String referencesString = referencesText.getText();
-
+	            	headerString = headerText.getText();
+	            	titleString = titleText.getText();
+	            	descriptionString = descriptionText.getText();
+	            	keywordsString = keywordsText.getText();
+	            	groupsString = groupsText.getText();
+	            	bodyString = bodyText.getText();
+	            	referencesString = referencesText.getText();
 	
 	                // Do error check, if no errors, update info. If errors, output error message above update button and below info input.
 	            	// Repeat process for each button push
@@ -202,65 +189,44 @@ public class CreateArticle {
 	            	if(pass == false) {
 
 	            		userPane.getChildren().add(errorLabel);
-	            		
+
 	            		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 20, Color.RED);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 50, Color.RED);
 	            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 90, Color.RED);
-	            		
 	            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 160, Color.RED);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 130, Color.RED);
 	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 230, Color.RED);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 170, Color.RED);
 	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 300, Color.RED);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 280, Color.RED);
 	            		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 370, Color.RED);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 320, Color.RED);
 	            		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 440, Color.RED);
-	            		
-	            		setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 530, Color.RED);
-	
+	            				Pos.BASELINE_LEFT, 10, 360, Color.RED);
 	            	}
 	            	
 	            	// If all necessary entries are filled, reset scene formatting and send info to next step!
 	            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
 	            	// 				   onto then next part. Thank you.
 	            	else {
-	            		
 	            		//Eliminate error indicator
 	            		userPane.getChildren().remove(errorLabel);
 	            		
 	            		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 20, Color.GREEN);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 	            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 90, Color.GREEN);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 90, Color.BLACK);
 	            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 160, Color.GREEN);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
 	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 230, Color.GREEN);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
 	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 300, Color.GREEN);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 280, Color.BLACK);
 	            		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 370, Color.GREEN);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 320, Color.BLACK);
 	            		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-	            				Pos.BASELINE_LEFT, 10, 440, Color.GREEN);
-	            		
-	            		setupButtonUI(createButton, "Arial", 14, WINDOW_WIDTH-20, 
-	                    		Pos.CENTER, 10, 530, Color.GREEN);
-	            		
+	            				Pos.BASELINE_LEFT, 10, 360, Color.BLACK);
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
@@ -290,6 +256,7 @@ public class CreateArticle {
 			{						
 				// Returns user back to previous page
 				userPane.getChildren().clear();  // Clear the current root
+				
 				// Create new pane for next interface
 				Pane newRoot = new Pane();
 				ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
@@ -303,43 +270,6 @@ public class CreateArticle {
 	/**
 	 * Methods
 	 */
-	
-	/**********
-	 * Private local method to initialize the standard fields for a label
-	 */
-	private void setupLabelUI(Label l, String font, double fontSize, double minWidth, Pos pos, double x, double y, Color color){
-		l.setFont(Font.font(font, fontSize));
-		l.setMinWidth(minWidth);
-		l.setAlignment(pos);
-		l.setLayoutX(x);
-		l.setLayoutY(y);
-		l.setTextFill(color);
-	}
-	/**********
-	 * Private local method to initialize the standard fields for a text field
-	 */
-	private void setupTextUI(TextField t, String ff, double f, double w, Pos p, double x, double y, boolean e){
-		t.setFont(Font.font(ff, f));
-		t.setMinWidth(w);
-		t.setMaxWidth(w);
-		t.setAlignment(p);
-		t.setLayoutX(x);
-		t.setLayoutY(y);		
-		t.setEditable(e);
-	}	
-	
-	/**********
-	 * Private local method to initialize the standard fields for a button
-	 */
-	private void setupButtonUI(Button b, String ff, double f, double w, Pos p, double x, double y, Color color){
-		b.setFont(Font.font(ff, f));
-		b.setMinWidth(w);
-		b.setMaxWidth(w);
-		b.setAlignment(p);
-		b.setLayoutX(x);
-		b.setLayoutY(y);		
-		b.setTextFill(color);
-	}	
 	
 	/**********
 	 * Private local method to check for valid text field input for all text fields (returns F if all necessary fields are NOT filled, T otherwise)
@@ -382,4 +312,44 @@ public class CreateArticle {
 		// Else, filled = true
 		return filled;
 	}
+	
+	/**********
+	 * Private local method to initialize the standard fields for a label
+	 */
+	private void setupLabelUI(Label l, String font, double fontSize, double minWidth, Pos pos, double x, double y, Color color){
+		l.setFont(Font.font(font, fontSize));
+		l.setMinWidth(minWidth);
+		l.setAlignment(pos);
+		l.setLayoutX(x);
+		l.setLayoutY(y);
+		l.setTextFill(color);
+	}
+	/**********
+	 * Private local method to initialize the standard fields for a text field
+	 */
+	/*
+	private void setupTextUI(TextField t, String ff, double f, double w, Pos p, double x, double y, boolean e){
+		t.setFont(Font.font(ff, f));
+		t.setMinWidth(w);
+		t.setMaxWidth(w);
+		t.setAlignment(p);
+		t.setLayoutX(x);
+		t.setLayoutY(y);		
+		t.setEditable(e);
+	}	
+	*/
+	
+	/**********
+	 * Private local method to initialize the standard fields for a button
+	 */
+	private void setupButtonUI(Button b, String ff, double f, double w, Pos p, double x, double y, Color color){
+		b.setFont(Font.font(ff, f));
+		b.setMinWidth(w);
+		b.setMaxWidth(w);
+		b.setAlignment(p);
+		b.setLayoutX(x);
+		b.setLayoutY(y);		
+		b.setTextFill(color);
+	}
 }
+

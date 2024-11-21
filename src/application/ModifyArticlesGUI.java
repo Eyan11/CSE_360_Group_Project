@@ -37,9 +37,9 @@ import java.sql.SQLException;
 public class ModifyArticlesGUI {
     public final static double WINDOW_WIDTH = 500;
     public final static double WINDOW_HEIGHT = 430;
-    private Pane pane;
+    //private Pane pane;
     private Label sceneLabel = new Label("Modify Articles");
-    private Button backButton = new Button("Back");
+    private Button backButton = new Button("<-");
 
     private Label articlesLabel = new Label("All Articles");
     private Label idHeader = new Label("ID:");
@@ -53,10 +53,17 @@ public class ModifyArticlesGUI {
     private TextField idTextField = new TextField();
     private Button editButton = new Button("Edit");
     private Button deleteButton = new Button("Delete");
+    
+    // Declaration of SetupUIElements Object
+  	public SetupUIElements setupUI;
 
     public ModifyArticlesGUI(Pane pane) {
+    	// Utilizes the SetUpElements class for the Label and Button
+    	setupUI = new SetupUIElements();
+    	
         setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, Pos.CENTER, 0, 10, Color.BLACK);
-        setupButtonUI(backButton, "Arial", 14, 80, Pos.BASELINE_LEFT, 10, 50, Color.GREEN);
+        // Button that returns user to previous interface
+ 		setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20, Pos.CENTER, 10, 10, false, Color.BLACK);
         setupLabelUI(articlesLabel, "Arial", 18, WINDOW_WIDTH, Pos.CENTER, 0, 90, Color.BLACK);
 
         // Set up table headers
@@ -76,18 +83,14 @@ public class ModifyArticlesGUI {
         setupTextFieldUI(idTextField, "Arial", 14, 80, Pos.CENTER_LEFT, 90, 300);
 
         // Set up edit and delete buttons
-        setupButtonUI(editButton, "Arial", 14, 80, Pos.CENTER, 90, 350, Color.GREEN);
-        setupButtonUI(deleteButton, "Arial", 14, 80, Pos.CENTER, 190, 350, Color.GREEN);
-
-        // Button actions
-        //editButton.setOnAction(event -> handleEdit());
-        //deleteButton.setOnAction(event -> handleDelete());
-
-        // Add components to the pane
-        pane.getChildren().addAll(sceneLabel, backButton, articlesLabel, idHeader, headerHeader, titleHeader, groupHeader, idLabel, errorLabel, idTextField, editButton, deleteButton);
+        setupButtonUI(editButton, "Arial", 14, 80, Pos.CENTER, 90, 350, Color.BLACK);
+        setupButtonUI(deleteButton, "Arial", 14, 80, Pos.CENTER, 190, 350, Color.BLACK);
 
         // Handle the Back button
         backButton.setOnAction(event -> handleBack(pane));
+        
+        // Add components to the pane
+        pane.getChildren().addAll(sceneLabel, backButton, articlesLabel, idHeader, headerHeader, titleHeader, groupHeader, idLabel, errorLabel, idTextField, editButton, deleteButton);
         
         editButton.setOnAction(new EventHandler<>()
 		{
@@ -162,65 +165,6 @@ public class ModifyArticlesGUI {
         }
     }
 
-    /*
-    // Method to handle edit action
-    private void handleEdit() {
-        if (idTextField.getText().isEmpty()) { // if nothing is in the id text box
-            errorLabel.setText("Error: Please enter an article ID.");
-        } else {
-            int id = Integer.parseInt(idTextField.getText()); //id is set to id entered
-            try {
-				if (ArticleDatabase.doesArticleIDExist(id)) { 
-	                pane.getChildren().clear();  // Clear the current pane
-	                
-	                Pane newRoot = new Pane();
-	                EditArticleGUI editArticle = new EditArticleGUI(newRoot, id);
-	                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-	        	    Stage currentStage = (Stage) pane.getScene().getWindow(); // 
-	        	    currentStage.setScene(newScene); //
-				} else {
-				    errorLabel.setText("Error: Article ID not found.");
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-    }
-
-    // Method to handle delete action
-    private void handleDelete() {
-        if (idTextField.getText().isEmpty()) {
-            errorLabel.setText("Error: Please enter an article ID.");
-        } else {
-            int id = Integer.parseInt(idTextField.getText());
-            try {
-				if (ArticleDatabase.deleteArticle(id)) {
-				    errorLabel.setTextFill(Color.GREEN);
-				    errorLabel.setText("Article ID " + id + " deleted successfully.");
-				    idTextField.clear();
-				    
-				    pane.getChildren().clear();
-				    
-		            Pane newRoot = new Pane();
-		            DeleteArticleConfirmationGUI deleteArt = new DeleteArticleConfirmationGUI(newRoot, id); 
-		            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-		    	    Stage currentStage = (Stage) pane.getScene().getWindow(); // 
-		    	    currentStage.setScene(newScene); //
-				    
-				    //displayArticleRows(pane); // Refresh display after deletion
-				} else {
-				    errorLabel.setTextFill(Color.RED);
-				    errorLabel.setText("Error: Failed to delete Article ID " + id + ".");
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-    }
-    */
-
     // Method to handle back action and navigate to ManageArticlesGUI
     private void handleBack(Pane pane) {
         pane.getChildren().clear();
@@ -261,3 +205,59 @@ public class ModifyArticlesGUI {
         textField.setLayoutY(y);
     }
 }
+
+/*
+// Method to handle edit action
+private void handleEdit() {
+    if (idTextField.getText().isEmpty()) { // if nothing is in the id text box
+        errorLabel.setText("Error: Please enter an article ID.");
+    } else {
+        int id = Integer.parseInt(idTextField.getText()); //id is set to id entered
+        try {
+			if (ArticleDatabase.doesArticleIDExist(id)) { 
+                pane.getChildren().clear();  // Clear the current pane
+                
+                Pane newRoot = new Pane();
+                EditArticleGUI editArticle = new EditArticleGUI(newRoot, id);
+                Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+        	    Stage currentStage = (Stage) pane.getScene().getWindow(); // 
+        	    currentStage.setScene(newScene); //
+			} else {
+			    errorLabel.setText("Error: Article ID not found.");
+			}
+		} catch (SQLException e) {
+		}
+    }
+}
+
+// Method to handle delete action
+private void handleDelete() {
+    if (idTextField.getText().isEmpty()) {
+        errorLabel.setText("Error: Please enter an article ID.");
+    } else {
+        int id = Integer.parseInt(idTextField.getText());
+        try {
+			if (ArticleDatabase.deleteArticle(id)) {
+			    errorLabel.setTextFill(Color.GREEN);
+			    errorLabel.setText("Article ID " + id + " deleted successfully.");
+			    idTextField.clear();
+			    
+			    pane.getChildren().clear();
+			    
+	            Pane newRoot = new Pane();
+	            DeleteArticleConfirmationGUI deleteArt = new DeleteArticleConfirmationGUI(newRoot, id); 
+	            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    	    Stage currentStage = (Stage) pane.getScene().getWindow(); // 
+	    	    currentStage.setScene(newScene); //
+			    
+			    //displayArticleRows(pane); // Refresh display after deletion
+			} else {
+			    errorLabel.setTextFill(Color.RED);
+			    errorLabel.setText("Error: Failed to delete Article ID " + id + ".");
+			}
+		} catch (SQLException e) {
+		}
+    }
+}
+*/
+

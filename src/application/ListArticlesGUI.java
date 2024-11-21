@@ -1,7 +1,7 @@
 package application;
 
 import database.ArticleDatabase;
-
+import database.LoginTracker;
 import javafx.scene.control.Label; // For Label object
 import javafx.scene.control.TextField; // For TextField object
 import javafx.scene.control.Button; // For Button object
@@ -135,16 +135,31 @@ public class ListArticlesGUI
 		backButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
-			{						
-				// Returns user back to previous page
-				theRoot.getChildren().clear();  // Clear the current root
-				
-				// Create new pane for next interface
-				Pane newRoot = new Pane();
-				ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
-				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-			    currentStage.setScene(newScene); // sets new scene
+			{
+				if(!LoginTracker.isStudent())
+				{
+					// Returns user back to previous page
+					theRoot.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
+				else
+				{
+					// Returns user back to previous page
+					theRoot.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					StudentHomeGUI studentHome = new StudentHomeGUI(newRoot); // Returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
 			}
 		});
 		
