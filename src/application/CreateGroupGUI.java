@@ -1,5 +1,6 @@
 package application;
 
+import database.AccountDatabase;
 import database.GroupDatabase;
 
 import javafx.scene.control.Label; // For Label object
@@ -89,12 +90,12 @@ public class CreateGroupGUI
 		 * TextField Creations 
 		 */
 		
-		// Text Field that collects user info for group administrator
-		setupUI.SetupTextFieldUI(adminText, "Arial", 18, 400, 40,
-				Pos.BASELINE_LEFT, 10, 85, true);
-		
 		// Text Field that collects user info for group name
 		setupUI.SetupTextFieldUI(groupText, "Arial", 18, 400, 40,
+				Pos.BASELINE_LEFT, 10, 85, true);
+		
+		// Text Field that collects user info for group administrator
+		setupUI.SetupTextFieldUI(adminText, "Arial", 18, 400, 40,
 				Pos.BASELINE_LEFT, 10, 180, true);
 		
 		/*
@@ -179,17 +180,24 @@ public class CreateGroupGUI
 				// Special Button
 				firstAdmin = adminText.getText();
 				groupName = groupText.getText();
-				// Creates group with special access in database
-				GroupDatabase.createGroup(groupName, firstAdmin, true);
-				
-				// Returns user back to previous page
-				theRoot.getChildren().clear();  // Clear the current root
-				// Create new pane for next interface
-				Pane newRoot = new Pane();
-				ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
-				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-			    currentStage.setScene(newScene); // sets new scene
+				if(AccountDatabase.doesUsernameExist(firstAdmin))
+				{
+					// Creates group with special access in database
+					GroupDatabase.createGroup(groupName, firstAdmin, true);
+					
+					// Returns user back to previous page
+					theRoot.getChildren().clear();  // Clear the current root
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
+				else 
+				{
+					System.out.println("First Admin Username Does Not Exist!");
+				}
 			}
 		});
 	}

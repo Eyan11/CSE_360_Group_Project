@@ -65,6 +65,10 @@ public class ListByGroupGUI
 		this.contentLevel = contentLevel;
 		this.articleContents = articleContents;
 		
+		/*****
+		 * ERROR FROM ARTICLE DATABASE
+		 */
+		
 		// Grab articles from database that are related to user parameters
 		String formattedInput = ArticleDatabase.searchByContents(this.group, this.contentLevel, this.articleContents);
 		// Create a label with limited article(s) information

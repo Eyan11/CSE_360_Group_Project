@@ -1,8 +1,5 @@
 package application;
 
-import java.sql.SQLException;
-
-import database.AccountDatabase;
 import database.ArticleDatabase;
 import database.GroupDatabase;
 import javafx.event.ActionEvent;
@@ -13,12 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;     
+import javafx.scene.layout.Pane; 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
 
 /**
  * <p> CreateArticleGUI Class </p>
@@ -43,14 +38,7 @@ public class CreateArticle {
 	/** The width of the pop-up window for the user interface */
 	public final static double WINDOW_WIDTH = 500;
 	/** The height of the pop-up window for the user interface */
-	public final static double WINDOW_HEIGHT = 800;
-	
-	boolean isViewer;
-	
-	String groupString = GroupDatabase.getAllAuthorizedGroupNames(isViewer); // !!!!!!!!!!!! Error !!!!!!!!!!!!
-	String GroupsArr;
-
-	
+	public final static double WINDOW_HEIGHT = 430;
 	
 	/** String inputs */
 	private String headerString;
@@ -58,11 +46,8 @@ public class CreateArticle {
 	private String authorString;
 	private String descriptionString;
 	private String keywordsString;
-	private String groupsString;
 	private String bodyString;
 	private String referencesString;
-	String allGroup = GroupDatabase.getAllGroupInfo();
-	String returnGroups = "";
 
 	/** Text to appear as a part of the window (text field indicators, etc. */
 	//private Label sceneLabel = new Label("Create Article");
@@ -72,7 +57,6 @@ public class CreateArticle {
 	private Label descriptionLabel = new Label("Description:");
 	private Label keywordsLabel = new Label("Keywords:");
 	private Label groupsLabel = new Label("Groups:");
-	private Label groupLabel = new Label(allGroup);
 	private Label contentLabel = new Label("Content level:");
 	private Label bodyLabel = new Label("Body:");
 	private Label referencesLabel = new Label("References:");
@@ -96,40 +80,33 @@ public class CreateArticle {
 	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI = new SetupUIElements();
 	
-	
 	/** Constructors
 	 */
 	
 	/** Constructor for setting up the user's GUI for the update account info page
 	 */
 	
-	
 	CreateArticle(Pane userPane) { // user passed in from previous step
 
 		// Utilizes the SetUpElements class for the Label and Button
     	setupUI = new SetupUIElements();
-    	
-    	if(groupString.contains("+")) {
-    		String[] GroupsArr = groupString.split("+");
 
-    	}
-    	// Else, display nothing for groups
-		
-        // Label the Scene with the name of the testbed, centered at the top of the pane
-		//setupLabelUI(sceneLabel, "Arial", 18, WINDOW_WIDTH, 
-				//Pos.CENTER, 0, 10, Color.BLACK);
+    	String returnGroups = "";
+    	
+    	String groupString = GroupDatabase.getAllAuthorizedGroupNames(false);
+    	String[] GroupsArr = groupString.split("\\+");
 		
 		// Label the email input field with a title just above it, left aligned
 		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 500, Color.RED);
 		
 		// Label the email input field with a title just above it, left aligned
-				setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
-						Pos.BASELINE_LEFT, 10, 500, Color.RED);
+		setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 500, Color.RED);
 		
 		// Label the email input field with a title just above it, left aligned
-				setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
-						Pos.BASELINE_LEFT, 10, 500, Color.RED);
+		setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 500, Color.RED);
 				
 		// Label the first name input field with a title just above it, left aligned
 		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -157,9 +134,8 @@ public class CreateArticle {
 		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 275, Color.BLACK);
 		
-		setupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 350, Color.BLACK);
-
+		//setupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
+				//.Pos.BASELINE_LEFT, 10, 350, Color.BLACK);
 		
 		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 335, Color.BLACK);
@@ -190,19 +166,14 @@ public class CreateArticle {
 		setupUI.SetupTextFieldUI(referencesText, "Arial", 18, 400, 10,
 				Pos.BASELINE_LEFT, 90, 375, true);
 		
-		//setupUI.SetupTextFieldUI(errorText, "Arial", 18, 400, 10,
-				//Pos.BASELINE_LEFT, 65, 390, true);
-		
 		ComboBox difficultyBox = new ComboBox();
-	        difficultyBox.getItems().addAll("Beginner", "Intermediate", "Advanced", "Expert");
-	        
+	        difficultyBox.getItems().addAll("Beginner", "Intermediate", "Advanced", "Expert");      
 	        difficultyBox.setLayoutX(20);
 	        difficultyBox.setLayoutY(250);
 	        
 	        
 		ComboBox groupBox = new ComboBox<>();
         	groupBox.getItems().addAll(GroupsArr);
-        
         	groupBox.setLayoutX(20);
         	groupBox.setLayoutY(295);
 
@@ -216,21 +187,22 @@ public class CreateArticle {
         Button backButton = new Button("Back");
         setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
+        
+        /*
         Button addButton = new Button("Add");
         setupUI.SetupButtonUI(addButton, "Arial", 11, 50, 20,
-        		Pos.CENTER, 80, 295, false, Color.BLACK);
+        		Pos.CENTER, 110, 295, false, Color.BLACK);
         
         Button removeButton = new Button("Remove");
         setupUI.SetupButtonUI(removeButton, "Arial", 11, 80, 20,
-        		Pos.CENTER, 140, 295, false, Color.BLACK);
-        
-
+        		Pos.CENTER, 160, 295, false, Color.BLACK);
+        */
         
         // Sends all previously established parameters for the pane to the scene for setup
-        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, authorLabel, authorText,
-        		descriptionLabel, descriptionText, keywordsLabel, keywordsText, groupLabel,
+        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, authorLabel, 
+        		authorText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
         		groupsLabel, contentLabel, bodyLabel, bodyText, referencesLabel, 
-        		referencesText, groupBox, difficultyBox, createButton, addButton, removeButton, backButton); 
+        		referencesText, groupBox, difficultyBox, createButton, backButton); 
         
         // Don't need this -- error (Only need scene when you're going to a different page)
         //Scene userScene = new Scene(userPane, 800, 500);
@@ -242,19 +214,15 @@ public class CreateArticle {
         // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
         //                 he will add functionality for repeated valid input.
         
-        
+        /*
         addButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
-            	
 	            	// Retrieve TextField input
 	            	headerString = headerText.getText();
 	            	titleString = titleText.getText();
 	            	authorString = authorText.getText();
 	            	descriptionString = descriptionText.getText();
 	            	keywordsString = keywordsText.getText();
-	            	//groupsString = groupsText.getText();      // NOTE: I don't think you guys need this anymore (on account of the 
-	            												//       method I used in the addButton method to gather the selected groups),
-	            												//       but just in case I'm keeping this here. Delete if you end up not needing it.
 	            	bodyString = bodyText.getText();
 	            	referencesString = referencesText.getText();
 	            	
@@ -275,11 +243,8 @@ public class CreateArticle {
             		
             		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
             				Pos.BASELINE_LEFT, 10, 275, Color.RED);
-
-	            	
 	            }
 	            else {
-	            	
 	            	// Remove error indicators
 	            	userPane.getChildren().remove(errorLabel2);
 	            	
@@ -291,20 +256,15 @@ public class CreateArticle {
 	            	if(difficultyString == null) {
 	            		// Select a difficulty dummy
 		            	userPane.getChildren().add(errorLabel3);
-
 		            	// Change stuff to red
-	            		
 	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
 	            	}
-	            	
 	            	else {
-	            		
 	            		// Remove error indicators
 	            		userPane.getChildren().remove(errorLabel);
 	            		userPane.getChildren().add(errorLabel2);
 	            		userPane.getChildren().add(errorLabel3);
-	            		
 	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
 	            		
@@ -315,21 +275,12 @@ public class CreateArticle {
 	            			returnGroups = returnGroups + selectedGroup + " & ";
 	            		}
 	            	}
-	            	
-	            	
 	            }
-	            	
-	            // LEFT FOR JULIO, use if needed, delete if not
-	            /*
-	            	// Remove "& " at the end of returnGroups list
-	            	 if (returnGroups.length() > 0) {
-	                     returnGroups = returnGroups.substring(0, returnGroups.length() - 2);
-	
-	            	 }  
-	            */
             }
         });
+        */
         
+        /*
         // Julio, remember what I said about this method (those who knows :skull:)
         removeButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
@@ -357,18 +308,17 @@ public class CreateArticle {
 	
             }  
         });
+        */
         
         
         createButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
-            	
 	            	// Retrieve TextField input
 	            	headerString = headerText.getText();
 	            	titleString = titleText.getText();
 	            	authorString = authorText.getText();
 	            	descriptionString = descriptionText.getText();
 	            	keywordsString = keywordsText.getText();
-	            	//groupsString = groupsText.getText();
 	            	bodyString = bodyText.getText();
 	            	referencesString = referencesText.getText();
 	
@@ -429,6 +379,8 @@ public class CreateArticle {
 	            		
 	            		// Retrieve selected role (admin, user) from the role combobox, turn it into string
 						String difficultyString = (String) difficultyBox.getSelectionModel().getSelectedItem();
+						
+						String groupsString = (String) groupBox.getSelectionModel().getSelectedItem();
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
@@ -441,7 +393,6 @@ public class CreateArticle {
 	            		ArticleDatabase.createArticle(headerString, titleString, authorString, descriptionString, 
 	            					keywordsString, difficultyString, groupsString, bodyString, referencesString);
             			
-            				
             			/**
             			 * Transitions to different home pages
             			 */

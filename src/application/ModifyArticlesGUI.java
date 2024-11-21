@@ -143,6 +143,9 @@ public class ModifyArticlesGUI {
     private void displayArticleRows(Pane pane) {
 
         String allArticles = ArticleDatabase.getAllArticles(); //allArticles accessing all the articles currently in database
+        
+        System.out.println(allArticles);
+        
         if (allArticles.isEmpty()) { // if there are no articles in the database then 
             Label noDataLabel = new Label("No articles found."); // it will say none found 
             setupLabelUI(noDataLabel, "Arial", 14, WINDOW_WIDTH, Pos.CENTER, 0, 160, Color.GRAY);
@@ -154,7 +157,7 @@ public class ModifyArticlesGUI {
         int yOffset = 160;
 
         for (String entry : articleEntries) {
-            String[] articleData = entry.split(",");
+            String[] articleData = entry.split("\\+");
             if (articleData.length >= 4) {  // ID, Header, Title, Group fields are present
                 String displayText = articleData[0] + "          " + articleData[1] + "       " + articleData[2] + "       " + articleData[3];
                 Label articleRow = new Label(displayText);

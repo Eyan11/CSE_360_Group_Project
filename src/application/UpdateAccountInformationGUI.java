@@ -210,7 +210,7 @@ public class UpdateAccountInformationGUI {
 					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
 					    currentStage.setScene(newScene); // 
         			}
-        			else if(!LoginEvaluator.studentRole(emailString)) // user is student or instructor
+        			else if(LoginEvaluator.studentRole(user)) // user is student or instructor
         			{
         				theRoot.getChildren().clear();  // Clear the current root
         				Pane newRoot = new Pane();

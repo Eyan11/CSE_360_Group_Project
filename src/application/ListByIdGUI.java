@@ -1,7 +1,7 @@
 package application;
 
 import database.ArticleDatabase;
-
+import database.LoginTracker;
 import javafx.scene.control.Label; // For Label object
 import javafx.scene.control.Button; // For Button object
 import javafx.geometry.Pos; // For Position object (vector2 coordinate used to describe position)
@@ -78,7 +78,7 @@ public class ListByIdGUI
 		// Grab article with the specified ID
 		String unformattedInput = ArticleDatabase.getArticleByID(this.userID);
 	    // Split the input by commas
-	    String[] formattedInput = unformattedInput.split(",+");
+	    String[] formattedInput = unformattedInput.split("\\+");
 
         // Parse and store each piece of data
         id = formattedInput[0];
@@ -89,8 +89,15 @@ public class ListByIdGUI
         keywords = formattedInput[5];
         level = formattedInput[6];
         groups = formattedInput[7];
-        body = formattedInput[8];
-        references = formattedInput[9];
+        if(LoginTracker.usingAdminRole())
+        {
+        	references = formattedInput[8];
+        }
+        else
+        {
+        	body = formattedInput[8];
+        	references = formattedInput[9];
+        }
 	    
 	    /*****
 	     * Label Declaration with Article Data

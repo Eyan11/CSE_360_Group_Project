@@ -398,7 +398,7 @@ public class ArticleDatabase {
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
 				// Get current article info
-				returnString += "ID:" + i + "\n"; 	// sequence number
+				returnString += "Sequence Number: " + i + "\n"; 	// sequence number
 				returnString += "Title: " + resultSet.getString("title") + "\n";
 				returnString += "Author: " + resultSet.getString("author") + "\n";
 				returnString += "Description: " + resultSet.getString("description") + "\n";

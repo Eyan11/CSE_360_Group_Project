@@ -174,6 +174,8 @@ public class ListArticlesGUI
 				// Retrieves ID from user and converts it into a integer
 				articleContentsFilter = articleContentText.getText();
 				int integerInput = Integer.parseInt(articleContentsFilter);
+				
+				System.out.println(integerInput);
 
 				// Make sure inputed Article ID from user is valid
 				if(ArticleDatabase.doesArticleIDExist(integerInput))
@@ -186,8 +188,6 @@ public class ListArticlesGUI
 					try {
 						ListByIdGUI listID = new ListByIdGUI(newRoot, integerInput); // ListByIdGUI helper class
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
 					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
@@ -213,6 +213,8 @@ public class ListArticlesGUI
 				groupFilter = groupText.getText();
 				contentLvlFilter = contentLvlText.getText();
 				articleContentsFilter = articleContentText.getText();
+				
+				System.out.println(groupFilter + contentLvlFilter + articleContentsFilter);
 				
 				theRoot.getChildren().clear();  // Clear the current root
 				// Create new pane for next interface
