@@ -1,13 +1,20 @@
 package application;
 
+import java.sql.SQLException;
+
+import database.AccountDatabase;
+import database.ArticleDatabase;
+import database.GroupDatabase;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;     
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -36,40 +43,54 @@ public class EditArticleGUI {
 		/** The height of the pop-up window for the user interface */
 		public final static double WINDOW_HEIGHT = 430;
 		
+		boolean isViewer;
+		
+		String groupString = GroupDatabase.getAllAuthorizedGroupNames(isViewer); // !!!!!!!!!!!! Error !!!!!!!!!!!!
+		String GroupsArr;
+		
 		/** String inputs */
 		private String headerString;
 		private String titleString;
+		private String authorString;
 		private String descriptionString;
 		private String keywordsString;
 		private String groupsString;
 		private String bodyString;
 		private String referencesString;
+		String allGroup = GroupDatabase.getAllGroupInfo();
+		String returnGroups = "";
 
 		/** Text to appear as a part of the window (text field indicators, etc. */
-		//private Label articleID = new Label("ID:");
-		//private Label sceneLabel = new Label("Create Articles");
+		//private Label sceneLabel = new Label("Create Article");
 		private Label headerLabel = new Label("Header:");
 		private Label titleLabel = new Label("Title:");
+		private Label authorLabel = new Label("Author:");
 		private Label descriptionLabel = new Label("Description:");
 		private Label keywordsLabel = new Label("Keywords:");
 		private Label groupsLabel = new Label("Groups:");
+		private Label groupLabel = new Label(allGroup);
+		private Label contentLabel = new Label("Content level:");
 		private Label bodyLabel = new Label("Body:");
 		private Label referencesLabel = new Label("References:");
 		private Label errorLabel = new Label("Please fill in the required entries (see red)");
+		private Label errorLabel2 = new Label("Please select a group (see red)");
+		private Label errorLabel3 = new Label("Please select a difficulty (see red)");
 		
 		/** Text fields for user input */
+		
+		// TODO: Not sure how to implement the ID part, as far as I can tell it has to do with the database 
 		// Either do ID = (function for ID import) and then set it later, or something else
 		//private TextField IDText = new TextField();
 		private TextField headerText = new TextField();
 		private TextField titleText = new TextField();
 		private TextField descriptionText = new TextField();
 		private TextField keywordsText = new TextField();
-		private TextField groupsText = new TextField();
+		private TextField authorText = new TextField();
 		private TextField bodyText = new TextField();
 		private TextField referencesText = new TextField();
-		private TextField errorText = new TextField();
+		//private TextField errorText = new TextField();
 		
-		//
+		// Declaration of SetupUIElements Object
 		public SetupUIElements setupUI = new SetupUIElements();
 		
 		/** Constructor for setting up the user's GUI for the update account info page
@@ -79,6 +100,12 @@ public class EditArticleGUI {
 		EditArticleGUI(Pane userPane, int articleID) { // user passed in from previous step
 			// Utilizes the SetUpElements class for the Label and Button
 	    	setupUI = new SetupUIElements();
+	    	
+	    	if(groupString.contains("+")) {
+	    		String[] GroupsArr = groupString.split("+");
+
+	    	}
+	    	// Else, display nothing for groups
 	        
 	        // Label the Scene with the name of the testbed, centered at the top of the pane
 			//setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
@@ -87,11 +114,19 @@ public class EditArticleGUI {
 			// Label the email input field with a title just above it, left aligned
 			//setupLabelUI(sceneLabel, "Arial", 14, WINDOW_WIDTH-10, 
 					//Pos.BASELINE_LEFT, 10, 25, Color.GREEN);
-						
+
 			// Label the email input field with a title just above it, left aligned
 			setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 					Pos.BASELINE_LEFT, 10, 500, Color.RED);
 			
+			// Label the email input field with a title just above it, left aligned
+					setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
+							Pos.BASELINE_LEFT, 10, 500, Color.RED);
+			
+			// Label the email input field with a title just above it, left aligned
+					setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
+							Pos.BASELINE_LEFT, 10, 500, Color.RED);
+					
 			// Label the first name input field with a title just above it, left aligned
 			setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
 					Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
@@ -100,22 +135,33 @@ public class EditArticleGUI {
 			setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 					Pos.BASELINE_LEFT, 10, 90, Color.BLACK);
 			
+			// Label the middle name input field with a title just above it, left aligned
+			setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
+					Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
+			
 			// Label the last name input field with a title just above it, left aligned
 			setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
+					Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
 			
 			// Label the preferred name input field with a title just above it, left aligned
 			setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
+					Pos.BASELINE_LEFT, 10, 210, Color.BLACK);
+			
+			setupLabelUI(contentLabel, "Arial", 14, WINDOW_WIDTH-10, 
+					Pos.BASELINE_LEFT, 10, 230, Color.BLACK);
 			
 			setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 280, Color.BLACK);
+					Pos.BASELINE_LEFT, 10, 275, Color.BLACK);
+			
+			setupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
+					Pos.BASELINE_LEFT, 10, 350, Color.BLACK);
+
 			
 			setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 320, Color.BLACK);
+					Pos.BASELINE_LEFT, 10, 335, Color.BLACK);
 			
 			setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-					Pos.BASELINE_LEFT, 10, 360, Color.BLACK);
+					Pos.BASELINE_LEFT, 10, 375, Color.BLACK);
 			
 			// Establish the text input operand field and when anything changes in the user inputs,
 			// the code will process the entire input to ensure that it is valid or an error.
@@ -125,36 +171,64 @@ public class EditArticleGUI {
 			setupUI.SetupTextFieldUI(titleText, "Arial", 18, 400, 10,
 					Pos.BASELINE_LEFT, 55, 75, true);
 			
+			setupUI.SetupTextFieldUI(authorText, "Arial", 18, 400, 10,
+					Pos.BASELINE_LEFT, 65, 115, true);
+			
 			setupUI.SetupTextFieldUI(descriptionText, "Arial", 18, 400, 10,
-					Pos.BASELINE_LEFT, 85, 115, true);
+					Pos.BASELINE_LEFT, 85, 155, true);
 			
 			setupUI.SetupTextFieldUI(keywordsText, "Arial", 18, 400, 10,
-					Pos.BASELINE_LEFT, 80, 155, true);
-			
-			setupUI.SetupTextFieldUI(groupsText, "Arial", 18, 400, 10,
-					Pos.BASELINE_LEFT, 65, 265, true);
+					Pos.BASELINE_LEFT, 80, 195, true);
 			
 			setupUI.SetupTextFieldUI(bodyText, "Arial", 18, 400, 10,
-					Pos.BASELINE_LEFT, 55, 305, true);
+					Pos.BASELINE_LEFT, 55, 335, true);
 			
 			setupUI.SetupTextFieldUI(referencesText, "Arial", 18, 400, 10,
-					Pos.BASELINE_LEFT, 90, 345, true);
+					Pos.BASELINE_LEFT, 90, 375, true);
+			
+			//setupUI.SetupTextFieldUI(errorText, "Arial", 18, 400, 10,
+					//Pos.BASELINE_LEFT, 65, 390, true);
+			
+			
+			ComboBox difficultyBox = new ComboBox();
+	        difficultyBox.getItems().addAll("Beginner", "Intermediate", "Advanced", "Expert");
+	        
+	        difficultyBox.setLayoutX(20);
+	        difficultyBox.setLayoutY(250);
+	        
+	        
+	        ComboBox groupBox = new ComboBox<>();
+        	groupBox.getItems().addAll(GroupsArr);
+        
+        	groupBox.setLayoutX(20);
+        	groupBox.setLayoutY(295);
+			
 			
 			// Establish the button which will be used to check and send new user info
 			// to the respective methods required to update the article info currently in the database
-			Button editButton = new Button("Confirm Changes");
-	        setupButtonUI(editButton, "Arial", 14, WINDOW_WIDTH-20, 
-	        		Pos.CENTER, 10, 400, Color.BLACK);
-	        
-	        Button backButton = new Button("<-");
-	        setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
-	        		Pos.CENTER, 10, 10, false, Color.BLACK);
+        	Button editButton = new Button("Apply");
+            setupButtonUI(editButton, "Arial", 14, WINDOW_WIDTH-20, 
+            		Pos.CENTER, 10, 420, Color.BLACK);
+            
+            Button backButton = new Button("Back");
+            setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
+            		Pos.CENTER, 10, 10, false, Color.BLACK);
+            Button addButton = new Button("Add");
+            setupUI.SetupButtonUI(addButton, "Arial", 11, 50, 20,
+            		Pos.CENTER, 80, 295, false, Color.BLACK);
+            
+            Button removeButton = new Button("Remove");
+            setupUI.SetupButtonUI(removeButton, "Arial", 11, 80, 20,
+            		Pos.CENTER, 140, 295, false, Color.BLACK);
 	        
 	        // Sends all previously established settings for the pane to the scene for setup
-	        userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, 
-	        		descriptionLabel, descriptionText, keywordsLabel, keywordsText,
-	        		groupsLabel, groupsText, bodyLabel, bodyText, referencesLabel, 
-	        		referencesText, editButton, backButton); 
+         // Sends all previously established parameters for the pane to the scene for setup
+            
+            //TODO: Must also have ID (again, pretty sure that's a database issue)
+            userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, authorLabel, authorText,
+            		descriptionLabel, descriptionText, keywordsLabel, keywordsText, groupLabel,
+            		groupsLabel, contentLabel, bodyLabel, bodyText, referencesLabel, 
+            		referencesText, groupBox, difficultyBox, editButton, addButton, removeButton, backButton); 
 	        
 	        /*Scene userScene = new Scene(userPane, 800, 500);
 	        userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -172,35 +246,39 @@ public class EditArticleGUI {
 		            	titleString = titleText.getText();
 		            	descriptionString = descriptionText.getText();
 		            	keywordsString = keywordsText.getText();
-		            	groupsString = groupsText.getText();
+		            	//groupsString = groupsText.getText();
 		            	bodyString = bodyText.getText();
 		            	referencesString = referencesText.getText();
 
 		
 		                // Do error check, if no errors, update info. If errors, output error message above update button and below info input.
 		            	// Repeat process for each button push
-		            	boolean pass = ErrorMessage(headerString, titleString, descriptionString, keywordsString, 
-		            			groupsString, bodyString, referencesString);
+		            	boolean pass = ErrorMessage(headerString, titleString, authorString, descriptionString, keywordsString, 
+		            			bodyString, referencesString);
 		            	
 		            	// If there are any unfilled entries, alter text box and output message indicating that entries are incomplete
 		            	// and highlight all necessary entry boxes
 		            	if(pass == false) {
+		            		userPane.getChildren().remove(errorLabel2);
+		            		userPane.getChildren().remove(errorLabel3);
 		            		userPane.getChildren().add(errorLabel);
-		
+
 		            		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 50, Color.RED);
 		            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 90, Color.RED);
-		            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            		setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 130, Color.RED);
-		            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 170, Color.RED);
+		            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            				Pos.BASELINE_LEFT, 10, 210, Color.RED);
 		            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
-		            				Pos.BASELINE_LEFT, 10, 280, Color.RED);
+		            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
 		            		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
-		            				Pos.BASELINE_LEFT, 10, 320, Color.RED);
+		            				Pos.BASELINE_LEFT, 10, 335, Color.RED);
 		            		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
-		            				Pos.BASELINE_LEFT, 10, 360, Color.RED);
+		            				Pos.BASELINE_LEFT, 10, 375, Color.RED);
 		            	}
 		            	// If all necessary entries are filled, reset scene formatting and send info to next step!
 		            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
@@ -213,17 +291,18 @@ public class EditArticleGUI {
 		            				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 		            		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 90, Color.BLACK);
-		            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            		setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
-		            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
+		            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            				Pos.BASELINE_LEFT, 10, 210, Color.BLACK);
 		            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 280, Color.BLACK);
 		            		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 320, Color.BLACK);
 		            		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		            				Pos.BASELINE_LEFT, 10, 360, Color.BLACK);
-		            		
 		            		// DEVELOPER NOTE: Critical step v1
 		            		// Pass info onto the next part!
 		            		/* TODO - add author and content level arguments
@@ -287,6 +366,138 @@ public class EditArticleGUI {
 		            	}
 	            }
 	        });
+	        
+	        addButton.setOnAction(new EventHandler<>() {
+	            public void handle(ActionEvent event) {
+	            	
+		            	// Retrieve TextField input
+		            	headerString = headerText.getText();
+		            	titleString = titleText.getText();
+		            	authorString = authorText.getText();
+		            	descriptionString = descriptionText.getText();
+		            	keywordsString = keywordsText.getText();
+		            	//groupsString = groupsText.getText();      // NOTE: I don't think you guys need this anymore (on account of the 
+		            												//       method I used in the addButton method to gather the selected groups),
+		            												//       but just in case I'm keeping this here. Delete if you end up not needing it.
+		            	bodyString = bodyText.getText();
+		            	referencesString = referencesText.getText();
+		            	
+		            	// Retrieve selected role (admin, user) from the role combobox, turn it into string
+						String difficultyString = (String) difficultyBox.getSelectionModel().getSelectedItem();
+					    
+						// Retrieve selected group (any amount of any strings) from the group combobox, turn it into string 
+						String selectedGroup = (String) groupBox.getSelectionModel().getSelectedItem();
+		            	
+					// Check for group selection 
+		            if(selectedGroup == null ) {
+		            	// Select a group dummy
+		            	userPane.getChildren().remove(errorLabel);
+		            	userPane.getChildren().remove(errorLabel3);
+		            	userPane.getChildren().add(errorLabel2);
+
+		            	// Change stuff to red
+	            		
+	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
+
+		            	
+		            }
+		            else {
+		            	
+		            	// Remove error indicators
+		            	userPane.getChildren().remove(errorLabel2);
+		            	
+		            	setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 275, Color.GREEN);
+		            	
+		            	// Check for difficulty selection
+
+		            	if(difficultyString == null) {
+		            		// Select a difficulty dummy
+			            	userPane.getChildren().add(errorLabel3);
+
+			            	// Change stuff to red
+		            		
+		            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
+		            	}
+		            	
+		            	else {
+		            		
+		            		// Remove error indicators
+		            		userPane.getChildren().remove(errorLabel);
+		            		userPane.getChildren().add(errorLabel2);
+		            		userPane.getChildren().add(errorLabel3);
+		            		
+		            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
+		            		
+		            		if(returnGroups == "") {
+		            			returnGroups = returnGroups + selectedGroup;
+		            		}
+		            		else {
+		            			returnGroups = returnGroups + selectedGroup + " & ";
+		            		}
+		            	}
+		            	
+		            	
+		            }
+		            	
+		            // LEFT FOR JULIO, use if needed, delete if not
+		            /*
+		            	// Remove "& " at the end of returnGroups list
+		            	 if (returnGroups.length() > 0) {
+		                     returnGroups = returnGroups.substring(0, returnGroups.length() - 2);
+		
+		            	 }  
+		            */
+	            }
+	        });
+	        
+	        // Julio, remember what I said about this method (those who knows :skull:)
+	        removeButton.setOnAction(new EventHandler<>() {
+	            public void handle(ActionEvent event) {
+	            	
+		            	// Retrieve TextField input
+		            	headerString = headerText.getText();
+		            	titleString = titleText.getText();
+		            	authorString = authorText.getText();
+		            	descriptionString = descriptionText.getText();
+		            	keywordsString = keywordsText.getText();
+		            	//groupsString = groupsText.getText();
+		            	bodyString = bodyText.getText();
+		            	referencesString = referencesText.getText();
+		            	
+		            	// Retrieve selected group (any amount of any strings) from the group combobox, turn it into string 
+						String selectedGroup = (String) groupBox.getSelectionModel().getSelectedItem();
+		            	
+		            	
+		            	if(returnGroups == "") {
+	            			returnGroups = returnGroups + selectedGroup;
+	            		}
+	            		else {
+	            			returnGroups = returnGroups + selectedGroup + " & ";
+	            		}
+		
+	            }  
+	        });
+	        
+	        backButton.setOnAction(new EventHandler<>()
+			{
+				public void handle(ActionEvent event) 
+				{						
+					// Returns user back to previous page
+					userPane.getChildren().clear();  // Clear the current root
+					
+					// Create new pane for next interface
+					Pane newRoot = new Pane();
+					ManageArticlesGUI manageArticles = new ManageArticlesGUI(newRoot); // Returns user to previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) userPane.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets new scene
+				}
+			});
+	        
 		}
 		
 		/**
