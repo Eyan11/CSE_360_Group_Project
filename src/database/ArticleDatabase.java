@@ -6,7 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*; // For SQL related objects
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * <p> ArticleDatabase. </p>
@@ -22,7 +24,7 @@ import java.util.Base64;
  * @author Eyan Martucci
  * 
  * @version 1.00		10/26/2024 Phase 2 implementation and documentation
- * @version TODO
+ * @version 2.00		11/20/2024 Phase 3 implementation and documentation
  *  
  */
 
@@ -440,7 +442,7 @@ public class ArticleDatabase {
 			// If non-empty, remove the last ", " in groups string
 			if (returnGroups.length() > 0)
 				returnGroups = returnGroups.substring(0, returnGroups.length() - 2);
-				returnGroups += "\n";
+			returnGroups += "\n";
 
 			
 			// Build content levels string
@@ -1018,13 +1020,10 @@ public class ArticleDatabase {
 	private static ResultSet craftResultSetToGetArticlesByGroups(String groups) throws SQLException {
 		
 		// Get all articles, then filter through them later
-		query = "SELECT * FROM articles"; 
+		query = "SELECT * FROM articles"; 		
 		// Allow statement to be scrollable so result set pointer can be reset to beginning
-		Statement statement = connection.createStatement(
-			    ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			    ResultSet.CONCUR_READ_ONLY
-			);
 		statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		resultSet = statement.executeQuery(query); 	// Execute query
 		
 		// Separate groups into an array
 		String[] groupsArr = groups.split(",");
@@ -1037,6 +1036,9 @@ public class ArticleDatabase {
 		
 		// If filtering by groups (not empty or "all")
 		if(!groups.trim().isEmpty() || !groups.toLowerCase().equals("all")) {
+			
+	        // Create a temporary result set to hold the filtered articles
+	        //List<Row> filteredRows = new ArrayList<>();  // List to store filtered rows
 			
 			// Check all articles
 			while(resultSet.next()) { 
@@ -1058,11 +1060,16 @@ public class ArticleDatabase {
 				}
 				
 				// If none of the requested groups are in the article
-				if(!keepArticle)
+				if(!keepArticle) {
+					System.out.println("BEFORE 'deleteRow'");
 					resultSet.deleteRow();	// Filter out article
+					System.out.println("AFTER 'deleteRow'");
+				}
 			}
 		}
+		System.out.println("Before 'beforeFirst'");
 		resultSet.beforeFirst(); 	// Move result set pointer back to start
+		System.out.println("After 'beforeFirst'");
 		return resultSet;
 	}
 	

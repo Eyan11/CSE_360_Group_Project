@@ -379,10 +379,10 @@ class ArticleDatabaseTesting {
 	
 	**********************************************************************************************/
 	
-	
+	/*
 	@Test
 	void testBackupArticles() {
-		/*
+		
 		ArticleDatabase.deleteAllArticles();
 		LoginTracker.logout();
 		// 		System.out.println("\n\n\n\nLOOK HERE\n\n\n\n");
@@ -392,11 +392,11 @@ class ArticleDatabaseTesting {
 		ArticleDatabase.createArticle("h1", "t", "a", "d", "k", "beginner", "groupG", "b", "r");
  		System.out.println("\n\n\n\nLOOK HERE\n\n\n\n");
 		assertTrue(ArticleDatabase.backupArticles("backup1", "all"), "Test 1");
-		/*
+		
 		// TEST 2 - backup all article (article 2)
 		ArticleDatabase.createArticle("h1", "t", "a", "d", "k", "beginner", "groupG", "b", "r");
 		assertTrue(ArticleDatabase.backupArticles("backup1", "all"), "Test 1");
-		*/
+		
 	}
 	
 	

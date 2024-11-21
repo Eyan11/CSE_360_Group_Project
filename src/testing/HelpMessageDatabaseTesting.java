@@ -82,7 +82,7 @@ class HelpMessageDatabaseTesting {
 		// TEST 1 - Empty table
 		assertEquals("", HelpMessageDatabase.getAllHelpMessages(), "Test 1");
 		
-		// TEST 2 - 1 group
+		// TEST 2 - 1 message
 		GroupDatabase.createGroup("group1", "userA", false);		// Create a general group 'group1'
 		GroupDatabase.addUserToGroup("userS", "group1", true);		// Add userS to group1
 		LoginTracker.login("userS");								// Login as userS
@@ -92,7 +92,7 @@ class HelpMessageDatabaseTesting {
 				+ "group1 group are requested.\n\n", 
 				HelpMessageDatabase.getAllHelpMessages(), "Test 2");
 			
-		// TEST 3 - 2 groups
+		// TEST 3 - 2 messages
 		GroupDatabase.createGroup("group2", "userA", true);			// Create special group 'group2'
 		GroupDatabase.addUserToGroup("userS", "group2", true);		// Add userS to group2
 		HelpMessageDatabase.createGenericMessage("group2");			// Create generic message with group2
