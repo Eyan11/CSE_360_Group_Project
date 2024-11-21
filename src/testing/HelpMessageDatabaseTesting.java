@@ -20,6 +20,7 @@ import java.util.Date;
  * @author Eyan Martucci
  * 
  * @version 1.00		11/19/2024 Phase 3 implementation and documentation
+ * @version 1.10		11/20/2024 Fixed issue by checking for current date instead of 11/19 specifically
  *  
  */
 
@@ -86,7 +87,8 @@ class HelpMessageDatabaseTesting {
 		GroupDatabase.addUserToGroup("userS", "group1", true);		// Add userS to group1
 		LoginTracker.login("userS");								// Login as userS
 		HelpMessageDatabase.createGenericMessage("group1");			// Create generic message with group1
-		assertEquals("2024-11-19\nMore help articles regarding the "
+		Date date = new java.sql.Date(System.currentTimeMillis());	// Get date in format "yyyy-mm-dd"
+		assertEquals(date + "\nMore help articles regarding the "
 				+ "group1 group are requested.\n\n", 
 				HelpMessageDatabase.getAllHelpMessages(), "Test 2");
 			
@@ -94,15 +96,14 @@ class HelpMessageDatabaseTesting {
 		GroupDatabase.createGroup("group2", "userA", true);			// Create special group 'group2'
 		GroupDatabase.addUserToGroup("userS", "group2", true);		// Add userS to group2
 		HelpMessageDatabase.createGenericMessage("group2");			// Create generic message with group2
-		assertEquals("2024-11-19\nMore help articles regarding the "
-				+ "group1 group are requested.\n\n"
-				+ "2024-11-19\nMore help articles regarding the "
+		assertEquals(date + "\nMore help articles regarding the "
+				+ "group1 group are requested.\n\n" + date
+				+ "\nMore help articles regarding the "
 				+ "group2 group are requested.\n\n", 
 				HelpMessageDatabase.getAllHelpMessages(), "Test 3");
 	}
 	
-	//System.out.println("\n\nGet All Group Info: " + GroupDatabase.getAllGroupInfo());
-	//System.out.println("\n\n\n TEST 1: \n\n\n\n");
+
 	@Test
 	void testCreateGenericMessage() {
 		HelpMessageDatabase.deleteAllMessages();	// Wipe table
