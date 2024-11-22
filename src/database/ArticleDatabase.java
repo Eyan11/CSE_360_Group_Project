@@ -777,6 +777,16 @@ public class ArticleDatabase {
 	 * Prints all article table contents to a user specified file
 	 */
 	public static boolean backupArticles(String filePath, String groups) {
+		// Prevent long group filter
+		if(groups.length() > 50) {
+			System.err.println("Can't backup articles because groups filter is over 50 characters!");
+			return false;
+		}
+		// Prevent empty or long file path
+		else if(filePath.length() <= 0 || filePath.length() > 100) {
+			System.err.println("Can't backup articles because file path must be between 1 and 100 charactes!");
+			return false;
+		}
 		
 		BufferedWriter writer = null;
 		try {
@@ -792,8 +802,8 @@ public class ArticleDatabase {
 				
 				resultGroups = resultSet.getString("groups");
 				
-				// If logged in user doesn't have viewing rights for all groups in article, skip it
-				if(!GroupDatabase.hasRightsForAllGroups(resultGroups, LoginTracker.getUsername(), true)) {
+				// If logged in user doesn't have admin rights for all groups in article, skip it
+				if(!GroupDatabase.hasRightsForAllGroups(resultGroups, LoginTracker.getUsername(), false)) {
 					System.out.println("Skipping backup for article because logged in user does not have viewing rights for all groups: " + resultGroups);
 					continue;
 				}
@@ -833,6 +843,11 @@ public class ArticleDatabase {
 	 * Gathers backup articles info from file and replaces the current table with restored table
 	 */
 	public static boolean restoreByOverriding(String filePath) {
+		// Prevent empty or long file path
+		if(filePath.length() <= 0 || filePath.length() > 100) {
+			System.err.println("Can't restore by overriding articles because file path must be between 1 and 100 charactes!");
+			return false;
+		}
 		
 		BufferedReader reader = null;
 		boolean returnValue = true;
@@ -843,9 +858,8 @@ public class ArticleDatabase {
 			// Temporary strings to collect file contents
 			String idString, header, title, author, description, keywords, level, groups, body, references = null;
 			
-			// Wipe the articles table and start a new one
-			deleteTable();
-			createTable();
+			// Wipe the articles table
+			deleteAllArticles();
 			
 			// While the next line isn't empty
 			while((reader.readLine()) != null) {
@@ -877,8 +891,8 @@ public class ArticleDatabase {
 				pstmt.setString(6, keywords);
 				pstmt.setString(7, level);
 				pstmt.setString(8, groups);
-				pstmt.setString(8, body);
-				pstmt.setString(9, references);
+				pstmt.setString(9, body);
+				pstmt.setString(10, references);
 				pstmt.executeUpdate();		// Execute query
 				
 				// Print result to console
@@ -910,6 +924,11 @@ public class ArticleDatabase {
 	 * Gathers backup articles info from file and replaces the current table with restored table
 	 */
 	public static boolean restoreByMerging(String filePath) {
+		// Prevent empty or long file path
+		if(filePath.length() <= 0 || filePath.length() > 100) {
+			System.err.println("Can't restore by merging articles because file path must be between 1 and 100 charactes!");
+			return false;
+		}
 		
 		BufferedReader reader = null;
 		boolean returnValue = true;
@@ -957,13 +976,13 @@ public class ArticleDatabase {
 				pstmt.setInt(1, id);
 				pstmt.setString(2, header);
 				pstmt.setString(3, title);
-				pstmt.setString(3, author);
-				pstmt.setString(4, description);
-				pstmt.setString(5, keywords);
-				pstmt.setString(3, level);
-				pstmt.setString(6, groups);
-				pstmt.setString(7, body);
-				pstmt.setString(8, references);
+				pstmt.setString(4, author);
+				pstmt.setString(5, description);
+				pstmt.setString(6, keywords);
+				pstmt.setString(7, level);
+				pstmt.setString(8, groups);
+				pstmt.setString(9, body);
+				pstmt.setString(10, references);
 				pstmt.executeUpdate();		// Execute query
 				
 				// Print result to console
@@ -1094,7 +1113,6 @@ public class ArticleDatabase {
 		
 		
 		// *** Enter Values Into Query ************************************************************
-		System.out.println("\n\n\nTESTING: ArticleDatabase.craftResultSetToSearchArticles \nQuery = " + query);	// TODO - remove
 		PreparedStatement pstmt = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		int index = 1;	// Used for pstmt index when setting strings
 		

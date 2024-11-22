@@ -353,6 +353,9 @@ class ArticleDatabaseTesting {
 		
 		// TEST 9 - group doesn't exist
 		assertFalse(ArticleDatabase.createArticle("h9", "t", "a", "d", "k", "intermediate", "Ignore", "b", "r"), "Test 9");
+		
+		// TEST 10 - Content level isn't beginner, intermediate, advanced, or expert
+		assertFalse(ArticleDatabase.createArticle("h9", "t", "a", "d", "k", "Ignore", "GroupG", "b", "r"), "Test 10");
 	}
 	
 	@Test
@@ -420,7 +423,7 @@ class ArticleDatabaseTesting {
 		assertFalse(ArticleDatabase.editArticle(id, "h9", "t", "a", "d", "k", "advanced", "groupX", "b", "r"), "Test 8");
 		
 		// TEST 9 - content level is not beginner, intermediate, advanced, or expert
-		assertFalse(ArticleDatabase.editArticle(id, "h9", "t", "a", "d", "k", "Ignore", "groupX", "b", "r"), "Test 9");
+		assertFalse(ArticleDatabase.editArticle(id, "h9", "t", "a", "d", "k", "Ignore", "groupG", "b", "r"), "Test 9");
 		
 		// TEST 10 - Keywords are over 50 characters
 		assertFalse(ArticleDatabase.editArticle(id, "h9", "t", "a", "d", 
@@ -456,36 +459,131 @@ class ArticleDatabaseTesting {
 	
 	**********************************************************************************************/
 	
-	/*
+	
 	@Test
 	void testBackupArticles() {
-		
 		ArticleDatabase.deleteAllArticles();
 		LoginTracker.logout();
-		// 		System.out.println("\n\n\n\nLOOK HERE\n\n\n\n");
 		
-		// TEST 1 - backup all articles (article 1)
+		// TEST 1 - Backup article 1
 		LoginTracker.login("userI");
-		ArticleDatabase.createArticle("h1", "t", "a", "d", "k", "beginner", "groupG", "b", "r");
- 		System.out.println("\n\n\n\nLOOK HERE\n\n\n\n");
+		ArticleDatabase.createArticle("h1", "t1", "a1", "d1", "k1", "beginner", "groupG", "b1", "r1");
 		assertTrue(ArticleDatabase.backupArticles("backup1", "all"), "Test 1");
 		
-		// TEST 2 - backup all article (article 2)
-		ArticleDatabase.createArticle("h1", "t", "a", "d", "k", "beginner", "groupG", "b", "r");
-		assertTrue(ArticleDatabase.backupArticles("backup1", "all"), "Test 1");
+		// TEST 2 - Backup articles 1 and 2
+		ArticleDatabase.createArticle("h2", "t2", "a2", "d2", "k2", "intermediate", "groupS", "b2", "r2");
+		assertTrue(ArticleDatabase.backupArticles("backup1", "all"), "Test 2");
 		
+		// TEST 3 - Backup articles 1, 2, and 3
+		ArticleDatabase.createArticle("h3", "t3", "a3", "d3", "k3", "advanced", "groupG", "b2", "r2");
+		assertTrue(ArticleDatabase.backupArticles("backup1", "all"), "Test 3");
+		
+		// TEST 4 - Backup articles with groupG
+		assertTrue(ArticleDatabase.backupArticles("backup1", "groupG"), "Test 4");
+		
+		// TEST 5 - Backup articles with groupS
+		assertTrue(ArticleDatabase.backupArticles("backup1", "groupS"), "Test 5");
+		
+		// TEST 6 - Backup articles with groupS AND groupG
+		assertTrue(ArticleDatabase.backupArticles("backup1", "groupS, groupG"), "Test 6");
+		
+		// TEST 7 - Backup no articles because userI does not have admin rights for groupX
+		LoginTracker.login("userA");
+		ArticleDatabase.createArticle("h4", "t4", "a4", "d4", "k4", "expert", "groupX", "b4", "r4");
+		LoginTracker.login("userI");
+		assertTrue(ArticleDatabase.backupArticles("backup1", "groupX"), "Test 7");
+		
+		// TEST 8 - Groups filter is over 50 characters
+		assertFalse(ArticleDatabase.backupArticles("backup1", 
+				"111111111122222222233333333334444444445555555555 Too Long"), "Test 8");
+		
+		// Test 9 - Empty file path
+		assertFalse(ArticleDatabase.backupArticles("", "all"), "Test 9");
+		
+		// Test 10 - File path is too long
+		assertFalse(ArticleDatabase.backupArticles(""
+				+ "111111111122222222233333333334444444445555555555"
+				+ "111111111122222222233333333334444444445555555555 Too Long", "all"), "Test 10");
 	}
 	
 	
-	/*
 	@Test
 	void testRestoreByOverriding() {
-		fail("Not yet implemented");
+		ArticleDatabase.deleteAllArticles();
+		LoginTracker.logout();
+		
+		// TEST 1 - Restore no articles
+		LoginTracker.login("userI");
+		ArticleDatabase.backupArticles("backup2", "all");
+		assertTrue(ArticleDatabase.restoreByOverriding("backup2"), "Test 1");
+		
+		// TEST 2 - Restore 1 article
+		ArticleDatabase.createArticle("h1", "t1", "a1", "d1", "k1", "beginner", "groupG", "b1", "r1");
+		ArticleDatabase.backupArticles("backup2", "all");
+		assertTrue(ArticleDatabase.restoreByOverriding("backup2"), "Test 2");
+		
+		// TEST 3 - Restore 2 articles
+		ArticleDatabase.createArticle("h2", "t2", "a2", "d2", "k2", "intermediate", "groupS", "b2", "r2");
+		ArticleDatabase.backupArticles("backup2", "all");
+		assertTrue(ArticleDatabase.restoreByOverriding("backup2"), "Test 3");
+		
+		// TEST 4 - Restore 3 articles
+		ArticleDatabase.createArticle("h3", "t3", "a3", "d3", "k3", "advanced", "groupG", "b3", "r3");
+		ArticleDatabase.backupArticles("backup2", "all");
+		assertTrue(ArticleDatabase.restoreByOverriding("backup2"), "Test 4");
+		
+		// TEST 5 - Empty file path
+		assertFalse(ArticleDatabase.restoreByOverriding(""), "Test 5");
+		
+		// TEST 6 - File path over 100 characters
+		assertFalse(ArticleDatabase.restoreByOverriding(""
+				+ "111111111122222222233333333334444444445555555555"
+				+ "111111111122222222233333333334444444445555555555 Too Long"), "Test 6");
+		
 	}
+	
 	
 	@Test
 	void testRestoreByMerging() {
-		fail("Not yet implemented");
+		ArticleDatabase.deleteAllArticles();
+		LoginTracker.logout();
+		
+		// TEST 1 - Restore no articles
+		ArticleDatabase.backupArticles("backup3", "all");
+		assertTrue(ArticleDatabase.restoreByMerging("backup3"), "Test 1");
+		
+		// TEST 2 - Restore 1 article
+		LoginTracker.login("userI");
+		ArticleDatabase.createArticle("h1", "t1", "a1", "d1", "k1", "beginner", "groupG", "b1", "r1");
+		ArticleDatabase.backupArticles("backup3", "all");
+		assertTrue(ArticleDatabase.restoreByMerging("backup3"), "Test 2");
+		
+		// TEST 3 - Restore 2 articles
+		ArticleDatabase.createArticle("h2", "t2", "a2", "d2", "k2", "intermediate", "groupS", "b2", "r2");
+		ArticleDatabase.backupArticles("backup3", "all");
+		assertTrue(ArticleDatabase.restoreByMerging("backup3"), "Test 3");
+		
+		// TEST 4 - Restore 3 articles
+		ArticleDatabase.createArticle("h3", "t3", "a3", "d3", "k3", "advanced", "groupG", "b3", "r3");
+		ArticleDatabase.backupArticles("backup3", "all");
+		assertTrue(ArticleDatabase.restoreByMerging("backup3"), "Test 4");
+		
+		// TEST 5 - Empty file path
+		assertFalse(ArticleDatabase.restoreByMerging(""), "Test 5");
+		
+		// TEST 6 - File path over 100 characters
+		assertFalse(ArticleDatabase.restoreByMerging(""
+				+ "111111111122222222233333333334444444445555555555"
+				+ "111111111122222222233333333334444444445555555555 Too Long"), "Test 6");
+		
+		// TEST 7 - Delete all before merging
+		ArticleDatabase.deleteAllArticles();
+		assertTrue(ArticleDatabase.restoreByMerging("backup3"), "Test 7");
+		
+		// TEST 7 - Don't add duplicate header
+		ArticleDatabase.deleteAllArticles();
+		ArticleDatabase.createArticle("h1", "t4", "a4", "d4", "k4", "expert", "groupG", "b4", "r4");
+		assertTrue(ArticleDatabase.restoreByMerging("backup3"), "Test 7");
 	}
-	*/
+	
 }
