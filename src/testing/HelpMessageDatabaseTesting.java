@@ -64,7 +64,8 @@ class HelpMessageDatabaseTesting {
 		assertTrue(HelpMessageDatabase.isTableEmpty(), "Test 1");
 
 		// TEST 2
-		GroupDatabase.createGroup("group1", "userS", false);
+		GroupDatabase.createGroup("group1", "userA", false);
+		LoginTracker.login("userS");
 		HelpMessageDatabase.createGenericMessage("group1");	// Fill table
 		assertFalse(HelpMessageDatabase.isTableEmpty(), "Test 2");
 		
@@ -118,38 +119,50 @@ class HelpMessageDatabaseTesting {
 		// Test 2 - Create generic message with group2
 		GroupDatabase.createGroup("group2", "userA", true);			// Create special group 'group2'
 		GroupDatabase.addUserToGroup("userS", "group2", true);		// Add userS to group2
-		assertTrue(HelpMessageDatabase.createGenericMessage("group2"), "Test 2");
+		assertTrue(HelpMessageDatabase.createGenericMessage(" GROUP2   "), "Test 2");
 		
-		// Test 3 - Group name doesn't exist
-		assertFalse(HelpMessageDatabase.createGenericMessage("Ignore"), "Test 3");
+		// Test 3 - Group name is too long
+		assertFalse(HelpMessageDatabase.createGenericMessage(
+				"11111111112222222222333333333344444444445555555555 Too Long"), "Test 3");
 		
-		// Test 4 - Logged in user isn't in group1
-		LoginTracker.login("userI");
-		assertFalse(HelpMessageDatabase.createGenericMessage("group1"), "Test 4");
+		// Test 4 - Group name is empty
+		assertFalse(HelpMessageDatabase.createGenericMessage(""), "Test 4");
 		
-		// Test 5 - Nobody is logged in
-		LoginTracker.logout();
+		// Test 5 - Group name doesn't exist
 		assertFalse(HelpMessageDatabase.createGenericMessage("Ignore"), "Test 5");
+		
+		// Test 6 - Nobody is logged in
+		LoginTracker.logout();
+		assertFalse(HelpMessageDatabase.createGenericMessage("group1"), "Test 6");
+		
+		// Test 7 - Not using student role
+		LoginTracker.login("userI");
+		assertFalse(HelpMessageDatabase.createGenericMessage("group1"), "Test 7");
+		
+		// Test 8 - Student doesn't belong to group3
+		GroupDatabase.createGroup("group3", "userA", true);			// Create special group 'group3'
+		LoginTracker.login("userS");
+		assertFalse(HelpMessageDatabase.createGenericMessage("group3"), "Test 8");
 	}
 	
 	
 	@Test
-	void testCreateSpecific() {
+	void testCreateSpecificMessage() {
 		HelpMessageDatabase.deleteAllMessages();	// Wipe table
 		LoginTracker.logout();
 		
 		// Test 1 - Create specific message 1
-		LoginTracker.login("userS");								// Login as userS
+		LoginTracker.login("userS");	// Login as student
 		assertTrue(HelpMessageDatabase.createSpecificMessage("This is my first message"), "Test 1");
 		
 		// Test 2 - Create specific message 2
 		assertTrue(HelpMessageDatabase.createSpecificMessage("This is my second message"), "Test 2");
 		
 		// Test 3 - Empty message
-		assertFalse(HelpMessageDatabase.createGenericMessage(""), "Test 3");
+		assertFalse(HelpMessageDatabase.createSpecificMessage(""), "Test 3");
 		
 		// Test 4 - Message too long (over 300 char)
-		assertFalse(HelpMessageDatabase.createGenericMessage(""
+		assertFalse(HelpMessageDatabase.createSpecificMessage(""
 				+ "1111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000"
 				+ "1111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000"
 				+ "1111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000"
@@ -157,7 +170,11 @@ class HelpMessageDatabaseTesting {
 		
 		// Test 5 - Nobody is logged in
 		LoginTracker.logout();
-		assertFalse(HelpMessageDatabase.createGenericMessage("Ignore"), "Test 5");
+		assertFalse(HelpMessageDatabase.createSpecificMessage("Ignore"), "Test 5");
+		
+		// Test 6 - Instructor is logged in
+		LoginTracker.login("userI");
+		assertFalse(HelpMessageDatabase.createSpecificMessage("Ignore"), "Test 6");
 	}
 
 }

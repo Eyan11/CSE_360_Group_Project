@@ -117,8 +117,8 @@ public class HelpMessageDatabase {
 	
 	
 	/**********
-	 * Returns the message and timestamp for every row in help_messages table as a String
-	 * in format of "date1\nmessage1\n\ndate2\nmessage2\n\n..."
+	 * Returns the message and date for every row in help_messages table as a String
+	 * in format of "<yyyy-mm-dd of message1>\nmessage1\n\n<yyyy-mm-dd of message2>\nmessage2\n\n..."
 	 */
 	public static String getAllHelpMessages() {
 		
@@ -139,7 +139,7 @@ public class HelpMessageDatabase {
 			// While the next row exists, check next row
 			while(resultSet.next()) { 
 				// Get current article info
-				returnString += resultSet.getDate("date").toString() + "\n";
+				returnString += resultSet.getDate("date").toString() + "\n";	// DATE is in format yyyy-mm-dd
 				returnString += resultSet.getString("message") + "\n\n";
 			}
 		}
@@ -166,20 +166,26 @@ public class HelpMessageDatabase {
 		groupName.toLowerCase();	// All groups are lowercase
 		groupName.trim();			// Remove excess whitespace
 		
+		// Prevent group names over 50 characters or empty group names
+		if(groupName.length() >= 50 || groupName.equals("")) {
+			System.err.println("Cannot create generic message because group name is empty or over 50 characters!");
+			return false;
+		}
 		// Prevent sending message if group doesn't exist
 		if(!GroupDatabase.doesGroupNameExist(groupName)) {
 			System.err.println("Cannot create generic message because group: " + groupName + " doesn't exist!");
 			return false;
 		}
-		// Prevent creating messages if nobody is logged in
-		if(!LoginTracker.isLoggedIn()) {
-			System.err.println("Cannot create generic message because nobody is logged in! Please login with LoginTracker class.");
+		// Prevent creating messages if nobody is logged in or not using the student role
+		if(!LoginTracker.isLoggedIn() || !LoginTracker.usingStudentRole()) {
+			System.err.println("Cannot create generic message because nobody is logged in, "
+					+ "or the logged in user is not using the student role!");
 			return false;
 		}
 		// Prevent sending message if user is not a viewer of group
 		if(!GroupDatabase.isUserInGroup(groupName, LoginTracker.getUsername(), true)) {
 			System.err.println("Cannot create generic message because logged in user "
-					+ "does not exist in group name: " + groupName + "!");
+					+ "does not exist in group name: " + groupName);
 			return false;
 		}
 		
@@ -217,10 +223,11 @@ public class HelpMessageDatabase {
 	 * Creates a specific message and stores in help_messages table, returns if successful or not.
 	 */
 	public static boolean createSpecificMessage(String message) {
-		// Prevent creating messages if nobody is logged in
-		if(!LoginTracker.isLoggedIn()) {
-			System.err.println("Cannot create specific message because nobody is logged in! "
-					+ "Please login with LoginTracker class.");
+		
+		// Prevent creating messages if nobody is logged in or if logged in user is not using student role
+		if(!LoginTracker.isLoggedIn() || !LoginTracker.usingStudentRole()) {
+			System.err.println("Cannot create specific message because nobody is logged in "
+					+ "or the logged in user is not using the student role!");
 			return false;
 		}
 		// Prevent a message that is empty or too long
@@ -241,7 +248,6 @@ public class HelpMessageDatabase {
 			pstmt.setDate(1, date);
 			pstmt.setString(2, message);
 			pstmt.executeUpdate();		// Execute query
-			return true;
 		}
 		catch(SQLException e) {
 			System.err.println("SQLException in HelpMessages.createSpecificMessage \n\n");
