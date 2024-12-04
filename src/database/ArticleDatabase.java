@@ -443,13 +443,13 @@ public class ArticleDatabase {
 			
 			// Build content levels string
 			if(numBeg > 0)
-				returnLevels += numBeg + " beginner, ";
+				returnLevels += " beginner, ";
 			if(numInt > 0)
-				returnLevels += numInt + " intermediate, ";
+				returnLevels += " intermediate, ";
 			if(numAdv > 0)
-				returnLevels += numAdv + " advanced, ";
+				returnLevels += " advanced, ";
 			if(numExp > 0)
-				returnLevels += numExp + " expert, ";
+				returnLevels += " expert, ";
 			
 			// If at least 1 article is returned, remove the last ", " from returnLevels
 			if(numBeg + numInt + numAdv + numExp > 0)

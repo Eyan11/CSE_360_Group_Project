@@ -79,8 +79,8 @@ public class ListByGroupGUI
 		 */
 		
 		// Label that displays article(s) related to user parameters
-		setupUI.SetupLabelUI(displayArticles, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 100, Color.BLACK);
+		setupUI.SetupLabelUI(displayArticles, "Arial", 16, WINDOW_WIDTH-10, 
+				Pos.BASELINE_LEFT, 10, 40, Color.BLACK);
 		
 		/*
 		 * Button Creation
