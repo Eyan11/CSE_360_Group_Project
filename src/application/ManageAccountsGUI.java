@@ -2,6 +2,7 @@ package application;
 
 import java.sql.SQLException;
 
+import database.LoginTracker;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -61,13 +62,27 @@ public class ManageAccountsGUI {
 
     private void handleBack(Button backButton, Pane theRoot) {
         backButton.setOnAction(event -> {
-        	theRoot.getChildren().clear();
-            
-            Pane newRoot = new Pane();
-            AdminHome adminHome = new AdminHome(newRoot); 
-            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-    	    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-    	    currentStage.setScene(newScene); //
+        	
+        	if(LoginTracker.usingAdminRole())
+        	{
+	        	theRoot.getChildren().clear();
+	            
+	            Pane newRoot = new Pane();
+	            AdminHome adminHome = new AdminHome(newRoot); 
+	            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    	    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    	    currentStage.setScene(newScene); //
+        	}
+        	else if(LoginTracker.usingInstructorRole())
+        	{
+        		theRoot.getChildren().clear();
+	            
+	            Pane newRoot = new Pane();
+	            InstructorHomeGUI instructorHome = new InstructorHomeGUI(newRoot); 
+	            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
+	    	    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
+	    	    currentStage.setScene(newScene); //
+        	}
        });
     }
     

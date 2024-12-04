@@ -3,6 +3,8 @@ package application;
 import java.sql.SQLException;
 
 import database.LoginTracker;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
@@ -30,6 +32,9 @@ public class InstructorHomeGUI {
      */
     public final static double WINDOW_WIDTH = 500;
     public final static double WINDOW_HEIGHT = 430;
+    
+    // The quit button that terminates the execution of this application
+    Button buttonQuit = new Button("X");
 
     // Declaration of SetupUIElements Object
     public SetupUIElements setupUI;
@@ -51,6 +56,10 @@ public class InstructorHomeGUI {
         Button manageArticlesButton = new Button("Manage Articles");
         Button helpMessagesButton = new Button("Help Messages");
         Button logoutButton = new Button("Logout");
+        
+        // Quit Button (Top-Right Corner)
+        setupUI.SetupButtonUI(buttonQuit, "Arial", 11, 25, 20, 
+        		Pos.BASELINE_LEFT, 465, 10, false, Color.RED);
 
         // Set up the buttons using SetupUIElements
         setupUI.SetupButtonUI(manageAccountsButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
@@ -65,13 +74,21 @@ public class InstructorHomeGUI {
         vbox.setLayoutY(100);
 
         // Add both title and VBox layout to root
-        theRoot.getChildren().addAll(title, vbox);
+        theRoot.getChildren().addAll(title, buttonQuit, vbox);
 
         // Handle button functionality
         ManageAccounts(manageAccountsButton, theRoot);
         ManageArticles(manageArticlesButton, theRoot);
         ManageHelpMessages(helpMessagesButton, theRoot);
         Logout(logoutButton, theRoot);
+        
+        buttonQuit.setOnAction(new EventHandler<>()
+    	{
+    		public void handle(ActionEvent event) 
+    		{						
+    			System.exit(0);
+    		}
+    	});
     }
 
     private void Logout(Button logoutButton, Pane theRoot) {

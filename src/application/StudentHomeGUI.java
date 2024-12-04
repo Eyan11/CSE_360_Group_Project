@@ -3,6 +3,8 @@ package application;
 import java.sql.SQLException;
 
 import database.LoginTracker;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos; // For positioning UI elements
 import javafx.scene.Scene;
 import javafx.scene.control.Button; // For Button object
@@ -34,6 +36,9 @@ public class StudentHomeGUI {
     public final static double WINDOW_WIDTH = 500;
     public final static double WINDOW_HEIGHT = 430;
     
+    // The quit button that terminates the execution of this application
+    Button buttonQuit = new Button("X");
+    
     // Declaration of SetupUIElements Object
     public SetupUIElements setupUI;
 
@@ -56,6 +61,10 @@ public class StudentHomeGUI {
         Button articleSearchButton = new Button("Article Search");
         Button logoutButton = new Button("Logout");
         Button quitButton = new Button("Quit");
+        
+        // Quit Button (Top-Right Corner)
+        setupUI.SetupButtonUI(buttonQuit, "Arial", 11, 25, 20, 
+        		Pos.BASELINE_LEFT, 465, 10, false, Color.RED);
 
         // Set up the buttons using SetupUIElements
         setupUI.SetupButtonUI(genericMessageButton, "Arial", 14, 200, Pos.CENTER, 0, 0, false, Color.BLACK);
@@ -71,7 +80,7 @@ public class StudentHomeGUI {
         vbox.setLayoutY(80); // Set a suitable vertical position
 
         // Add title and buttons to the root
-        theRoot.getChildren().addAll(homeText, vbox);
+        theRoot.getChildren().addAll(homeText, buttonQuit, vbox);
 
         // Handle button functionalities
         handleGenericMessage(genericMessageButton, theRoot);
@@ -79,6 +88,14 @@ public class StudentHomeGUI {
         handleArticleSearch(articleSearchButton, theRoot);
         handleLogout(logoutButton, theRoot);
         handleQuit(quitButton);
+        
+        buttonQuit.setOnAction(new EventHandler<>()
+    	{
+    		public void handle(ActionEvent event) 
+    		{						
+    			System.exit(0);
+    		}
+    	});
     }
 
     private void handleGenericMessage(Button genericMessageButton, Pane theRoot) {
