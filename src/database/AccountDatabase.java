@@ -323,9 +323,14 @@ public class AccountDatabase {
 	 * Returns true if expired OR key/expiration timestamp does not exist in account database
 	 */
 	public static boolean isKeyExpired(String key) {
+		// Prevents empty or very long keys
+		if(key.equals("") || key.length() > 15) {
+			System.err.println("Cannot check if key is expired because key is not between 0 and 15 charcters!");
+			return true;
+		}
 		// Prevents using method if key does NOT exist
 		if(!doesKeyExist(key)) {
-			System.err.println("Cannot check if key is expired because key does not exist in account database");
+			System.err.println("Cannot check if key is expired because key does not exist in account database!");
 			return true;
 		}
 		
@@ -370,6 +375,11 @@ public class AccountDatabase {
 	 * Returns the expiration date of a given key
 	 */
 	public static String getKeyExpiration(String key) {
+		// Prevents empty or very long keys
+		if(key.equals("") || key.length() > 15) {
+			System.err.println("Cannot get key expiration because key is not between 0 and 15 charcters!");
+			return "";
+		}
 		// Prevents using method if key does NOT exist
 		if(!doesKeyExist(key)) {
 			System.err.println("Cannot get expiration date because key does not exist in account database");
@@ -399,6 +409,7 @@ public class AccountDatabase {
 	/**********
 	 * Returns the username and display name of every account
 	 * in format of "username1,display_name1,is_student,is_instructor,is_admin|\nusername2,display_name2,is_student,is_instructor,is_admin|\n..."
+	 * Notes: the role status (is_student/instructor/admin) is 0 if false and 1 if true
 	 * Notes: A username can be a one-time key, a display_name can be empty, and all accounts are separated by "|\n"
 	 */
 	public static String getAllAccounts() {
@@ -444,7 +455,6 @@ public class AccountDatabase {
 			returnString = returnString.substring(0, returnString.length() - 2);
 		}
 		System.out.println("RETURN STRING OF GET ALL ACCOUNTS: " + returnString);
-		// Return in the format of "username1|display_name1,username2|\ndisplay_name2,..."
 		return returnString;
 	}
 	
@@ -522,14 +532,14 @@ public class AccountDatabase {
 			System.err.println("Cannot create account because username already exists");
 			return false;
 		}
-		// Prevents very long usernames
-		if(user.length() > 50) {
-			System.err.println("Cannot create account username is over 50 characters");
+		// Prevents empty or very long usernames
+		if(user.equals("") || user.length() > 50) {
+			System.err.println("Cannot create account username is empty or over 50 characters");
 			return false;
 		}
-		// Prevents very long passwords
-		if(pass.length() > 50) {
-			System.err.println("Cannot create account password is over 50 characters");
+		// Prevents empty or very long passwords
+		if(pass.equals("") || pass.length() > 50) {
+			System.err.println("Cannot create account password is empty or over 50 characters");
 			return false;
 		}
 		
@@ -665,19 +675,24 @@ public class AccountDatabase {
 	public static boolean updateUserRoles(String user, boolean isStudent, 
 			boolean isInstructor, boolean isAdmin) {
 		
+		// Prevents a username that is empty or over 50 characters
+		if(user.equals("") || user.length() > 50) {
+			System.err.println("Cannot update roles, username is not between 1 and 50 characters!");
+			return false;
+		}
 		// Checks if username doesn't exist
 		if(!doesUsernameExist(user)) {
-			System.err.println("Cannot update roles, username does not exist in accounts database");
+			System.err.println("Cannot update roles, username does not exist in accounts database!");
 			return false;
 		}
 		// Prevents account from having no roles
 		if(!isStudent && !isInstructor && !isAdmin) {
-			System.err.println("Cannot update roles, at least one role must be selected");
+			System.err.println("Cannot update roles, at least one role must be selected!");
 			return false;
 		}
 		// Prevents account from both student and instructor roles
 		if(isStudent && isInstructor) {
-			System.err.println("Cannot update roles, cannot have both student and instructor role");
+			System.err.println("Cannot update roles, cannot have both student and instructor role!");
 			return false;
 		}
 		
@@ -776,6 +791,11 @@ public class AccountDatabase {
 	 * Returns an empty string when reset failed
 	 */
 	public static String resetUser(String user) {
+		// Prevents a username that is empty or over 50 characters
+		if(user.equals("") || user.length() > 50) {
+			System.err.println("Cannot reset account, username is not between 1 and 50 characters!");
+			return "";
+		}
 		// Checks if username doesn't exist
 		if(!doesUsernameExist(user)) {
 			System.err.println("Cannot reset account, username does not exist in accounts database");
@@ -825,6 +845,16 @@ public class AccountDatabase {
 	 * Replaces a user's password with given password
 	 */
 	public static boolean resetPassword(String key, String pass) {
+		// Prevents a key that is empty or over 50 characters
+		if(key.equals("") || key.length() > 50) {
+			System.err.println("Cannot reset password, key is not between 1 and 50 characters!");
+			return false;
+		}
+		// Prevents a password that is empty or over 50 characters
+		if(pass.equals("") || pass.length() > 50) {
+			System.err.println("Cannot reset password, password is not between 1 and 50 characters!");
+			return false;
+		}
 		// Checks if key doesn't exist
 		if(!doesKeyExist(key)) {
 			System.err.println("Cannot reset password, key does not exist in accounts database");
@@ -868,6 +898,11 @@ public class AccountDatabase {
 	 * Removes a user's account from database
 	 */
 	public static boolean deleteUser(String user) {
+		// Prevents a username that is empty or over 50 characters
+		if(user.equals("") || user.length() > 50) {
+			System.err.println("Cannot delete user, user is not between 1 and 50 characters!");
+			return false;
+		}
 		// Checks if username doesn't exist
 		if(!doesUsernameExist(user)) {
 			System.err.println("Cannot delete account, username does not exist in accounts database");
