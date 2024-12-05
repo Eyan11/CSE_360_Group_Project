@@ -1,6 +1,5 @@
 package application;
 
-import java.sql.SQLException;	// To catch errors for SQL database
 import database.AccountDatabase;	// To use account database in different package
 
 /*******

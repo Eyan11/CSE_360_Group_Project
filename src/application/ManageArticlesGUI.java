@@ -2,6 +2,7 @@ package application;
 
 import java.sql.SQLException;
 
+import database.LoginTracker;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -82,13 +83,30 @@ public class ManageArticlesGUI {
 
     private void handleBack(Button backButton, Pane theRoot) {
         backButton.setOnAction(event -> {
-            theRoot.getChildren().clear(); // Clear the root
-            
-            Pane newRoot = new Pane();
-            AdminHome adminHome = new AdminHome(newRoot); 
-            Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-            Stage currentStage = (Stage) theRoot.getScene().getWindow();
-            currentStage.setScene(newScene);
+        	// Checks if user is logged in as an admin if user has multiple roles
+			if(LoginTracker.usingAdminRole())
+			{
+				theRoot.getChildren().clear();  // clear the current root
+				
+				// Send user to previous interface
+				Pane newRoot = new Pane(); // create new root
+				AdminHome adminHome = new AdminHome(newRoot); // call previous interface
+				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+			    currentStage.setScene(newScene); // sets scene
+			}
+			// Checks if user is logged in as instructor if user has multiple roles
+			else if(LoginTracker.usingInstructorRole())
+			{
+				theRoot.getChildren().clear();  // clear the current root
+				
+				// Send user to previous interface
+				Pane newRoot = new Pane(); // create new root
+				InstructorHomeGUI instructorHome = new InstructorHomeGUI(newRoot); // call previous interface
+				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+			    currentStage.setScene(newScene); // sets scene
+			}
         });
     }
 

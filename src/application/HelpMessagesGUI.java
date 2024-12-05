@@ -94,30 +94,34 @@ public class HelpMessagesGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				// Checks if logged in user is an instructor or not
-				if(LoginTracker.isInstructor()) {
-					// Returns user back to previous page
-					theRoot.getChildren().clear();  // Clear the current root
+				// Checks if user is logged in as an admin if user has multiple roles
+				if(LoginTracker.usingAdminRole())
+				{
+					theRoot.getChildren().clear();  // clear the current root
 					
-					// Create new pane for next interface
-					Pane newRoot = new Pane();
-					InstructorHomeGUI iHome = new InstructorHomeGUI(newRoot); // InstructorHomeGUI class
+					// Send user to previous interface
+					Pane newRoot = new Pane(); // create new root
+					AdminHome adminHome = new AdminHome(newRoot); // call previous interface
 					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-				    currentStage.setScene(newScene); // sets new scene
-				} else { // user logged in is an administrator
-					// Returns user back to previous page
-					theRoot.getChildren().clear();  // Clear the current root
+				    currentStage.setScene(newScene); // sets scene
+				}
+				// Checks if user is logged in as instructor if user has multiple roles
+				else if(LoginTracker.usingInstructorRole())
+				{
+					theRoot.getChildren().clear();  // clear the current root
 					
-					// Create new pane for next interface
-					Pane newRoot = new Pane();
-					AdminHome aHome = new AdminHome(newRoot); // AdminHomeGUI class
+					// Send user to previous interface
+					Pane newRoot = new Pane(); // create new root
+					InstructorHomeGUI instructorHome = new InstructorHomeGUI(newRoot); // call previous interface
 					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
 				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-				    currentStage.setScene(newScene); // sets new scene
+				    currentStage.setScene(newScene); // sets scene
 				}
 			}
 		});
 	}
 }
+
+
 

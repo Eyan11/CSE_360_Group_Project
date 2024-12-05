@@ -159,15 +159,31 @@ public class ModifyAccountsGUI
 		homeButton.setOnAction(new EventHandler<>()
 		{
 			public void handle(ActionEvent event) 
-			{						
-				theRoot.getChildren().clear();  // clear the current root
-				
-				// Send user to previous interface
-				Pane newRoot = new Pane(); // create new root
-				AdminHome adminHome = new AdminHome(newRoot); // call previous interface
-				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
-			    Stage currentStage = (Stage) theRoot.getScene().getWindow();
-			    currentStage.setScene(newScene); // sets scene
+			{		
+				// Checks if user is logged in as an admin if user has multiple roles
+				if(LoginTracker.usingAdminRole())
+				{
+					theRoot.getChildren().clear();  // clear the current root
+					
+					// Send user to previous interface
+					Pane newRoot = new Pane(); // create new root
+					AdminHome adminHome = new AdminHome(newRoot); // call previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets scene
+				}
+				// Checks if user is logged in as instructor if user has multiple roles
+				else if(LoginTracker.usingInstructorRole())
+				{
+					theRoot.getChildren().clear();  // clear the current root
+					
+					// Send user to previous interface
+					Pane newRoot = new Pane(); // create new root
+					InstructorHomeGUI instructorHome = new InstructorHomeGUI(newRoot); // call previous interface
+					Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // creates new scene
+				    Stage currentStage = (Stage) theRoot.getScene().getWindow();
+				    currentStage.setScene(newScene); // sets scene
+				}
 			}
 		});
 		

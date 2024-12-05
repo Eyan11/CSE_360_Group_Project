@@ -89,6 +89,9 @@ public class SelectRole {
     private void handleRoleSelection(Button studentButton, Button instructorButton, Button adminButton, String username, Pane theRoot) {  // Changed StackPane to Pane
         // Event handler for the student button
         studentButton.setOnAction(event -> {
+        	// Update selected role
+        	LoginTracker.selectStudentRole();
+        	
             // Simulate navigating to the Student/Instructor HomePage
         	theRoot.getChildren().clear();
         	
@@ -101,6 +104,9 @@ public class SelectRole {
 
         // Event handler for the instructor button
         instructorButton.setOnAction(event -> {
+        	// Update selected role
+        	LoginTracker.selectInstructorRole();
+        	
             // Student/Instructor HomePage
         	theRoot.getChildren().clear();
         	
@@ -113,6 +119,9 @@ public class SelectRole {
 
         // Event handler for the admin button
         adminButton.setOnAction(event -> {
+        	// Update selected role
+        	LoginTracker.selectAdminRole();
+        	
             // Simulate navigating to the AdminHome page
         	theRoot.getChildren().clear();
         	
