@@ -7,7 +7,6 @@ import javafx.geometry.Pos; // For Position object (vector2 coordinate used to d
 import javafx.scene.paint.Color; // To set color of UI elements
 
 import javafx.scene.layout.Pane; // For Pane object
-import database.AccountDatabase;
 import database.LoginTracker;
 import javafx.event.ActionEvent; // For ActionEvent object
 import javafx.event.EventHandler; // For EventHandler object

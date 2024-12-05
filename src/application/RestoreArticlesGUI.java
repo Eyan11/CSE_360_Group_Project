@@ -13,8 +13,6 @@ import javafx.event.ActionEvent; // For ActionEvent object
 import javafx.event.EventHandler; // For EventHandler object
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-
-import java.io.IOException;
 import java.sql.*;
 
 /*******
