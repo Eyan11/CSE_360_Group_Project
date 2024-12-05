@@ -195,7 +195,7 @@ public class ModifyAccountsGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				if(!LoginTracker.isAdmin())
+				if(!LoginTracker.usingAdminRole())
 				{
 					// Collect user name input from user for modification
 					userInput = userText.getText();
@@ -333,7 +333,7 @@ public class ModifyAccountsGUI
 		{
 			public void handle(ActionEvent event) 
 			{
-				if(!LoginTracker.isAdmin())
+				if(!LoginTracker.usingAdminRole())
 				{
 					// Collect user name from user for input
 					userInput = userText.getText();

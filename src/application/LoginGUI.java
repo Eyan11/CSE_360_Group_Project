@@ -7,6 +7,7 @@ import javafx.geometry.Pos; // For Position object (vector2 coordinate used to d
 import javafx.scene.paint.Color; // To set color of UI elements
 
 import javafx.scene.layout.Pane; // For Pane object
+import database.AccountDatabase;
 import database.LoginTracker;
 import javafx.event.ActionEvent; // For ActionEvent object
 import javafx.event.EventHandler; // For EventHandler object
@@ -116,12 +117,6 @@ public class LoginGUI
 		//TextField that will take key from user
 		setupUI.SetupTextFieldUI(keyText, "Arial", 18, WINDOW_WIDTH-20,
 				Pos.BASELINE_LEFT, 10, 315, true);
-		
-		/*
-		 * Button Creations
-		 * FOR JULIO: 
-		 * figure out dimensions for login button
-		 */
 		
 		//Button that should be pressed when password is inputed passwordText TextField
 		setupUI.SetupButtonUI(loginButton, "Arial", 14, WINDOW_WIDTH-20, 
@@ -259,29 +254,26 @@ public class LoginGUI
 					setupUI.SetupLabelUI(keyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 							Pos.BASELINE_LEFT, 10, 290, Color.BLACK);
 					
-					//IF new user, send user to CreateAccountGUI
-					if(!LoginEvaluator.accountCreation(keyInput))
+					// IF new user, send user to CreateAccountGUI
+					if(LoginEvaluator.accountCreation(keyInput))
 					{
 						theRoot.getChildren().clear();  // Clear the current root
 						
 						Pane newRoot = new Pane();
 						CreateAccountInformationGUI createAccount = new CreateAccountInformationGUI(newRoot, keyInput);
-						
-						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); //
-					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // 
-					    currentStage.setScene(newScene); // 
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // create new scene
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // create new stage
+					    currentStage.setScene(newScene); // set new scene
 					}
-					/*
-					 * IF existing user, send user to ResetPasswordGUI
-					 * ResetPasswordGUI will not be implemented in Phase 1
-					else if(LoginEvaluator.resetPassword(keyInput))
+					else // IF existing user, send user to ResetPasswordGUI
 					{
+						theRoot.getChildren().clear();  // Clear the current root
 						
-					}
-					*/
-					else // key doesn't fit either scenario
-					{
-						System.err.println("KEY CHECKER ERROR");
+						Pane newRoot = new Pane();
+						ResetPassword resetPass = new ResetPassword(newRoot, keyInput);
+						Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // create new scene
+					    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // create new stage
+					    currentStage.setScene(newScene); // set new scene
 					}
 				}
 				else // ERROR MESSAGE / Error Indication
@@ -294,3 +286,6 @@ public class LoginGUI
 		});
 	}
 }
+
+
+

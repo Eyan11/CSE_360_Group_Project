@@ -1,9 +1,7 @@
 package application;
 
-import java.sql.SQLException;
-
 import database.AccountDatabase;
-import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -11,11 +9,20 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class ResetPassword {
+	
+	//The width/height of the pop-up window for the user interface
+	public final static double WINDOW_WIDTH = 500;
+	public final static double WINDOW_HEIGHT = 430;
+	
+	private String key;
 
     // Constructor 
-    public ResetPassword(Pane root, String key) {
+    public ResetPassword(Pane theRoot, String key) {
+    	this.key = key;
+    	
         // Create the title "Reset Password"
         Text title = new Text("Reset Password");
         title.setFont(new Font("Arial", 32));
@@ -66,7 +73,13 @@ public class ResetPassword {
                 errorMessage.setVisible(false);
                 
                 // Send verification key and password to AccountDatabase
-				AccountDatabase.resetPassword(newPassword, confirmPassword);
+				AccountDatabase.resetPassword(this.key, newPassword);
+				
+				Pane newRoot = new Pane();
+				LoginGUI login = new LoginGUI(newRoot);
+				Scene newScene = new Scene(newRoot, WINDOW_WIDTH, WINDOW_HEIGHT); // create new scene
+			    Stage currentStage = (Stage) theRoot.getScene().getWindow(); // create new stage
+			    currentStage.setScene(newScene); // set new scene
 
             } else {
                 // Show error message if passwords don't match
@@ -76,6 +89,9 @@ public class ResetPassword {
         });
 
         // Add all elements
-        root.getChildren().addAll(title, newPasswordLabel, newPasswordField, confirmPasswordLabel, confirmPasswordField, errorMessage, resetButton);
+        theRoot.getChildren().addAll(title, newPasswordLabel, newPasswordField, confirmPasswordLabel, confirmPasswordField, errorMessage, resetButton);
     }
 }
+
+
+

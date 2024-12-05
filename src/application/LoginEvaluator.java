@@ -181,13 +181,6 @@ public class LoginEvaluator
 	}
 	
 	/**
-	 * VERIFY BUTTON Methods
-	 * Assume for now, every account is a new account when trying to verify
-	 * NEED TO FINISH for Phase2:
-	 * public static boolean resetPassword(String key)
-	 */
-	
-	/**
 	 * IF new user, send user to CreateAccountGUI
 	 * @param key
 	 * @return
@@ -198,26 +191,16 @@ public class LoginEvaluator
 		//stores inputed parameter
 		keyInput = key;
 		
-		/*		
-		//
-		if(!AccountDatabase.isAccountUpdated(...))
+		// Checks if key is being utilized for resetting password or account creation
+		if(AccountDatabase.isInviteKey(key))
 		{	
+			// Key is being utilized for account creation
 			return true;
 		}
-		//
+		// Key is being utilized for resetting password
 		return false;
-		*/
-		
-		return false; // TEMPORARY return value
 	}
-	
-	/**
-	 * IF existing user, send user to ResetPasswordGUI
-	 * ResetPasswordGUI will not be implemented in Phase 1
-	 * @param key
-	 * @return
-	 */
-	
-	/*
-	 */
 }
+
+
+

@@ -62,7 +62,6 @@ public class ManageAccountsGUI {
 
     private void handleBack(Button backButton, Pane theRoot) {
         backButton.setOnAction(event -> {
-        	
         	if(LoginTracker.usingAdminRole())
         	{
 	        	theRoot.getChildren().clear();
