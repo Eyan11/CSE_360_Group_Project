@@ -219,20 +219,20 @@ class ArticleDatabaseTesting {
 		// TEST 2 - One article
 		LoginTracker.login("userI");
 		ArticleDatabase.createArticle("h1", "t1", "a1", "d1", "k1", "beginner", "groupG", "b1", "r1");
-		String searchResult = "Groups: groupG\nContent Levels: 1 beginner\n\n"
+		String searchResult = "Groups: groupG\nContent Levels: beginner\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("all", "all", "all"), "Test 2");
 		
 		// TEST 3 - Two articles
 		ArticleDatabase.createArticle("h2", "t2", "a2", "d2", "k2", "intermediate", "groupS", "b2", "r2");
-		searchResult = "Groups: groupG, groupS\nContent Levels: 1 beginner, 1 intermediate\n\n"
+		searchResult = "Groups: groupG, groupS\nContent Levels: beginner, intermediate\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n"
 				 + 	"Sequence Number: 2\nTitle: t2\nAuthor: a2\nDescription: d2\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("all", "all", "all"), "Test 3");
 		
 		// TEST 4 - Three articles
 		ArticleDatabase.createArticle("h3", "t3", "a3", "d3", "k3", "advanced", "groupG", "b3", "r3");
-		searchResult = "Groups: groupG, groupS\nContent Levels: 1 beginner, 1 intermediate, 1 advanced\n\n"
+		searchResult = "Groups: groupG, groupS\nContent Levels: beginner, intermediate, advanced\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n"
 				 + 	"Sequence Number: 2\nTitle: t2\nAuthor: a2\nDescription: d2\n\n"
 				 + 	"Sequence Number: 3\nTitle: t3\nAuthor: a3\nDescription: d3\n\n";
@@ -242,7 +242,7 @@ class ArticleDatabaseTesting {
 		LoginTracker.login("userA");
 		ArticleDatabase.createArticle("h4", "t4", "a4", "d4", "k4", "expert", "groupX", "b4", "r4");
 		LoginTracker.login("userI");
-		searchResult = "Groups: groupG, groupS\nContent Levels: 1 beginner, 1 intermediate, 1 advanced\n\n"
+		searchResult = "Groups: groupG, groupS\nContent Levels: beginner, intermediate, advanced\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n"
 				 + 	"Sequence Number: 2\nTitle: t2\nAuthor: a2\nDescription: d2\n\n"
 				 + 	"Sequence Number: 3\nTitle: t3\nAuthor: a3\nDescription: d3\n\n";
@@ -250,7 +250,7 @@ class ArticleDatabaseTesting {
 		
 		// TEST 6 - Return all 4 articles because userA has access to all groups
 		LoginTracker.login("userA");
-		searchResult = "Groups: groupG, groupS, groupX\nContent Levels: 1 beginner, 1 intermediate, 1 advanced, 1 expert\n\n"
+		searchResult = "Groups: groupG, groupS, groupX\nContent Levels: beginner, intermediate, advanced, expert\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n"
 				 + 	"Sequence Number: 2\nTitle: t2\nAuthor: a2\nDescription: d2\n\n"
 				 + 	"Sequence Number: 3\nTitle: t3\nAuthor: a3\nDescription: d3\n\n"
@@ -259,39 +259,39 @@ class ArticleDatabaseTesting {
 		
 		// TEST 7 - Filter by groups
 		LoginTracker.login("userI");
-		searchResult = "Groups: groupG\nContent Levels: 1 beginner, 1 advanced\n\n"
+		searchResult = "Groups: groupG\nContent Levels: beginner, advanced\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n"
 				 + 	"Sequence Number: 2\nTitle: t3\nAuthor: a3\nDescription: d3\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("groupG", "all", "all"), "Test 7");
 		
 		// TEST 8 - Filter by level
-		searchResult = "Groups: groupG\nContent Levels: 1 advanced\n\n"
+		searchResult = "Groups: groupG\nContent Levels: advanced\n\n"
 				 + 	"Sequence Number: 1\nTitle: t3\nAuthor: a3\nDescription: d3\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("all", "advanced", "all"), "Test 8");
 		
 		// TEST 9 - Filter by contents (title)
-		searchResult = "Groups: groupG\nContent Levels: 1 beginner\n\n"
+		searchResult = "Groups: groupG\nContent Levels: beginner\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("all", "all", "t1"), "Test 9");
 		
 		// TEST 10 - Filter by contents (author)
-		searchResult = "Groups: groupS\nContent Levels: 1 intermediate\n\n"
+		searchResult = "Groups: groupS\nContent Levels: intermediate\n\n"
 				+ 	"Sequence Number: 1\nTitle: t2\nAuthor: a2\nDescription: d2\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("all", "all", "a2"), "Test 10");
 		
 		// TEST 11 - Filter by contents (description)
-		searchResult = "Groups: groupG\nContent Levels: 1 advanced\n\n"
+		searchResult = "Groups: groupG\nContent Levels: advanced\n\n"
 				+ 	"Sequence Number: 1\nTitle: t3\nAuthor: a3\nDescription: d3\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("all", "all", "d3"), "Test 11");
 		
 		// TEST 12 - Use All 3 Filters
-		searchResult = "Groups: groupG\nContent Levels: 1 beginner\n\n"
+		searchResult = "Groups: groupG\nContent Levels: beginner\n\n"
 				+ 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n";
 		assertEquals(searchResult, ArticleDatabase.searchByContents("groupG", "beginner", "a1"), "Test 12");
 		
 		// TEST 13 - Filter by Multiple Groups
 		LoginTracker.login("userA");	// Use admin just to show it doesn't return all groups
-		searchResult = "Groups: groupG, groupS\nContent Levels: 1 beginner, 1 intermediate, 1 advanced\n\n"
+		searchResult = "Groups: groupG, groupS\nContent Levels: beginner, intermediate, advanced\n\n"
 				 + 	"Sequence Number: 1\nTitle: t1\nAuthor: a1\nDescription: d1\n\n"
 				 + 	"Sequence Number: 2\nTitle: t2\nAuthor: a2\nDescription: d2\n\n"
 				 + 	"Sequence Number: 3\nTitle: t3\nAuthor: a3\nDescription: d3\n\n";

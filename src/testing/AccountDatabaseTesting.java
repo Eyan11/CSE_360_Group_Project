@@ -205,6 +205,38 @@ class AccountDatabaseTesting {
 	}
 	
 	@Test
+	void testIsInviteKey() {
+		AccountDatabase.deleteAllAccounts();
+		
+		// TEST 1 - invite first user
+		AccountDatabase.createFirstAccount("user1", "pass");
+		String key = AccountDatabase.inviteUser(true, false, false);
+		assertTrue(AccountDatabase.isInviteKey(key), "Test 1");
+		
+		// TEST 2 - invite second user
+		key = AccountDatabase.inviteUser(false, true, false);
+		assertTrue(AccountDatabase.isInviteKey(key), "Test 2");
+		
+		// TEST 3 - incorrect key length
+		assertFalse(AccountDatabase.isInviteKey("WrongKeyLength"), "Test 3");
+		
+		// TEST 4 - key doesn't exist
+		assertFalse(AccountDatabase.isInviteKey("KeyDoesNotExist"), "Test 4");
+		
+		// TEST 5 - already created account with invite key, so key is gone now
+		AccountDatabase.createAccountWithKey("user2", "pass", key);
+		assertFalse(AccountDatabase.isInviteKey(key), "Test 5");
+		
+		// TEST 6 - key exists but is for the first reset user
+		key = AccountDatabase.resetUser("user2");
+		assertFalse(AccountDatabase.isInviteKey(key), "Test 6");
+		
+		// TEST 7 - key exists but is for the second reset user
+		key = AccountDatabase.resetUser("user1");
+		assertFalse(AccountDatabase.isInviteKey(key), "Test 7");
+	}
+	
+	@Test
 	void testIsKeyExpired() {
 		AccountDatabase.deleteAllAccounts();
 		

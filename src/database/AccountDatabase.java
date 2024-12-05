@@ -319,13 +319,49 @@ public class AccountDatabase {
 	
 	
 	/**********
+	 * Returns true if a given key corresponds to a user that was invited (rather than reset)
+	 */
+	public static boolean isInviteKey(String key) {
+		// Prevents checking keys of wrong length
+		if(key.length() != KEY_LENGTH) {
+			System.err.println("Can't check if key is for invited user since key is not 15 characters");
+			return false;
+		}
+		// Prevents checking keys that don't exist
+		if(!doesKeyExist(key)) {
+			System.err.println("Cannot check if key is for invited user because key does not exist in database!"
+					+ " Please use AccountDatabase.doesKeyExist(String key) before calling this method");
+			return false;
+		}
+		
+		// Query finds accounts with matching username and where is_key is true
+	    query = "SELECT * FROM accounts WHERE username = ? AND is_key = true";
+	    // Prepare the previous query to be executed
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        
+	        pstmt.setString(1, key);				// Set the ? placeholder variable to key
+	        resultSet = pstmt.executeQuery();		// ResultSet is now positioned before first row
+	        
+	        // If returned at least 1 row, the key corresponds to an invited user
+	        if (resultSet.next()) {
+	            return true;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		System.err.println("Checked if key is for invited user, but key is for a reset user or an error has occured");
+	    return false;	// If an error occurs or no matches found from query, then return false
+	}
+	
+	
+	/**********
 	 * Checks if current time is past the expiration time for a given key
 	 * Returns true if expired OR key/expiration timestamp does not exist in account database
 	 */
 	public static boolean isKeyExpired(String key) {
-		// Prevents empty or very long keys
-		if(key.equals("") || key.length() > 15) {
-			System.err.println("Cannot check if key is expired because key is not between 0 and 15 charcters!");
+		// Prevents keys of wrong length
+		if(key.length() != KEY_LENGTH) {
+			System.err.println("Cannot check if key is expired because key is not 15 charcters!");
 			return true;
 		}
 		// Prevents using method if key does NOT exist
@@ -375,9 +411,9 @@ public class AccountDatabase {
 	 * Returns the expiration date of a given key
 	 */
 	public static String getKeyExpiration(String key) {
-		// Prevents empty or very long keys
-		if(key.equals("") || key.length() > 15) {
-			System.err.println("Cannot get key expiration because key is not between 0 and 15 charcters!");
+		// Prevents keys of wrong length
+		if(key.length() != KEY_LENGTH) {
+			System.err.println("Cannot get key expiration because key is not 15 charcters!");
 			return "";
 		}
 		// Prevents using method if key does NOT exist
@@ -545,10 +581,10 @@ public class AccountDatabase {
 		
 		
 		// Query inserts placeholder variables ? into accounts database 
-		// where the password is a key and matches key param
+		// where the username is a key and matches key param
 		String query = "UPDATE accounts "
 				+ "SET username = ?, password = ?, is_key = false, is_account_updated = false, expiration = ? "
-				+ "WHERE is_key = true AND password = ?";
+				+ "WHERE is_key = true AND username = ?";
 		
 		// Prepare the previous query to be executed
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {

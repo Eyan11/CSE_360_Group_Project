@@ -358,7 +358,7 @@ public class ArticleDatabase {
 	
 	/**********
 	 * Returns the sequence number, title, author, and description as String for all matching articles
-	 * 	in format of "Groups: text1, text2|Content Levels: 1 beginner, 3 advanced|
+	 * 	in format of "Groups: text1, text2|Content Levels: beginner, advanced|
 	 * 	Sequence Number: 1\nTitle: text\nAuthor: text\nDescription: text\n\n..."
 	 */
 	public static String searchByContents(String groupFilter, String levelFilter, String searchContents) {
@@ -380,7 +380,7 @@ public class ArticleDatabase {
 			
 			// Temporary variables for collecting data
 			String returnGroups = "Groups: ";
-			String returnLevels = "Content Levels: ";
+			String returnLevels = "Content Levels:";
 			String tempGroups = "";
 			String[] groupsArr = new String[10];
 			int numBeg = 0;
@@ -443,17 +443,17 @@ public class ArticleDatabase {
 			
 			// Build content levels string
 			if(numBeg > 0)
-				returnLevels += " beginner, ";
+				returnLevels += " beginner,";
 			if(numInt > 0)
-				returnLevels += " intermediate, ";
+				returnLevels += " intermediate,";
 			if(numAdv > 0)
-				returnLevels += " advanced, ";
+				returnLevels += " advanced,";
 			if(numExp > 0)
-				returnLevels += " expert, ";
+				returnLevels += " expert,";
 			
-			// If at least 1 article is returned, remove the last ", " from returnLevels
+			// If at least 1 article is returned, remove the last "," from returnLevels
 			if(numBeg + numInt + numAdv + numExp > 0)
-				returnLevels = returnLevels.substring(0, returnLevels.length() - 2);	
+				returnLevels = returnLevels.substring(0, returnLevels.length() - 1);	
 			
 			// Combine all return strings into one
 			returnString = returnGroups + "\n" + returnLevels + "\n\n" + returnString;
