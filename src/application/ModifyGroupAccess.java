@@ -63,7 +63,7 @@ public class ModifyGroupAccess {
 		
 		// Label the email input field with a title just above it, left aligned
 		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 120, 220, Color.RED);
+				Pos.BASELINE_LEFT, 120, 270, Color.RED);
 		// Label the email input field with a title just above it, left aligned
 		setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 120, 220, Color.RED);

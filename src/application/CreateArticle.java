@@ -345,6 +345,8 @@ public class CreateArticle {
 	            				Pos.BASELINE_LEFT, 10, 170, Color.RED);
 	            		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 210, Color.RED);
+	            		setupLabelUI(contentLabel, "Arial", 14, WINDOW_WIDTH-10, 
+	            				Pos.BASELINE_LEFT, 10, 230, Color.RED);
 	            		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 	            				Pos.BASELINE_LEFT, 10, 275, Color.RED);
 	            		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 

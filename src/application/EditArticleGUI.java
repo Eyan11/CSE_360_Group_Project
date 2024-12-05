@@ -244,6 +244,7 @@ public class EditArticleGUI {
 		            	// Retrieve TextField input
 		            	headerString = headerText.getText();
 		            	titleString = titleText.getText();
+		            	authorString = authorText.getText();
 		            	descriptionString = descriptionText.getText();
 		            	keywordsString = keywordsText.getText();
 		            	//groupsString = groupsText.getText();
@@ -310,6 +311,11 @@ public class EditArticleGUI {
 	            					groupsString, bodyString, referencesString);
 	            			*/
 		            		
+		            		// Retrieve selected role (admin, user) from the role combobox, turn it into string
+							String difficultyString = (String) difficultyBox.getSelectionModel().getSelectedItem();
+							
+		            		ArticleDatabase.editArticle(articleID, headerString, titleString, authorString, descriptionString, keywordsString, 
+	            					difficultyString, groupsString, bodyString, referencesString);
 	            			/**
 	            			 * Transitions to different home pages
 	            			 */
