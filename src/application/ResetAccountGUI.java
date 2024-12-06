@@ -17,14 +17,16 @@ import javafx.stage.Stage;
 /**
  * <p> ResetAccountGUI Class </p>
  * 
- * <p> Description: The Java/FX-based user interface for updating user account information 
- * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
+ * <p> Description: The Java/FX-based user interface for retrieving the one-time use code for
+ * 					resetting user account information. This window appears after a username is input in the username box on the reset
+ * 					account page and clicking the "Reset" button. Code expires after 10 minutes.
+ * Developed for Professor Lynn Robert Carter's CSE 360 Group Project (current version: Phase 4).</p>
  * 
  * <p> Copyright: Evan Espinosa © 2024 </p>
  * 
  * @author Evan Espinosa
  * 
- * @version 1.00		2024-10-30 The JavaFX-based GUI for the implementation of the user's reset account page
+ * @version 1.00		2024-12-04 The JavaFX-based GUI for the implementation of the user's reset account page
  *  
  */
 
@@ -34,7 +36,6 @@ public class ResetAccountGUI {
 	 * Variable declaration
 	 */
 	
-	//private String user; // Imported from calling class
 	/** The width of the pop-up window for the user interface */
 	public final static double WINDOW_WIDTH = 500;
 	/** The height of the pop-up window for the user interface */

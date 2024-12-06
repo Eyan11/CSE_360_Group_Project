@@ -15,11 +15,21 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ * <p> ModifyGroupAccess Class </p>
+ * 
+ * <p> Description: The Java/FX-based user interface for modifying a user's group access. This page can be accessed by instructors and admins. 
+ * Developed for Professor Lynn Robert Carter's CSE 360 Group Project (current version: Phase 4).</p>
+ * 
+ * <p> Copyright: Evan Espinosa © 2024 </p>
+ * 
+ * @author Evan Espinosa
+ * 
+ * @version 1.00 2024-12-04 The JavaFX-based GUI for the implementation of the user's modify group access page
+ *  
+ */
 
-//Import groups from CreateGroupGUI
-//List groups from CreateGroupGUI & create new variables (strings, labels, text, etc.) in a for loop that adds them to the GUI for ModifyGroupAccess
-// groupString = GroupDatabase.GetAllAuthorizedGroupNames
-//String[] GroupsArr = groupString.split("+");
+
 public class ModifyGroupAccess {
 
 	/**
@@ -32,7 +42,7 @@ public class ModifyGroupAccess {
 	public final static double WINDOW_HEIGHT = 430;
 	
 	/** String inputs */
-	//private String user; // Passed in from previous step
+	// N/A
 	
 	/** Text to appear as a part of the window (text field indicators, etc. */
 	private Label sceneLabel = new Label("Modify Groups Access");
@@ -61,22 +71,22 @@ public class ModifyGroupAccess {
 		String groupString = GroupDatabase.getAllAuthorizedGroupNames(false);
 		String GroupsArr[] = groupString.split("\\+");
 		
-		// Label the email input field with a title just above it, left aligned
+		// Error label 1
 		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 120, 270, Color.RED);
-		// Label the email input field with a title just above it, left aligned
+		// Error label 2
 		setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 120, 220, Color.RED);
-		// Label the email input field with a title just above it, left aligned
+		// Label the group input field with a title just above it, left aligned
 		setupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 150, Color.BLACK);
-		// Label the email input field with a title just above it, left aligned
+		// Label the role input field with a title just above it, left aligned
 		setupLabelUI(roleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 		Pos.BASELINE_LEFT, 100, 150, Color.BLACK);
-		// Label the email input field with a title just above it, left aligned
+		// Label the groups display with a title just above it, left aligned
 		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 200, Color.BLACK);
-		// Text label for error if error occurs
+		// Text label for user info
 		setupLabelUI(userLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 90, Color.GREEN);
 		
@@ -119,8 +129,6 @@ public class ModifyGroupAccess {
         		userText, removeButton, addButton, backButton); 
 		        
         // Establishes the button logic for each press
-        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
-        //                 he will add functionality for repeated valid input.
         addButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
         		// Retrieve TextField input
@@ -137,20 +145,9 @@ public class ModifyGroupAccess {
             		
             		setupLabelUI(userLabel, "Arial", 14, WINDOW_WIDTH-10, 
             				Pos.BASELINE_LEFT, 10, 90, Color.RED);
-    		        /*
-    				//Button addButton = new Button("Add");
-    		        setupUI.SetupButtonUI(addButton, "Arial", 14, 50, 20, 
-    		        		Pos.CENTER, 160, 245, false, Color.RED);
-    		        
-    		        //Button removeButton = new Button("Remove");
-    		        setupUI.SetupButtonUI(removeButton, "Arial", 14, 80, 20, 
-    		        		Pos.CENTER, 260, 245, false, Color.RED);
-    		        */
 
             	}	
             	// If all necessary entries are filled, reset scene formatting and send info to next step!
-            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
-            	// 				   onto then next part. Thank you.
             	else {
             		
             		//Eliminate error indicator
@@ -158,13 +155,6 @@ public class ModifyGroupAccess {
             					            		
             		setupLabelUI(userLabel, "Arial", 14, WINDOW_WIDTH-10, 
             				Pos.BASELINE_LEFT, 10, 90, Color.GREEN);
-            		
-            		/*
-            		setupButtonUI(addButton, "Arial", 14, WINDOW_WIDTH-20, 
-                    		Pos.CENTER, 160, 220, Color.GREEN);
-            		setupButtonUI(removeButton, "Arial", 14, WINDOW_WIDTH-20, 
-                    		Pos.CENTER, 260, 220, Color.GREEN);
-                    */
             		
             		// Retrieve selected role (admin, user) from the role combobox, turn it into string
 					String selectedRole = (String) roleBox.getSelectionModel().getSelectedItem();
@@ -184,35 +174,18 @@ public class ModifyGroupAccess {
 
 					}
 					// Else, if selected role is "User", remove User of name userString from the group
-
 					if(selectedRole == "User") 
 					{
 											
 						userPane.getChildren().remove(errorLabel2);
-						
-						/*
-						//Button addButton = new Button("Add");
-	    		        setupUI.SetupButtonUI(addButton, "Arial", 14, 50, 20, 
-	    		        		Pos.CENTER, 160, 245, false, Color.GREEN);
-	    		        */
-						
 						GroupDatabase.addUserToGroup(userString, selectedGroup, true);
 					} 
-					else { // NOTE: Add button gets all wide if this happens, so make sure to select an admin or user role!
+					else {
 						userPane.getChildren().add(errorLabel2);
 						
 						// Label the email input field with a title just above it, left aligned
 						setupLabelUI(roleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 						Pos.BASELINE_LEFT, 100, 150, Color.RED);
-						
-						/*
-	    				//Button addButton = new Button("Add");
-	    		        setupUI.SetupButtonUI(addButton, "Arial", 14, 50, 20, 
-	    		        		Pos.CENTER, 160, 245, false, Color.RED);
-	    		        //Button removeButton = new Button("Remove");
-	    		        setupUI.SetupButtonUI(removeButton, "Arial", 14, 80, 20, 
-	    		        		Pos.CENTER, 260, 245, false, Color.RED);
-	    		        */
 					}
 					
         			/**

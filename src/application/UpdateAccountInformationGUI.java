@@ -16,22 +16,20 @@ import javafx.stage.Stage;
 /**
  * <p> UpdateAccountInformationGUI Class </p>
  * 
- * <p> Description: The Java/FX-based user interface for updating user account information 
- * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
+ * <p> Description: The Java/FX-based user interface for updating user account information .
+ * Developed for Professor Lynn Robert Carter's CSE 360 Group Project (current version: Phase 4).</p>
  * 
  * <p> Copyright: Evan Espinosa © 2024 </p>
  * 
  * @author Evan Espinosa
  * 
- * @version 1.00		2024-09-10 The JavaFX-based GUI for the implementation of the user's update account information page
+ * @version 1.00		2024-12-04 The JavaFX-based GUI for the implementation of the user's update account information page
  *  
  */
 
 // ALL NOTES CRITICAL FOR OTHER DEVELOPERS READING THE CODE AND CONNECTING IT TO THEIR OWN ARE PREFACED BY "DEVELOPER NOTE: "
 // However, it is still highly recommended that you read ALL comments throughout the program before doing anything 
 // (especially before changing anything!)
-// DEVELOPER NOTE: Additional imports may be necessary for this program to work with the rest of phase 1
-//public class UpdateAccountInformationGUI extends Application { // Use this class header if you want to test with start()
 public class UpdateAccountInformationGUI {
 	/**
 	 * Variable declaration
@@ -50,7 +48,6 @@ public class UpdateAccountInformationGUI {
     private String preferredString;
 	
 	/** Text to appear as a part of the window (text field indicators, etc. */
-	//private Label sceneLabel = new Label("Update User Info Window");
 	private Label emailLabel = new Label("Enter email here");
 	private Label firstName = new Label("Enter first name here");
 	private Label middleName = new Label("Enter middle name here");
@@ -63,9 +60,6 @@ public class UpdateAccountInformationGUI {
 	private TextField middleNameText = new TextField();
 	private TextField lastNameText = new TextField();
 	private TextField prefNameText = new TextField();
-	
-	//private Button updateButton = new Button("Button test");	
-	//updateButton.setText("Update");
 	
 	
 	/** Constructors
@@ -80,10 +74,6 @@ public class UpdateAccountInformationGUI {
 		updateStage.setTitle("User Info Update");
         
        
-        // Label the Scene with the name of the testbed, centered at the top of the pane
-		//setupLabelUI(sceneLabel, "Arial", 24, WINDOW_WIDTH, 
-				//Pos.CENTER, 0, 10, Color.GREEN);
-		
 		// Label the email input field with a title just above it, left aligned
 		setupLabelUI(emailLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 25, Color.BLACK);
@@ -132,8 +122,6 @@ public class UpdateAccountInformationGUI {
         							  prefName, prefNameText, updateButton);
         
         // Establishes the button logic for each press
-        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
-        //                 he will add functionality for repeated valid input.
         updateButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
             	// Retrieve TextField input
@@ -170,8 +158,6 @@ public class UpdateAccountInformationGUI {
             	}
             	
             	// If all necessary entries are filled, reset scene formatting and send info to next step!
-            	// DEVELOPER NOTE: Please let Evan know what steps need to be incorporated so I can add whatever is necessary to pass 
-            	// 				   onto then next part. Thank you.
             	else if (!AccountDatabase.doesEmailExist(user)) {
             		// Reset color values to green
             		setupButtonUI(updateButton, "Arial", 14, WINDOW_WIDTH-20, 
@@ -275,11 +261,6 @@ public class UpdateAccountInformationGUI {
 		
 		boolean filled; // Checks of all necessary entries are filled. Starts as false (by default). If any parameters are not filled, stays false.
 						// Otherwise, returns as true!
-		/*if( (email == "") || (first == "") || (middle == "") || (last == "") ) {
-			// Show error above button saying "All necessary text boxes must be filled! (see red)
-			// Change relevant titles to red (gonna have to break if statements up)	 
-		
-		}*/
 		// If any entry is empty, filled = false
 		if(email == "") {
 			filled = false;

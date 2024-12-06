@@ -18,14 +18,14 @@ import javafx.stage.Stage;
 /**
  * <p> CreateArticleGUI Class </p>
  * 
- * <p> Description: The Java/FX-based user interface for the creation of an article 
- * in Lynn Robert Carter's CSE 360 Group Project (current version: Phase 2).</p>
+ * <p> Description: The Java/FX-based user interface for the creation of an article.
+ * Developed for Professor Lynn Robert Carter's CSE 360 Group Project (current version: Phase 4).</p>
  * 
  * <p> Copyright: Evan Espinosa © 2024 </p>
  * 
  * @author Evan Espinosa
  * 
- * @version 1.00 2024-09-10 The JavaFX-based GUI for the implementation of the user's update account information page
+ * @version 1.00 2024-12-04 The JavaFX-based GUI for the implementation of the user's create article page
  *  
  */
 
@@ -50,7 +50,6 @@ public class CreateArticle {
 	private String referencesString;
 
 	/** Text to appear as a part of the window (text field indicators, etc. */
-	//private Label sceneLabel = new Label("Create Article");
 	private Label headerLabel = new Label("Header:");
 	private Label titleLabel = new Label("Title:");
 	private Label authorLabel = new Label("Author:");
@@ -62,8 +61,6 @@ public class CreateArticle {
 	private Label referencesLabel = new Label("References:");
 	private Label errorLabel = new Label("Please fill in the required entries (see red)");
 	private Label errorLabel2 = new Label("Please select a group (see red)");
-	private Label errorLabel3 = new Label("Please select a difficulty (see red)");
-
 
 
 	
@@ -75,7 +72,6 @@ public class CreateArticle {
 	private TextField authorText = new TextField();
 	private TextField bodyText = new TextField();
 	private TextField referencesText = new TextField();
-	//private TextField errorText = new TextField();
 	
 	// Declaration of SetupUIElements Object
 	public SetupUIElements setupUI = new SetupUIElements();
@@ -96,50 +92,47 @@ public class CreateArticle {
     	String groupString = GroupDatabase.getAllAuthorizedGroupNames(false);
     	String[] GroupsArr = groupString.split("\\+");
 		
-		// Label the email input field with a title just above it, left aligned
-		setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
+		// Error label 1
+    	setupLabelUI(errorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 500, Color.RED);
 		
-		// Label the email input field with a title just above it, left aligned
+		// Error label 2
 		setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 500, Color.RED);
 		
-		// Label the email input field with a title just above it, left aligned
-		setupLabelUI(errorLabel2, "Arial", 14, WINDOW_WIDTH-10, 
-				Pos.BASELINE_LEFT, 10, 500, Color.RED);
-				
 		// Label the first name input field with a title just above it, left aligned
 		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 50, Color.BLACK);
 		
-		// Label the middle name input field with a title just above it, left aligned
+		// Label the title input field with a title just above it, left aligned
 		setupLabelUI(titleLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 90, Color.BLACK);
 		
-		// Label the middle name input field with a title just above it, left aligned
+		// Label the author name input field with a title just above it, left aligned
 		setupLabelUI(authorLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 130, Color.BLACK);
 		
-		// Label the last name input field with a title just above it, left aligned
+		// Label the description input field with a title just above it, left aligned
 		setupLabelUI(descriptionLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 170, Color.BLACK);
 		
-		// Label the preferred name input field with a title just above it, left aligned
+		// Label the keywords input field with a title just above it, left aligned
 		setupLabelUI(keywordsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 210, Color.BLACK);
 		
+		// Label the content input field with a title just above it, left aligned
 		setupLabelUI(contentLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 230, Color.BLACK);
 		
+		// Label the groups input field with a title just above it, left aligned
 		setupLabelUI(groupsLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 275, Color.BLACK);
 		
-		//setupLabelUI(groupLabel, "Arial", 14, WINDOW_WIDTH-10, 
-				//.Pos.BASELINE_LEFT, 10, 350, Color.BLACK);
-		
+		// Label the body input field with a title just above it, left aligned
 		setupLabelUI(bodyLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 335, Color.BLACK);
 		
+		// Label the references input field with a title just above it, left aligned
 		setupLabelUI(referencesLabel, "Arial", 14, WINDOW_WIDTH-10, 
 				Pos.BASELINE_LEFT, 10, 375, Color.BLACK);
 		
@@ -166,12 +159,13 @@ public class CreateArticle {
 		setupUI.SetupTextFieldUI(referencesText, "Arial", 18, 400, 10,
 				Pos.BASELINE_LEFT, 90, 375, true);
 		
+		// ComboBox for article skill level
 		ComboBox difficultyBox = new ComboBox();
 	        difficultyBox.getItems().addAll("Beginner", "Intermediate", "Advanced", "Expert");      
 	        difficultyBox.setLayoutX(20);
 	        difficultyBox.setLayoutY(250);
 	        
-	        
+	    // ComboBox for group selection
 		ComboBox groupBox = new ComboBox<>();
         	groupBox.getItems().addAll(GroupsArr);
         	groupBox.setLayoutX(20);
@@ -188,32 +182,14 @@ public class CreateArticle {
         setupUI.SetupButtonUI(backButton, "Arial", 11, 50, 20,
         		Pos.CENTER, 10, 10, false, Color.BLACK);
         
-        /*
-        Button addButton = new Button("Add");
-        setupUI.SetupButtonUI(addButton, "Arial", 11, 50, 20,
-        		Pos.CENTER, 110, 295, false, Color.BLACK);
-        
-        Button removeButton = new Button("Remove");
-        setupUI.SetupButtonUI(removeButton, "Arial", 11, 80, 20,
-        		Pos.CENTER, 160, 295, false, Color.BLACK);
-        */
-        
         // Sends all previously established parameters for the pane to the scene for setup
         userPane.getChildren().addAll(headerLabel, headerText, titleLabel, titleText, authorLabel, 
         		authorText, descriptionLabel, descriptionText, keywordsLabel, keywordsText,
         		groupsLabel, contentLabel, bodyLabel, bodyText, referencesLabel, 
         		referencesText, groupBox, difficultyBox, createButton, backButton); 
         
-        // Don't need this -- error (Only need scene when you're going to a different page)
-        //Scene userScene = new Scene(userPane, 800, 500);
-        //userScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-        //updateStage.setScene(userScene);
-        //updateStage.show();
-        
         // Establishes the button logic for each press
-        // DEVELOPER NOTE: Button logic does not refresh or continue after VALID input. If this ever becomes an issue, let Evan know and 
-        //                 he will add functionality for repeated valid input.
-        
+     
         /*
         addButton.setOnAction(new EventHandler<>() {
             public void handle(ActionEvent event) {
@@ -332,7 +308,6 @@ public class CreateArticle {
 	            	if(pass == false) {
 	            		
 	            		userPane.getChildren().remove(errorLabel2);
-	            		userPane.getChildren().remove(errorLabel3);
 	            		userPane.getChildren().add(errorLabel);
 
 	            		setupLabelUI(headerLabel, "Arial", 14, WINDOW_WIDTH-10, 
@@ -386,12 +361,6 @@ public class CreateArticle {
 	            		
 	            		// DEVELOPER NOTE: Critical step v1
 	            		// Pass info onto the next part!
-	            		/*	TODO - add author and content level arguments (see below)
-            			ArticleDatabase.createArticle(headerString, titleString, descriptionString, keywordsString, 
-            					groupsString, bodyString, referencesString);
-            			*/
-						
-						// Julio and Eyan, slight error here. Thanks again for the decoding help
 	            		ArticleDatabase.createArticle(headerString, titleString, authorString, descriptionString, 
 	            					keywordsString, difficultyString, groupsString, bodyString, referencesString);
             			
