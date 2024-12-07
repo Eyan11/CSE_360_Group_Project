@@ -49,25 +49,11 @@ public class DatabaseManager {
 			HelpMessageDatabase.setConnection(connection, statement);
 			GroupDatabase.setConnection(connection, statement);
 			
-			// Wipe all data in accounts table
+			// Create all tables if they don't already exist
 			AccountDatabase.createTable();
-			AccountDatabase.deleteAllAccounts();
-			
-			// Wipe all data in articles table
 			ArticleDatabase.createTable();
-			ArticleDatabase.deleteAllArticles();
-			
-			// Wipe all data in help_messages table
 			HelpMessageDatabase.createTable();
-			HelpMessageDatabase.deleteAllMessages();
-			
-			// Wipe all data in groups table
 			GroupDatabase.createTable();
-			GroupDatabase.deleteAllGroups();
-			
-			// Perform tests on both accounts and articles tables
-			//AccountDatabaseTesting.performTestEvaluations();
-			//ArticleDatabaseTesting.performTestEvaluations();
 		} 
 		// Connection failed
 		catch (ClassNotFoundException e) {
